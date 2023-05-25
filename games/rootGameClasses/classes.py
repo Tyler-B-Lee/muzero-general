@@ -2,7 +2,7 @@ import numpy as np
 import math
 import random
 
-# Named Constants
+### Named Constants
 SUIT_MOUSE = 0
 SUIT_RABBIT = 1
 SUIT_FOX = 2
@@ -21,13 +21,19 @@ N_PLAYERS = 2
 PIND_MARQUISE = 0
 PIND_EYRIE = 1
 
+# MARQUISE
 BIND_SAWMILL = 0
 BIND_WORKSHOP = 1
 BIND_RECRUITER = 2
-BIND_ROOST = 0
-
 TIND_KEEP = 0
 TIND_WOOD = 1
+
+# EYRIE
+BIND_ROOST = 0
+LEADER_BUILDER = 0
+LEADER_CHARISMATIC = 1
+LEADER_COMMANDER = 2
+LEADER_DESPOT = 3
 
 class Clearing:
     def __init__(self,id:int,suit:int,num_building_slots:int,num_ruins:int,is_corner_clearing:bool,adj_clearing_ids:list) -> None:
@@ -69,11 +75,22 @@ class Clearing:
 
         if not (num_marquise + num_eyrie):
             return -1
+        # the Eyrie rule tied clearings they have a piece in with "Lords of the Forest"
         return PIND_EYRIE if (num_eyrie >= num_marquise) else PIND_MARQUISE
 
     def is_ruler(self,faction_index:int) -> bool:
         "Returns True if the given faction IS the ruler of this clearing, False otherwise."
         return self.get_ruler() == faction_index
+    
+    ### BUILDING METHODS
+    def get_num_buildings(self,faction_index:int,building_index:int = -1) -> int:
+        """
+        Returns the number of buildings of the given type for the given faction in the clearing.
+
+        If no building index is specified, returns the total number of buildings
+        for the given faction, regardless of their type.
+        """
+        return len(self.buildings[faction_index]) if (building_index == -1) else sum(x == building_index for x in self.buildings[faction_index])
     
     def place_building(self,faction_index:int,building_index:int) -> None:
         "Place the given building in this clearing. Assumes the move is legal, performing no checks."
@@ -83,6 +100,12 @@ class Clearing:
         "Removes the given building in this clearing, assuming it exists. Does not handle points."
         self.buildings[faction_index].remove(building_index)
 
+
+    ### TOKEN METHODS
+    def get_num_tokens(self,faction_index:int,token_index:int) -> int:
+        "Returns the number of tokens of the given type for the given faction in the clearing."
+        return sum(x == token_index for x in self.tokens[faction_index])
+
     def place_token(self,faction_index:int,token_index:int) -> None:
         "Place the given token in this clearing. Assumes the move is legal, performing no checks."
         self.buildings[faction_index].append(token_index)
@@ -91,13 +114,19 @@ class Clearing:
         "Removes the given building in this clearing, assuming it exists. Does not handle points."
         self.buildings[faction_index].remove(token_index)
     
-    def change_num_warriors(self,faction_index:int, change:int) -> None:
+    ### WARRIOR METHODS
+    def get_num_warriors(self,faction_index:int) -> int:
+        "Returns the number of warriors of the given faction in the clearing."
+        return self.warriors[faction_index]
+
+    def change_num_warriors(self,faction_index:int,change:int) -> None:
         """
         Adds the specified number of warriors of the specified faction to the clearing.
-        Use a negative number to remove warriors.
+        Use a negative number to remove warriors. Does NOT change faction supply counts.
         """
         self.warriors[faction_index] += change
     
+
     def can_start_battle(self,attacker_index:int,defender_index:int) -> bool:
         """
         Returns True if one faction can attack the other as directed
@@ -110,7 +139,7 @@ class Clearing:
         Returns True if the faction can place a piece in this clearing. This is mainly affected
         by the Marquise's Keep, which blocks other Factions from placing pieces in its clearing.
         """
-        
+        return (faction_index == PIND_MARQUISE) or (TIND_KEEP not in self.tokens[PIND_MARQUISE])
 
 
 class Card:
@@ -148,9 +177,48 @@ class Deck:
         return len(self.cards)
 
 class Player:
-    def __init__(self,id:int,warrior_storage_size:int) -> None:
+    def __init__(self,id:int) -> None:
         self.id = id
-        self.warrior_storage_size = warrior_storage_size
+        self.warrior_storage = 0
+        self.buildings = {}
+        self.tokens = {}
+        self.crafted_items = {}
+        self.hand = []
+
+    def change_num_warriors(self, change:int) -> None:
+        """
+        Changes the number of warriors in this faction's supply by adding 'change'.
+        Use a negative number to remove warriors.
+        """
+        self.warrior_storage += change
+    
+    def change_num_buildings(self, building_index:int, change:int) -> None:
+        """
+        Changes the number of buildings of the given type in this faction's supply by adding 'change'.
+        Use a negative number to remove buildings of the given type.
+        """
+        self.buildings[building_index] += change
+
+
+class Marquise(Player):
+    def __init__(self, id: int,) -> None:
+        super().__init__(id)
+        self.warrior_storage = 25
+        for i in range(3):
+            self.buildings[i] = 6
+        self.tokens[TIND_KEEP] = 1
+        self.tokens[TIND_WOOD] = 8
+    
+
+class Eyrie(Player):
+    def __init__(self, id: int) -> None:
+        super().__init__(id)
+        self.warrior_storage = 20
+        self.buildings[BIND_ROOST] = 7
+        self.available_leaders = {0,1,2,3}
+        self.deposed_leaders = {}
+        self.viziers = [Card(CID_LOYAL_VIZIER,SUIT_BIRD,"Loyal Vizier",(0,0,0,0),False,False,ITEM_NONE,0) for i in range(2)]
+
 
 # (Card info, Amount in deck)
 # Recipe amounts are (Mouse, Bunny, Fox, Wild)
@@ -173,33 +241,35 @@ STANDARD_DECK_COMP = [
     (Card(14,SUIT_RABBIT,  "Command Warren",       (0,2,0,0),   False,     False,  ITEM_NONE,     0),      2),
     (Card(15,SUIT_BIRD,   "Crossbow (Bird)",       (0,0,1,0),   False,     False,  ITEM_CROSSBOW, 1),      1),
     (Card(16,SUIT_MOUSE,  "Crossbow (Mouse)",      (0,0,1,0),   False,     False,  ITEM_CROSSBOW, 1),      1),
-#    (Card(17,SUIT_BIRD,   "Bird Dominance",        (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
-#    (Card(18,SUIT_RABBIT,  "Bunny Dominance",      (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
-#    (Card(19,SUIT_MOUSE,  "Mouse Dominance",       (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
-#    (Card(20,SUIT_FOX,    "Fox Dominance",         (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
+    (Card(17, SUIT_FOX,    "Favor of the Foxes",   (0,0,3,0),   False,     False,  ITEM_NONE,     0),      1),
+    (Card(18, SUIT_MOUSE,  "Favor of the Mice",    (3,0,0,0),   False,     False,  ITEM_NONE,     0),      1),
+    (Card(19, SUIT_RABBIT, "Favor of the Rabbits", (0,3,0,0),   False,     False,  ITEM_NONE,     0),      1),
+    (Card(20, SUIT_FOX,    "Foxfolk Steel",        (0,0,2,0),   False,     False,  ITEM_SWORD,    2),      1),
     # (id,   Suit,        Name,                    Recipe,    is_ambush, is_dom, item,          points), Amount
-    (Card(21, SUIT_FOX,    "Favor of the Foxes",   (0,0,3,0),   False,     False,  ITEM_NONE,     0),      1),
-    (Card(22, SUIT_MOUSE,  "Favor of the Mice",    (3,0,0,0),   False,     False,  ITEM_NONE,     0),      1),
-    (Card(23, SUIT_RABBIT, "Favor of the Rabbits", (0,3,0,0),   False,     False,  ITEM_NONE,     0),      1),
-    (Card(24, SUIT_FOX,    "Foxfolk Steel",        (0,0,2,0),   False,     False,  ITEM_SWORD,    2),      1),
-    (Card(25, SUIT_FOX,    "Gently Used Knapsack", (1,0,0,0),   False,     False,  ITEM_BAG,      1),      1),
-    (Card(26, SUIT_MOUSE,   "Investments",         (0,2,0,0),   False,     False,  ITEM_COINS,    3),      1),
-    (Card(27, SUIT_MOUSE,    "Mouse-in-a-Sack",    (1,0,0,0),   False,     False,  ITEM_BAG,      1),      1),
-    (Card(28, SUIT_FOX,   "Protection Racket",     (0,2,0,0),   False,     False,  ITEM_COINS,    3),      1),
-    (Card(29, SUIT_RABBIT,  "Root Tea (Rabbit)",   (1,0,0,0),   False,     False,  ITEM_TEA,      2),      1),
-    (Card(30, SUIT_FOX,  "Root Tea (Fox)",         (1,0,0,0),   False,     False,  ITEM_TEA,      2),      1),
-    (Card(31, SUIT_MOUSE,  "Root Tea (Mouse)",     (1,0,0,0),   False,     False,  ITEM_TEA,      2),      1),
-    (Card(32, SUIT_BIRD,  "Sappers",               (1,0,0,0),   False,     False,  ITEM_NONE,     0),      2),
-    (Card(33, SUIT_MOUSE,  "Scouting Party",       (2,0,0,0),   False,     False,  ITEM_NONE,     0),      2),
-    (Card(34, SUIT_RABBIT, "Smuggler's Trail",     (1,0,0,0),   False,     False,  ITEM_BAG,      1),      1),
-    (Card(35, SUIT_FOX,   "Stand and Deliver!",    (3,0,0,0),   False,     False,  ITEM_NONE,     0),      2),
-    (Card(36, SUIT_MOUSE,   "Sword",               (0,0,2,0),   False,     False,  ITEM_SWORD,    2),      1),
-    (Card(37, SUIT_FOX,   "Tax Collector",         (1,1,1,0),   False,     False,  ITEM_NONE,     0),      3),
-    (Card(38, SUIT_FOX,   "Travel Gear (Fox)",     (0,1,0,0),   False,     False,  ITEM_BOOT,     1),      1),
-    (Card(39, SUIT_MOUSE,   "Travel Gear (Mouse)", (0,1,0,0),   False,     False,  ITEM_BOOT,     1),      1),
-    (Card(40, SUIT_BIRD,   "Woodland Runners",     (0,1,0,0),   False,     False,  ITEM_BOOT,     1),      1),
-    (Card(41, SUIT_BIRD,  "Royal Claim",           (0,0,0,4),   False,     False,  ITEM_NONE,     0),      1)
+    (Card(21, SUIT_FOX,    "Gently Used Knapsack", (1,0,0,0),   False,     False,  ITEM_BAG,      1),      1),
+    (Card(22, SUIT_MOUSE,   "Investments",         (0,2,0,0),   False,     False,  ITEM_COINS,    3),      1),
+    (Card(23, SUIT_MOUSE,    "Mouse-in-a-Sack",    (1,0,0,0),   False,     False,  ITEM_BAG,      1),      1),
+    (Card(24, SUIT_FOX,   "Protection Racket",     (0,2,0,0),   False,     False,  ITEM_COINS,    3),      1),
+    (Card(25, SUIT_RABBIT,  "Root Tea (Rabbit)",   (1,0,0,0),   False,     False,  ITEM_TEA,      2),      1),
+    (Card(26, SUIT_FOX,  "Root Tea (Fox)",         (1,0,0,0),   False,     False,  ITEM_TEA,      2),      1),
+    (Card(27, SUIT_MOUSE,  "Root Tea (Mouse)",     (1,0,0,0),   False,     False,  ITEM_TEA,      2),      1),
+    (Card(28, SUIT_BIRD,  "Sappers",               (1,0,0,0),   False,     False,  ITEM_NONE,     0),      2),
+    (Card(29, SUIT_MOUSE,  "Scouting Party",       (2,0,0,0),   False,     False,  ITEM_NONE,     0),      2),
+    (Card(30, SUIT_RABBIT, "Smuggler's Trail",     (1,0,0,0),   False,     False,  ITEM_BAG,      1),      1),
+    (Card(31, SUIT_FOX,   "Stand and Deliver!",    (3,0,0,0),   False,     False,  ITEM_NONE,     0),      2),
+    (Card(32, SUIT_MOUSE,   "Sword",               (0,0,2,0),   False,     False,  ITEM_SWORD,    2),      1),
+    (Card(33, SUIT_FOX,   "Tax Collector",         (1,1,1,0),   False,     False,  ITEM_NONE,     0),      3),
+    (Card(34, SUIT_FOX,   "Travel Gear (Fox)",     (0,1,0,0),   False,     False,  ITEM_BOOT,     1),      1),
+    (Card(35, SUIT_MOUSE,   "Travel Gear (Mouse)", (0,1,0,0),   False,     False,  ITEM_BOOT,     1),      1),
+    (Card(36, SUIT_BIRD,   "Woodland Runners",     (0,1,0,0),   False,     False,  ITEM_BOOT,     1),      1),
+    (Card(37, SUIT_BIRD,  "Royal Claim",           (0,0,0,4),   False,     False,  ITEM_NONE,     0),      1)
+#    (Card(38,SUIT_BIRD,   "Bird Dominance",        (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
+#    (Card(39,SUIT_RABBIT,  "Bunny Dominance",      (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
+#    (Card(40,SUIT_MOUSE,  "Mouse Dominance",       (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
+#    (Card(41,SUIT_FOX,    "Fox Dominance",         (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
 ]
+CID_ROYAL_CLAIM = 37
+CID_LOYAL_VIZIER = len(STANDARD_DECK_COMP)
 
 MAP_AUTUMN = [
     #        id, suit,         num_building_slots, num_ruins, is_corner_clearing, list of adj clearings
