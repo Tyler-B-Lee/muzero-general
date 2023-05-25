@@ -17,6 +17,18 @@ ITEM_COINS = 5
 ITEM_BAG = 6
 ITEM_CROSSBOW = 7
 
+N_PLAYERS = 2
+PIND_MARQUISE = 0
+PIND_EYRIE = 1
+
+BIND_SAWMILL = 0
+BIND_WORKSHOP = 1
+BIND_RECRUITER = 2
+BIND_ROOST = 0
+
+TIND_KEEP = 0
+TIND_WOOD = 1
+
 class Clearing:
     def __init__(self,id:int,suit:int,num_building_slots:int,num_ruins:int,is_corner_clearing:bool,adj_clearing_ids:list) -> None:
         self.id = id
@@ -24,10 +36,81 @@ class Clearing:
         self.num_building_slots = num_building_slots
         self.num_ruins = num_ruins
         self.is_corner_clearing = is_corner_clearing
-        self.warriors = {}
-        self.tokens = {}
-        self.buildings = {i:None for i in range(self.num_building_slots)}
+        self.warriors = {i:0 for i in range(N_PLAYERS)}
+        self.tokens = {i:[] for i in range(N_PLAYERS)}
+        self.buildings = {i:[] for i in range(N_PLAYERS)}
         self.adjacent_clearing_ids = adj_clearing_ids
+    
+    def get_num_empty_slots(self) -> int:
+        "Returns the number of empty slots available to build in for the clearing."
+        return self.num_building_slots - sum(len(x) for x in self.buildings.values())
+    
+    def get_ruling_power(self, faction_index:int) -> int:
+        "Returns the total ruling power of the given faction: # of Warriors + # of buildings."
+        return self.warriors[faction_index] + len(self.buildings[faction_index])
+    
+    def has_presence(self, faction_index:int) -> bool:
+        """
+        Returns True if any pieces of the given faction,
+        including tokens, warriors, or buildings, are located in
+        this clearing, and False otherwise.
+
+        This means that that the given faction could be attacked.
+        """
+        return bool(self.get_ruling_power(faction_index) or len(self.tokens[faction_index]))
+
+    def get_ruler(self) -> int:
+        """
+        Returns the player index of the player that rules the current clearing.
+        If nobody returns the current clearing, returns -1.
+        """
+        num_marquise = self.get_ruling_power(PIND_MARQUISE)
+        num_eyrie = self.get_ruling_power(PIND_EYRIE)
+
+        if not (num_marquise + num_eyrie):
+            return -1
+        return PIND_EYRIE if (num_eyrie >= num_marquise) else PIND_MARQUISE
+
+    def is_ruler(self,faction_index:int) -> bool:
+        "Returns True if the given faction IS the ruler of this clearing, False otherwise."
+        return self.get_ruler() == faction_index
+    
+    def place_building(self,faction_index:int,building_index:int) -> None:
+        "Place the given building in this clearing. Assumes the move is legal, performing no checks."
+        self.buildings[faction_index].append(building_index)
+    
+    def remove_building(self,faction_index:int,building_index:int) -> None:
+        "Removes the given building in this clearing, assuming it exists. Does not handle points."
+        self.buildings[faction_index].remove(building_index)
+
+    def place_token(self,faction_index:int,token_index:int) -> None:
+        "Place the given token in this clearing. Assumes the move is legal, performing no checks."
+        self.buildings[faction_index].append(token_index)
+    
+    def remove_token(self,faction_index:int,token_index:int) -> None:
+        "Removes the given building in this clearing, assuming it exists. Does not handle points."
+        self.buildings[faction_index].remove(token_index)
+    
+    def change_num_warriors(self,faction_index:int, change:int) -> None:
+        """
+        Adds the specified number of warriors of the specified faction to the clearing.
+        Use a negative number to remove warriors.
+        """
+        self.warriors[faction_index] += change
+    
+    def can_start_battle(self,attacker_index:int,defender_index:int) -> bool:
+        """
+        Returns True if one faction can attack the other as directed
+        in this particular clearing, and False otherwise.
+        """
+        return bool( self.warriors[attacker_index] and self.has_presence(defender_index) )
+
+    def can_place(self,faction_index:int) -> bool:
+        """
+        Returns True if the faction can place a piece in this clearing. This is mainly affected
+        by the Marquise's Keep, which blocks other Factions from placing pieces in its clearing.
+        """
+        
 
 
 class Card:
@@ -65,13 +148,13 @@ class Deck:
         return len(self.cards)
 
 class Player:
-    def __init__(self) -> None:
-        self.id
-        self.warrior_storage_size
+    def __init__(self,id:int,warrior_storage_size:int) -> None:
+        self.id = id
+        self.warrior_storage_size = warrior_storage_size
 
 # (Card info, Amount in deck)
 # Recipe amounts are (Mouse, Bunny, Fox, Wild)
-STANDARD_DECK = [
+STANDARD_DECK_COMP = [
     # (id,   Suit,        Name,                    Recipe,    is_ambush, is_dom, item,          points), Amount
     (Card(0, SUIT_BIRD,   "Ambush! (Bird)",        (0,0,0,0),   True,      False,  ITEM_NONE,     0),      2),
     (Card(1, SUIT_RABBIT,  "Ambush! (Bunny)",      (0,0,0,0),   True,      False,  ITEM_NONE,     0),      1),
@@ -136,9 +219,9 @@ MAP_AUTUMN = [
 
 
 class root2pCatsVsEyrie:
-    def __init__(self):
-        self.board_size = 11
-        self.board = np.zeros((self.board_size, self.board_size), dtype="int32")
+    def __init__(self, board_clearings:list):
+        self.n_players = N_PLAYERS
+        self.board_clearings = board_clearings
         self.player = 1
         self.board_markers = [
             chr(x) for x in range(ord("A"), ord("A") + self.board_size)

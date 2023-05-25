@@ -134,7 +134,7 @@ class Game(AbstractGame):
     """
 
     def __init__(self, seed=None):
-        self.env = Gomoku()
+        self.env = root2pCatsVsEyrie(MAP_AUTUMN)
 
     def step(self, action):
         """
