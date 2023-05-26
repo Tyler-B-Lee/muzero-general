@@ -34,6 +34,10 @@ LEADER_BUILDER = 0
 LEADER_CHARISMATIC = 1
 LEADER_COMMANDER = 2
 LEADER_DESPOT = 3
+DECREE_RECRUIT = 0
+DECREE_MOVE = 1
+DECREE_BATTLE = 2
+DECREE_BUILD = 3
 
 class Clearing:
     def __init__(self,id:int,suit:int,num_building_slots:int,num_ruins:int,is_corner_clearing:bool,adj_clearing_ids:list) -> None:
@@ -185,6 +189,10 @@ class Player:
         self.crafted_items = {}
         self.hand = []
 
+    def get_num_buildings_on_track(self, building_index:int) -> int:
+        "Returns the number of buildings of the given type left on this player's track."
+        return self.buildings[building_index]
+
     def change_num_warriors(self, change:int) -> None:
         """
         Changes the number of warriors in this faction's supply by adding 'change'.
@@ -198,6 +206,13 @@ class Player:
         Use a negative number to remove buildings of the given type.
         """
         self.buildings[building_index] += change
+    
+    def change_num_tokens(self, token_index:int, change:int) -> None:
+        """
+        Changes the number of tokens of the given type in this faction's supply by adding 'change'.
+        Use a negative number to remove tokens of the given type.
+        """
+        self.tokens[token_index] += change
 
 
 class Marquise(Player):
@@ -208,6 +223,36 @@ class Marquise(Player):
             self.buildings[i] = 6
         self.tokens[TIND_KEEP] = 1
         self.tokens[TIND_WOOD] = 8
+        self.building_costs = [0,1,2,3,3,4]
+
+        self.point_tracks = {}
+        self.point_tracks[BIND_SAWMILL] = [0,1,2,3,4,5]
+        self.point_tracks[BIND_WORKSHOP] = [0,2,2,3,4,5]
+        self.point_tracks[BIND_RECRUITER] = [0,1,2,3,3,4]
+
+    def get_num_cards_to_draw(self) -> int:
+        "Returns the number of cards to draw at the end of the turn (In Evening)."
+        recruiters_left = self.get_num_buildings_on_track(BIND_RECRUITER)
+        if recruiters_left > 3:
+            return 1
+        elif recruiters_left > 1:
+            return 2
+        return 3
+
+    def update_from_building_placed(self, building_index:int) -> int:
+        """
+        Updates the player board as if the given building was placed:
+        - Removes 1 building from the corresponding track
+        - Adds the amount of wood that would be spent back to the token storage
+
+        Returns the number of Victory Points scored.
+        """
+        i = 6 - self.get_num_buildings_on_track(building_index)
+        building_cost = self.building_costs[i]
+        self.change_num_buildings(building_index,-1)
+        self.change_num_tokens(TIND_WOOD, building_cost)
+
+        return self.point_tracks[building_index][i]
     
 
 class Eyrie(Player):
@@ -215,9 +260,32 @@ class Eyrie(Player):
         super().__init__(id)
         self.warrior_storage = 20
         self.buildings[BIND_ROOST] = 7
+        self.roost_points = [0,1,2,3,4,4,5]
         self.available_leaders = {0,1,2,3}
         self.deposed_leaders = {}
+        self.chosen_leader_index = None
+        self.decree = {i:[] for i in range(4)}
         self.viziers = [Card(CID_LOYAL_VIZIER,SUIT_BIRD,"Loyal Vizier",(0,0,0,0),False,False,ITEM_NONE,0) for i in range(2)]
+    
+    def get_num_cards_to_draw(self) -> int:
+        "Returns the number of cards to draw at the end of the turn (In Evening)."
+        recruiters_left = self.get_num_buildings_on_track(BIND_ROOST)
+        if recruiters_left > 4:
+            return 1
+        elif recruiters_left > 1:
+            return 2
+        return 3
+    
+    def get_points_to_score(self) -> int:
+        "Returns the number of points that should be scored in the evening phase."
+        x = self.get_num_buildings_on_track(BIND_ROOST)
+        if x == 7:
+            return 0
+        return self.roost_points[6 - x]
+
+    def place_roost(self) -> None:
+        "Removes 1 roost from the track, as if it was placed on the board."
+        self.change_num_buildings(BIND_ROOST,-1)
 
 
 # (Card info, Amount in deck)
