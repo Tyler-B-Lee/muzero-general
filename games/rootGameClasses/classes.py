@@ -216,6 +216,12 @@ class Player:
 
 
 class Marquise(Player):
+    building_costs = [0,1,2,3,3,4]
+    point_tracks = {}
+    point_tracks[BIND_SAWMILL] = [0,1,2,3,4,5]
+    point_tracks[BIND_WORKSHOP] = [0,2,2,3,4,5]
+    point_tracks[BIND_RECRUITER] = [0,1,2,3,3,4]
+
     def __init__(self, id: int,) -> None:
         super().__init__(id)
         self.warrior_storage = 25
@@ -223,12 +229,6 @@ class Marquise(Player):
             self.buildings[i] = 6
         self.tokens[TIND_KEEP] = 1
         self.tokens[TIND_WOOD] = 8
-        self.building_costs = [0,1,2,3,3,4]
-
-        self.point_tracks = {}
-        self.point_tracks[BIND_SAWMILL] = [0,1,2,3,4,5]
-        self.point_tracks[BIND_WORKSHOP] = [0,2,2,3,4,5]
-        self.point_tracks[BIND_RECRUITER] = [0,1,2,3,3,4]
 
     def get_num_cards_to_draw(self) -> int:
         "Returns the number of cards to draw at the end of the turn (In Evening)."
@@ -248,21 +248,28 @@ class Marquise(Player):
         Returns the number of Victory Points scored.
         """
         i = 6 - self.get_num_buildings_on_track(building_index)
-        building_cost = self.building_costs[i]
+        building_cost = Marquise.building_costs[i]
         self.change_num_buildings(building_index,-1)
         self.change_num_tokens(TIND_WOOD, building_cost)
 
-        return self.point_tracks[building_index][i]
+        return Marquise.point_tracks[building_index][i]
     
 
 class Eyrie(Player):
+    roost_points = [0,1,2,3,4,4,5]
+    leader_starting_viziers = { # (Recruit, Move, Battle, Build)
+        LEADER_BUILDER:     (1,1,0,0),
+        LEADER_CHARISMATIC: (1,0,1,0),
+        LEADER_COMMANDER:   (0,1,1,0),
+        LEADER_DESPOT:      (0,1,0,1)
+    }
+
     def __init__(self, id: int) -> None:
         super().__init__(id)
         self.warrior_storage = 20
         self.buildings[BIND_ROOST] = 7
-        self.roost_points = [0,1,2,3,4,4,5]
         self.available_leaders = {0,1,2,3}
-        self.deposed_leaders = {}
+        self.deposed_leaders = set()
         self.chosen_leader_index = None
         self.decree = {i:[] for i in range(4)}
         self.viziers = [Card(CID_LOYAL_VIZIER,SUIT_BIRD,"Loyal Vizier",(0,0,0,0),False,False,ITEM_NONE,0) for i in range(2)]
@@ -286,6 +293,65 @@ class Eyrie(Player):
     def place_roost(self) -> None:
         "Removes 1 roost from the track, as if it was placed on the board."
         self.change_num_buildings(BIND_ROOST,-1)
+    
+    def choose_new_leader(self, leader_index:int) -> None:
+        """
+        Sets the given leader as the new leader of the Eyries. Assumes that the two
+        Loyal Vizier Cards are in the factions list of viziers, and will attempt to
+        place them in the corresponding Decree columns for the given leader.
+        """
+        self.chosen_leader_index = leader_index
+        self.available_leaders.remove(leader_index)
+
+        # Place the starting viziers for the new leader
+        for i, place_vizier in enumerate(Eyrie.leader_starting_viziers[leader_index]):
+            if place_vizier:
+                self.decree[i].append(self.viziers.pop())
+    
+    def turmoil_helper(self):
+        """
+        Resolves several actions as if Turmoil has just occured:
+        - Takes out the Loyal Viziers from the Decree
+        - Completely empties the decree
+        - Removes the current leader and resets the available leaders if needed
+
+        Returns a tuple containing two items:
+        - list: contains all of the card objects in the decree that should be discarded
+        - int: the number of bird cards that were in the
+        decree in total, which is the number of points that the Eyrie should lose
+        """
+        num_bird_cards = 0
+        cards_to_discard = []
+
+        # we want to remove the two viziers, but will
+        # simultaneously count the number of bird cards
+        # in the entire decree
+        for card_list in self.decree.values():
+            num_birds_in_this_slot = sum(x.suit == SUIT_BIRD for x in card_list)
+            # this slot only matters now if any birds are in it
+            if num_birds_in_this_slot:
+                num_bird_cards += num_birds_in_this_slot
+                for i,card in enumerate(card_list):
+                    if card.id == CID_LOYAL_VIZIER:
+                        # This is a loyal vizier, which we need to keep for the Eyrie's board
+                        # We can safely pop the card because at most one will appear in each of these lists
+                        self.viziers.append(card_list.pop(i))
+                        break
+            # add the non-vizier cards to the list to discard
+            cards_to_discard += card_list
+        
+        # reset the decree
+        self.decree = {i:[] for i in range(4)}
+
+        # depose the current leader
+        self.deposed_leaders.add(self.chosen_leader_index)
+        self.chosen_leader_index = None
+        if len(self.deposed_leaders) == 4:
+            # reset available leaders if all 4 have been deposed
+            self.available_leaders = {0,1,2,3}
+            self.deposed_leaders.clear()
+
+        return cards_to_discard, num_bird_cards
 
 
 # (Card info, Amount in deck)
