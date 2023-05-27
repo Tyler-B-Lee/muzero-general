@@ -1,6 +1,8 @@
-import numpy as np
-import math
 import random
+import copy
+from typing import List, Tuple
+
+Recipe = Tuple[int,int,int,int]
 
 ### Named Constants
 SUIT_MOUSE = 0
@@ -8,14 +10,14 @@ SUIT_RABBIT = 1
 SUIT_FOX = 2
 SUIT_BIRD = 3
 
-ITEM_NONE = 0
-ITEM_HAMMER = 1
-ITEM_SWORD = 2
-ITEM_BOOT = 3
-ITEM_TEA = 4
-ITEM_COINS = 5
-ITEM_BAG = 6
-ITEM_CROSSBOW = 7
+ITEM_HAMMER = 0
+ITEM_SWORD = 1
+ITEM_BOOT = 2
+ITEM_TEA = 3
+ITEM_COINS = 4
+ITEM_BAG = 5
+ITEM_CROSSBOW = 6
+ITEM_NONE = 7
 
 N_PLAYERS = 2
 PIND_MARQUISE = 0
@@ -40,12 +42,12 @@ DECREE_BATTLE = 2
 DECREE_BUILD = 3
 
 class Clearing:
-    def __init__(self,id:int,suit:int,num_building_slots:int,num_ruins:int,is_corner_clearing:bool,adj_clearing_ids:list) -> None:
+    def __init__(self,id:int,suit:int,num_building_slots:int,num_ruins:int,opposite_corner_id:int,adj_clearing_ids:list[int]) -> None:
         self.id = id
         self.suit = suit
         self.num_building_slots = num_building_slots
         self.num_ruins = num_ruins
-        self.is_corner_clearing = is_corner_clearing
+        self.opposite_corner_id = opposite_corner_id
         self.warriors = {i:0 for i in range(N_PLAYERS)}
         self.tokens = {i:[] for i in range(N_PLAYERS)}
         self.buildings = {i:[] for i in range(N_PLAYERS)}
@@ -146,8 +148,28 @@ class Clearing:
         return (faction_index == PIND_MARQUISE) or (TIND_KEEP not in self.tokens[PIND_MARQUISE])
 
 
+class Board:
+    def __init__(self, board_comp:list[Clearing]) -> None:
+        self.board_comp = board_comp
+        self.reset()
+    
+    def reset(self):
+        "Resets the map to the cleared starting state."
+        self.clearings = copy.deepcopy(self.board_comp)
+    
+    def make_move(self,faction_index:int,amount:int,start_index:int,end_index:int):
+        """
+        Subtracts warriors of a faction from one clearing, and adds them to another.
+        Performs no other checks / assumes the move will be legal.
+        """
+        start_c,end_c = self.clearings[start_index],self.clearings[end_index]
+        
+        start_c.change_num_warriors(faction_index,-amount)
+        end_c.change_num_warriors(faction_index,amount)
+
+
 class Card:
-    def __init__(self,id:int,suit:int,name:str,recipe:tuple,is_ambush:bool,is_dominance:bool,item:int,points:int) -> None:
+    def __init__(self,id:int,suit:int,name:str,recipe:Recipe,is_ambush:bool,is_dominance:bool,item:int,points:int) -> None:
         self.id = id
         self.suit = suit
         self.name = name
@@ -158,13 +180,28 @@ class Card:
         self.points = points
 
 class Deck:
-    def __init__(self, cards = list()):
-        self.cards = list(cards)
+    def __init__(self, deck_comp:list):
+        self.deck_comp = deck_comp
+        self.reset()
     
     def shuffle(self):
         random.shuffle(self.cards)
+    
+    def reset(self):
+        "Remakes the deck from the starting composition and then shuffles it."
+        self.cards = []
+        for card,amount in self.deck_comp:
+            addition = [card for i in range(amount)]
+            self.cards += addition
+        self.shuffle()
 
     def draw(self, n):
+        """
+        Attempts to draw n cards from the deck by popping from the 'cards' list.
+        Returns a list of the card objects drawn.
+
+        If the deck runs out, simply returns all of the cards it could draw.
+        """
         drawn = []
         for x in range(n):
             try:
@@ -173,12 +210,13 @@ class Deck:
                 pass
         return drawn
     
-    def add(self, cards):
+    def add(self, cards:list):
         for card in cards:
             self.cards.append(card)
                 
     def size(self):
         return len(self.cards)
+
 
 class Player:
     def __init__(self,id:int) -> None:
@@ -186,7 +224,7 @@ class Player:
         self.warrior_storage = 0
         self.buildings = {}
         self.tokens = {}
-        self.crafted_items = {}
+        self.crafted_items = {i:0 for i in range(7)}
         self.hand = []
 
     def get_num_buildings_on_track(self, building_index:int) -> int:
@@ -213,6 +251,13 @@ class Player:
         Use a negative number to remove tokens of the given type.
         """
         self.tokens[token_index] += change
+    
+    def change_num_items(self, item_index:int, change:int) -> None:
+        """
+        Changes the number of items of the given type in this faction's supply by adding 'change'.
+        Use a negative number to remove items of the given type.
+        """
+        self.crafted_items[item_index] += change
 
 
 class Marquise(Player):
@@ -406,129 +451,17 @@ CID_ROYAL_CLAIM = 37
 CID_LOYAL_VIZIER = len(STANDARD_DECK_COMP)
 
 MAP_AUTUMN = [
-    #        id, suit,         num_building_slots, num_ruins, is_corner_clearing, list of adj clearings
-    Clearing(0,  SUIT_FOX,     1,                 0,         True,               [1,3,4]),
-    Clearing(1,  SUIT_RABBIT,  2,                 0,         False,              [0,2]),
-    Clearing(2,  SUIT_MOUSE,   2,                 0,         True,               [1,3,7]),
-    Clearing(3,  SUIT_RABBIT,  1,                 1,         False,              [0,2,5]),
-    Clearing(4,  SUIT_MOUSE,   2,                 0,         False,              [0,5,8]),
-    Clearing(5,  SUIT_FOX,     1,                 1,         False,              [3,4,6,8,10]),
-    Clearing(6,  SUIT_MOUSE,   2,                 1,         False,              [5,7,11]),
-    Clearing(7,  SUIT_FOX,     1,                 1,         False,              [2,6,11]),
-    Clearing(8,  SUIT_RABBIT,  1,                 0,         True,               [4,5,9]),
-    Clearing(9,  SUIT_FOX,     2,                 0,         False,              [8,10]),
-    Clearing(10, SUIT_MOUSE,   2,                 0,         False,              [5,9,11]),
-    Clearing(11, SUIT_RABBIT,  1,                 0,         True,               [6,7,10])
+    #        id, suit,         num_building_slots, num_ruins, opposite_corner_id, list of adj clearings
+    Clearing(0,  SUIT_FOX,     1,                 0,         11,                  [1,3,4]),
+    Clearing(1,  SUIT_RABBIT,  2,                 0,         -1,                  [0,2]),
+    Clearing(2,  SUIT_MOUSE,   2,                 0,         8,                   [1,3,7]),
+    Clearing(3,  SUIT_RABBIT,  1,                 1,         -1,                  [0,2,5]),
+    Clearing(4,  SUIT_MOUSE,   2,                 0,         -1,                  [0,5,8]),
+    Clearing(5,  SUIT_FOX,     1,                 1,         -1,                  [3,4,6,8,10]),
+    Clearing(6,  SUIT_MOUSE,   2,                 1,         -1,                  [5,7,11]),
+    Clearing(7,  SUIT_FOX,     1,                 1,         -1,                  [2,6,11]),
+    Clearing(8,  SUIT_RABBIT,  1,                 0,         2,                   [4,5,9]),
+    Clearing(9,  SUIT_FOX,     2,                 0,         -1,                  [8,10]),
+    Clearing(10, SUIT_MOUSE,   2,                 0,         -1,                  [5,9,11]),
+    Clearing(11, SUIT_RABBIT,  1,                 0,         0,                   [6,7,10])
 ]
-
-
-class root2pCatsVsEyrie:
-    def __init__(self, board_clearings:list):
-        self.n_players = N_PLAYERS
-        self.board_clearings = board_clearings
-        self.player = 1
-        self.board_markers = [
-            chr(x) for x in range(ord("A"), ord("A") + self.board_size)
-        ]
-
-    def to_play(self):
-        return 0 if self.player == 1 else 1
-
-    def reset(self):
-        self.board = np.zeros((self.board_size, self.board_size), dtype="int32")
-        self.player = 1
-        return self.get_observation()
-
-    def step(self, action):
-        x = math.floor(action / self.board_size)
-        y = action % self.board_size
-        self.board[x][y] = self.player
-
-        done = self.is_finished()
-
-        reward = 1 if done else 0
-
-        self.player *= -1
-
-        return self.get_observation(), reward, done
-
-    def get_observation(self):
-        board_player1 = np.where(self.board == 1, 1.0, 0.0)
-        board_player2 = np.where(self.board == -1, 1.0, 0.0)
-        board_to_play = np.full((11, 11), self.player, dtype="int32")
-        return np.array([board_player1, board_player2, board_to_play])
-
-    def legal_actions(self):
-        legal = []
-        for i in range(self.board_size):
-            for j in range(self.board_size):
-                if self.board[i][j] == 0:
-                    legal.append(i * self.board_size + j)
-        return legal
-
-    def is_finished(self):
-        has_legal_actions = False
-        directions = ((1, -1), (1, 0), (1, 1), (0, 1))
-        for i in range(self.board_size):
-            for j in range(self.board_size):
-                # if no stone is on the position, don't need to consider this position
-                if self.board[i][j] == 0:
-                    has_legal_actions = True
-                    continue
-                # value-value at a coord, i-row, j-col
-                player = self.board[i][j]
-                # check if there exist 5 in a line
-                for d in directions:
-                    x, y = i, j
-                    count = 0
-                    for _ in range(5):
-                        if (x not in range(self.board_size)) or (
-                            y not in range(self.board_size)
-                        ):
-                            break
-                        if self.board[x][y] != player:
-                            break
-                        x += d[0]
-                        y += d[1]
-                        count += 1
-                        # if 5 in a line, store positions of all stones, return value
-                        if count == 5:
-                            return True
-        return not has_legal_actions
-
-    def render(self):
-        marker = "  "
-        for i in range(self.board_size):
-            marker = marker + self.board_markers[i] + " "
-        print(marker)
-        for row in range(self.board_size):
-            print(chr(ord("A") + row), end=" ")
-            for col in range(self.board_size):
-                ch = self.board[row][col]
-                if ch == 0:
-                    print(".", end=" ")
-                elif ch == 1:
-                    print("X", end=" ")
-                elif ch == -1:
-                    print("O", end=" ")
-            print()
-
-    def human_input_to_action(self):
-        human_input = input("Enter an action: ")
-        if (
-            len(human_input) == 2
-            and human_input[0] in self.board_markers
-            and human_input[1] in self.board_markers
-        ):
-            x = ord(human_input[0]) - 65
-            y = ord(human_input[1]) - 65
-            if self.board[x][y] == 0:
-                return True, x * self.board_size + y
-        return False, -1
-
-    def action_to_human_input(self, action):
-        x = math.floor(action / self.board_size)
-        y = action % self.board_size
-        x = chr(x + 65)
-        y = chr(y + 65)
-        return x + y
