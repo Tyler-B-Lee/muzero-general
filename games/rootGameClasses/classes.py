@@ -157,7 +157,25 @@ class Board:
         "Resets the map to the cleared starting state."
         self.clearings = copy.deepcopy(self.board_comp)
     
-    def make_move(self,faction_index:int,amount:int,start_index:int,end_index:int):
+    def get_total_building_counts(self,faction_index:int,building_index:int = -1):
+        """
+        Finds the number of buildings of the given faction in each clearing.
+        If no building type is specified, returns the total number
+        of buildings belonging to the given faction in each clearing.
+
+        Returns a list of integers, with each index matching the corresponding clearing index.
+        """
+        return [x.get_num_buildings(faction_index,building_index) for x in self.clearings]
+    
+    def get_clearing_building_counts(self,faction_index:int,clearing_index:int,building_index:int = -1):
+        """
+        Returns the number of buildings of the given faction in the GIVEN clearing.
+        If no building type is specified, returns the total number
+        of buildings belonging to the given faction in the ONE clearing.
+        """
+        return self.clearings[clearing_index].get_num_buildings(faction_index,building_index)
+
+    def move_warriors(self,faction_index:int,amount:int,start_index:int,end_index:int):
         """
         Subtracts warriors of a faction from one clearing, and adds them to another.
         Performs no other checks / assumes the move will be legal.
@@ -166,6 +184,25 @@ class Board:
         
         start_c.change_num_warriors(faction_index,-amount)
         end_c.change_num_warriors(faction_index,amount)
+    
+    def place_warriors(self,faction_index:int,amount:int,clearing_index:int):
+        "Adds the given number of warriors of the faction to the clearing, assuming it is legal to do so."
+        self.clearings[clearing_index].change_num_warriors(faction_index,amount)
+
+    def deal_hits(self,faction_index:int,amount:int,clearing_index:int):
+        """
+        Make the given faction take a certain number of hits in the given clearing.
+        Removes warriors first, then buildings/tokens if necessary. 
+
+        TODO: Have some system to tell it which buildings/tokens to take out first?
+        """
+        target_clearing = self.clearings[clearing_index]
+        for i in range(amount):
+            if target_clearing.get_num_warriors(faction_index):
+                target_clearing.change_num_warriors(faction_index,-1)
+            else:
+                break
+    
 
 
 class Card:
@@ -180,7 +217,7 @@ class Card:
         self.points = points
 
 class Deck:
-    def __init__(self, deck_comp:list):
+    def __init__(self, deck_comp:list[tuple[Card,int]]):
         self.deck_comp = deck_comp
         self.reset()
     
@@ -210,7 +247,7 @@ class Deck:
                 pass
         return drawn
     
-    def add(self, cards:list):
+    def add(self, cards:list[Card]):
         for card in cards:
             self.cards.append(card)
                 
