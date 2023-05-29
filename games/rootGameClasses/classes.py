@@ -169,12 +169,47 @@ class Board:
     
     def get_clearing_building_counts(self,faction_index:int,clearing_index:int,building_index:int = -1):
         """
-        Returns the number of buildings of the given faction in the GIVEN clearing.
+        Returns the number of buildings of the given faction of the given type in the GIVEN clearing.
         If no building type is specified, returns the total number
         of buildings belonging to the given faction in the ONE clearing.
         """
         return self.clearings[clearing_index].get_num_buildings(faction_index,building_index)
+    
+    def get_rulers(self):
+        """
+        Finds the current ruling faction of each clearing. Returns a list of integers,
+        each corresponding to the faction ID of the ruler in the given clearing, or
+        a -1 if there is no ruler of the clearing.
+        """
+        return [x.get_ruler() for x in self.clearings]
+    
+    def get_possible_battles(self,attacker_index:int,defender_index:int):
+        """
+        Returns a list of all of the places where the given faction can start
+        a battle with the target faction.
 
+        Returns a list of booleans, one for each clearing.
+        """
+        return [x.can_start_battle(attacker_index,defender_index) for x in self.clearings]
+    
+    def get_crafting_power(self,faction_index:int):
+        """
+        Returns the crafting power of the given faction. This is
+        represented by a list of integers:
+        - [Mouse Power / Rabbit Power / Fox Power]
+        """
+        power = [0,0,0]
+        if faction_index == PIND_MARQUISE:
+            buildings = self.get_total_building_counts(PIND_MARQUISE,BIND_WORKSHOP)
+        else:
+            buildings = self.get_total_building_counts(PIND_EYRIE,BIND_ROOST)
+
+        for clearing_i,num_buildings in enumerate(buildings):
+            if num_buildings:
+                c = self.clearings[clearing_i]
+                power[c.suit] += num_buildings
+        return power
+    
     def move_warriors(self,faction_index:int,amount:int,start_index:int,end_index:int):
         """
         Subtracts warriors of a faction from one clearing, and adds them to another.
@@ -184,10 +219,14 @@ class Board:
         
         start_c.change_num_warriors(faction_index,-amount)
         end_c.change_num_warriors(faction_index,amount)
-    
+
     def place_warriors(self,faction_index:int,amount:int,clearing_index:int):
         "Adds the given number of warriors of the faction to the clearing, assuming it is legal to do so."
         self.clearings[clearing_index].change_num_warriors(faction_index,amount)
+    
+    def add_building(self,faction_index:int,building_index:int,clearing_index:int):
+        "Adds one of the given building type to the given clearing, assuming it's legal to do so."
+        self.clearings[clearing_index].place_building(faction_index,building_index)
 
     def deal_hits(self,faction_index:int,amount:int,clearing_index:int):
         """
@@ -203,7 +242,7 @@ class Board:
             else:
                 break
     
-
+    
 
 class Card:
     def __init__(self,id:int,suit:int,name:str,recipe:Recipe,is_ambush:bool,is_dominance:bool,item:int,points:int) -> None:
