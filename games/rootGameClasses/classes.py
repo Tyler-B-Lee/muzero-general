@@ -42,7 +42,7 @@ DECREE_BATTLE = 2
 DECREE_BUILD = 3
 
 class Clearing:
-    def __init__(self,id:int,suit:int,num_building_slots:int,num_ruins:int,opposite_corner_id:int,adj_clearing_ids:list[int]) -> None:
+    def __init__(self,id:int,suit:int,num_building_slots:int,num_ruins:int,opposite_corner_id:int,adj_clearing_ids:set[int]) -> None:
         self.id = id
         self.suit = suit
         self.num_building_slots = num_building_slots
@@ -196,6 +196,10 @@ class Board:
         """
         return [x.can_start_battle(attacker_index,defender_index) for x in self.clearings]
     
+    def get_num_warriors(self,faction_index:int):
+        "Returns a list of the number of warriors of the given faction in each clearing."
+        return [x.get_num_warriors(faction_index) for x in self.clearings]
+    
     def get_crafting_power(self,faction_index:int):
         """
         Returns the crafting power of the given faction. This is
@@ -281,13 +285,14 @@ class Board:
     
 
 class Card:
-    def __init__(self,id:int,suit:int,name:str,recipe:Recipe,is_ambush:bool,is_dominance:bool,item:int,points:int) -> None:
+    def __init__(self,id:int,suit:int,name:str,recipe:Recipe,is_ambush:bool,is_dominance:bool,is_persistent:bool,item:int,points:int) -> None:
         self.id = id
         self.suit = suit
         self.name = name
         self.crafting_recipe = recipe
         self.is_ambush = is_ambush
         self.is_dominance = is_dominance
+        self.is_persistent = is_persistent
         self.crafting_item = item
         self.points = points
 
@@ -340,6 +345,7 @@ class Player:
         self.buildings = {}
         self.tokens = {}
         self.crafted_items = {i:0 for i in range(7)}
+        self.persistent_cards = []
         self.hand = []
 
     def get_num_buildings_on_track(self, building_index:int) -> int:
@@ -373,7 +379,11 @@ class Player:
         Use a negative number to remove items of the given type.
         """
         self.crafted_items[item_index] += change
-
+    
+    def has_suit_in_hand(self, suit_id:int):
+        "Returns True only if any card in the players hand is the given suit."
+        return any((c.suit == suit_id) for c in self.hand)
+    
 
 class Marquise(Player):
     building_costs = [0,1,2,3,3,4]
@@ -517,66 +527,67 @@ class Eyrie(Player):
 # (Card info, Amount in deck)
 # Recipe amounts are (Mouse, Bunny, Fox, Wild)
 STANDARD_DECK_COMP = [
-    # (id,   Suit,        Name,                    Recipe,    is_ambush, is_dom, item,          points), Amount
-    (Card(0, SUIT_BIRD,   "Ambush! (Bird)",        (0,0,0,0),   True,      False,  ITEM_NONE,     0),      2),
-    (Card(1, SUIT_RABBIT,  "Ambush! (Bunny)",      (0,0,0,0),   True,      False,  ITEM_NONE,     0),      1),
-    (Card(2, SUIT_FOX,    "Ambush! (Fox)",         (0,0,0,0),   True,      False,  ITEM_NONE,     0),      1),
-    (Card(3, SUIT_MOUSE,  "Ambush! (Mouse)",       (0,0,0,0),   True,      False,  ITEM_NONE,     0),      1),
-    (Card(4, SUIT_FOX,    "Anvil",                 (0,0,1,0),   False,     False,  ITEM_HAMMER,   2),      1),
-    (Card(5, SUIT_BIRD,   "Armorers",              (0,0,1,0),   False,     False,  ITEM_NONE,     0),      2),
-    (Card(6, SUIT_BIRD,   "Arms Trader",           (0,0,2,0),   False,     False,  ITEM_SWORD,    2),      1),
-    (Card(7, SUIT_RABBIT,  "A Visit to Friends",   (0,1,0,0),   False,     False,  ITEM_BOOT,     1),      1),
-    (Card(8, SUIT_RABBIT,  "Bake Sale",            (0,2,0,0),   False,     False,  ITEM_COINS,    3),      1),
-    (Card(9, SUIT_RABBIT,  "Better Burrow Bank",   (0,2,0,0),   False,     False,  ITEM_NONE,     0),      2),
-    (Card(10,SUIT_BIRD,   "Birdy Bindle",          (1,0,0,0),   False,     False,  ITEM_BAG,      1),      1),
-    (Card(11,SUIT_BIRD,   "Brutal Tactics",        (0,0,2,0),   False,     False,  ITEM_NONE,     0),      2),
-    (Card(12,SUIT_RABBIT,  "Cobbler",              (0,2,0,0),   False,     False,  ITEM_NONE,     0),      2),
-    (Card(13,SUIT_MOUSE,  "Codebreakers",          (1,0,0,0),   False,     False,  ITEM_NONE,     0),      2),
-    (Card(14,SUIT_RABBIT,  "Command Warren",       (0,2,0,0),   False,     False,  ITEM_NONE,     0),      2),
-    (Card(15,SUIT_BIRD,   "Crossbow (Bird)",       (0,0,1,0),   False,     False,  ITEM_CROSSBOW, 1),      1),
-    (Card(16,SUIT_MOUSE,  "Crossbow (Mouse)",      (0,0,1,0),   False,     False,  ITEM_CROSSBOW, 1),      1),
-    (Card(17, SUIT_FOX,    "Favor of the Foxes",   (0,0,3,0),   False,     False,  ITEM_NONE,     0),      1),
-    (Card(18, SUIT_MOUSE,  "Favor of the Mice",    (3,0,0,0),   False,     False,  ITEM_NONE,     0),      1),
-    (Card(19, SUIT_RABBIT, "Favor of the Rabbits", (0,3,0,0),   False,     False,  ITEM_NONE,     0),      1),
-    (Card(20, SUIT_FOX,    "Foxfolk Steel",        (0,0,2,0),   False,     False,  ITEM_SWORD,    2),      1),
-    # (id,   Suit,        Name,                    Recipe,    is_ambush, is_dom, item,          points), Amount
-    (Card(21, SUIT_FOX,    "Gently Used Knapsack", (1,0,0,0),   False,     False,  ITEM_BAG,      1),      1),
-    (Card(22, SUIT_MOUSE,   "Investments",         (0,2,0,0),   False,     False,  ITEM_COINS,    3),      1),
-    (Card(23, SUIT_MOUSE,    "Mouse-in-a-Sack",    (1,0,0,0),   False,     False,  ITEM_BAG,      1),      1),
-    (Card(24, SUIT_FOX,   "Protection Racket",     (0,2,0,0),   False,     False,  ITEM_COINS,    3),      1),
-    (Card(25, SUIT_RABBIT,  "Root Tea (Rabbit)",   (1,0,0,0),   False,     False,  ITEM_TEA,      2),      1),
-    (Card(26, SUIT_FOX,  "Root Tea (Fox)",         (1,0,0,0),   False,     False,  ITEM_TEA,      2),      1),
-    (Card(27, SUIT_MOUSE,  "Root Tea (Mouse)",     (1,0,0,0),   False,     False,  ITEM_TEA,      2),      1),
-    (Card(28, SUIT_BIRD,  "Sappers",               (1,0,0,0),   False,     False,  ITEM_NONE,     0),      2),
-    (Card(29, SUIT_MOUSE,  "Scouting Party",       (2,0,0,0),   False,     False,  ITEM_NONE,     0),      2),
-    (Card(30, SUIT_RABBIT, "Smuggler's Trail",     (1,0,0,0),   False,     False,  ITEM_BAG,      1),      1),
-    (Card(31, SUIT_FOX,   "Stand and Deliver!",    (3,0,0,0),   False,     False,  ITEM_NONE,     0),      2),
-    (Card(32, SUIT_MOUSE,   "Sword",               (0,0,2,0),   False,     False,  ITEM_SWORD,    2),      1),
-    (Card(33, SUIT_FOX,   "Tax Collector",         (1,1,1,0),   False,     False,  ITEM_NONE,     0),      3),
-    (Card(34, SUIT_FOX,   "Travel Gear (Fox)",     (0,1,0,0),   False,     False,  ITEM_BOOT,     1),      1),
-    (Card(35, SUIT_MOUSE,   "Travel Gear (Mouse)", (0,1,0,0),   False,     False,  ITEM_BOOT,     1),      1),
-    (Card(36, SUIT_BIRD,   "Woodland Runners",     (0,1,0,0),   False,     False,  ITEM_BOOT,     1),      1),
-    (Card(37, SUIT_BIRD,  "Royal Claim",           (0,0,0,4),   False,     False,  ITEM_NONE,     0),      1)
+    # (id,   Suit,        Name,                    Recipe,    is_ambush, is_dom, is_persistent    item,          points), Amount
+    (Card(0, SUIT_BIRD,   "Ambush! (Bird)",        (0,0,0,0),   True,      False,   False,      ITEM_NONE,        0),      2),
+    (Card(1, SUIT_RABBIT,  "Ambush! (Bunny)",      (0,0,0,0),   True,      False,   False,      ITEM_NONE,        0),      1),
+    (Card(2, SUIT_FOX,    "Ambush! (Fox)",         (0,0,0,0),   True,      False,   False,      ITEM_NONE,        0),      1),
+    (Card(3, SUIT_MOUSE,  "Ambush! (Mouse)",       (0,0,0,0),   True,      False,   False,      ITEM_NONE,        0),      1),
+    (Card(4, SUIT_FOX,    "Anvil",                 (0,0,1,0),   False,     False,   False,      ITEM_HAMMER,      2),      1),
+    (Card(5, SUIT_BIRD,   "Armorers",              (0,0,1,0),   False,     False,   True,       ITEM_NONE,        0),      2),
+    (Card(6, SUIT_BIRD,   "Arms Trader",           (0,0,2,0),   False,     False,   False,      ITEM_SWORD,       2),      1),
+    (Card(7, SUIT_RABBIT,  "A Visit to Friends",   (0,1,0,0),   False,     False,   False,      ITEM_BOOT,        1),      1),
+    (Card(8, SUIT_RABBIT,  "Bake Sale",            (0,2,0,0),   False,     False,   False,      ITEM_COINS,       3),      1),
+    (Card(9, SUIT_RABBIT,  "Better Burrow Bank",   (0,2,0,0),   False,     False,   True,       ITEM_NONE,        0),      2),
+    (Card(10,SUIT_BIRD,   "Birdy Bindle",          (1,0,0,0),   False,     False,   False,      ITEM_BAG,         1),      1),
+    (Card(11,SUIT_BIRD,   "Brutal Tactics",        (0,0,2,0),   False,     False,   True,       ITEM_NONE,        0),      2),
+    (Card(12,SUIT_RABBIT,  "Cobbler",              (0,2,0,0),   False,     False,   True,       ITEM_NONE,        0),      2),
+    (Card(13,SUIT_MOUSE,  "Codebreakers",          (1,0,0,0),   False,     False,   True,       ITEM_NONE,        0),      2),
+    (Card(14,SUIT_RABBIT,  "Command Warren",       (0,2,0,0),   False,     False,   True,       ITEM_NONE,        0),      2),
+    (Card(15,SUIT_BIRD,   "Crossbow (Bird)",       (0,0,1,0),   False,     False,   False,      ITEM_CROSSBOW,    1),      1),
+    (Card(16,SUIT_MOUSE,  "Crossbow (Mouse)",      (0,0,1,0),   False,     False,   False,      ITEM_CROSSBOW,    1),      1),
+    (Card(17, SUIT_FOX,    "Favor of the Foxes",   (0,0,3,0),   False,     False,   False,      ITEM_NONE,        0),      1),
+    (Card(18, SUIT_MOUSE,  "Favor of the Mice",    (3,0,0,0),   False,     False,   False,      ITEM_NONE,        0),      1),
+    (Card(19, SUIT_RABBIT, "Favor of the Rabbits", (0,3,0,0),   False,     False,   False,      ITEM_NONE,        0),      1),
+    (Card(20, SUIT_FOX,    "Foxfolk Steel",        (0,0,2,0),   False,     False,   False,      ITEM_SWORD,       2),      1),
+    # (id,   Suit,        Name,                    Recipe,    is_ambush, is_dom, is_persistent    item,          points), Amount
+    (Card(21, SUIT_FOX,    "Gently Used Knapsack", (1,0,0,0),   False,     False,   False,      ITEM_BAG,         1),      1),
+    (Card(22, SUIT_MOUSE,   "Investments",         (0,2,0,0),   False,     False,   False,      ITEM_COINS,       3),      1),
+    (Card(23, SUIT_MOUSE,    "Mouse-in-a-Sack",    (1,0,0,0),   False,     False,   False,      ITEM_BAG,         1),      1),
+    (Card(24, SUIT_FOX,   "Protection Racket",     (0,2,0,0),   False,     False,   False,      ITEM_COINS,       3),      1),
+    (Card(25, SUIT_RABBIT,  "Root Tea (Rabbit)",   (1,0,0,0),   False,     False,   False,      ITEM_TEA,         2),      1),
+    (Card(26, SUIT_FOX,  "Root Tea (Fox)",         (1,0,0,0),   False,     False,   False,      ITEM_TEA,         2),      1),
+    (Card(27, SUIT_MOUSE,  "Root Tea (Mouse)",     (1,0,0,0),   False,     False,   False,      ITEM_TEA,         2),      1),
+    (Card(28, SUIT_BIRD,  "Sappers",               (1,0,0,0),   False,     False,   True,       ITEM_NONE,        0),      2),
+    (Card(29, SUIT_MOUSE,  "Scouting Party",       (2,0,0,0),   False,     False,   True,       ITEM_NONE,        0),      2),
+    (Card(30, SUIT_RABBIT, "Smuggler's Trail",     (1,0,0,0),   False,     False,   False,      ITEM_BAG,         1),      1),
+    (Card(31, SUIT_FOX,   "Stand and Deliver!",    (3,0,0,0),   False,     False,   True,       ITEM_NONE,        0),      2),
+    (Card(32, SUIT_MOUSE,   "Sword",               (0,0,2,0),   False,     False,   False,      ITEM_SWORD,       2),      1),
+    (Card(33, SUIT_FOX,   "Tax Collector",         (1,1,1,0),   False,     False,   True,       ITEM_NONE,        0),      3),
+    (Card(34, SUIT_FOX,   "Travel Gear (Fox)",     (0,1,0,0),   False,     False,   False,      ITEM_BOOT,        1),      1),
+    (Card(35, SUIT_MOUSE,   "Travel Gear (Mouse)", (0,1,0,0),   False,     False,   False,      ITEM_BOOT,        1),      1),
+    (Card(36, SUIT_BIRD,   "Woodland Runners",     (0,1,0,0),   False,     False,   False,      ITEM_BOOT,        1),      1),
+    (Card(37, SUIT_BIRD,  "Royal Claim",           (0,0,0,4),   False,     False,   True,       ITEM_NONE,        0),      1)
 #    (Card(38,SUIT_BIRD,   "Bird Dominance",        (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
 #    (Card(39,SUIT_RABBIT,  "Bunny Dominance",      (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
 #    (Card(40,SUIT_MOUSE,  "Mouse Dominance",       (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
 #    (Card(41,SUIT_FOX,    "Fox Dominance",         (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
 ]
 CID_ROYAL_CLAIM = 37
+CID_FAVORS = {17,18,19}
 CID_LOYAL_VIZIER = len(STANDARD_DECK_COMP)
 
 MAP_AUTUMN = [
-    #        id, suit,         num_building_slots, num_ruins, opposite_corner_id, list of adj clearings
-    Clearing(0,  SUIT_FOX,     1,                 0,         11,                  [1,3,4]),
-    Clearing(1,  SUIT_RABBIT,  2,                 0,         -1,                  [0,2]),
-    Clearing(2,  SUIT_MOUSE,   2,                 0,         8,                   [1,3,7]),
-    Clearing(3,  SUIT_RABBIT,  1,                 1,         -1,                  [0,2,5]),
-    Clearing(4,  SUIT_MOUSE,   2,                 0,         -1,                  [0,5,8]),
-    Clearing(5,  SUIT_FOX,     1,                 1,         -1,                  [3,4,6,8,10]),
-    Clearing(6,  SUIT_MOUSE,   2,                 1,         -1,                  [5,7,11]),
-    Clearing(7,  SUIT_FOX,     1,                 1,         -1,                  [2,6,11]),
-    Clearing(8,  SUIT_RABBIT,  1,                 0,         2,                   [4,5,9]),
-    Clearing(9,  SUIT_FOX,     2,                 0,         -1,                  [8,10]),
-    Clearing(10, SUIT_MOUSE,   2,                 0,         -1,                  [5,9,11]),
-    Clearing(11, SUIT_RABBIT,  1,                 0,         0,                   [6,7,10])
+    #        id, suit,         num_building_slots, num_ruins, opposite_corner_id, set of adj clearings
+    Clearing(0,  SUIT_FOX,     1,                 0,         11,                  {1,3,4}),
+    Clearing(1,  SUIT_RABBIT,  2,                 0,         -1,                  {0,2}),
+    Clearing(2,  SUIT_MOUSE,   2,                 0,         8,                   {1,3,7}),
+    Clearing(3,  SUIT_RABBIT,  1,                 1,         -1,                  {0,2,5}),
+    Clearing(4,  SUIT_MOUSE,   2,                 0,         -1,                  {0,5,8}),
+    Clearing(5,  SUIT_FOX,     1,                 1,         -1,                  {3,4,6,8,10}),
+    Clearing(6,  SUIT_MOUSE,   2,                 1,         -1,                  {5,7,11}),
+    Clearing(7,  SUIT_FOX,     1,                 1,         -1,                  {2,6,11}),
+    Clearing(8,  SUIT_RABBIT,  1,                 0,         2,                   {4,5,9}),
+    Clearing(9,  SUIT_FOX,     2,                 0,         -1,                  {8,10}),
+    Clearing(10, SUIT_MOUSE,   2,                 0,         -1,                  {5,9,11}),
+    Clearing(11, SUIT_RABBIT,  1,                 0,         0,                   {6,7,10})
 ]

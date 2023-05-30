@@ -6,13 +6,13 @@ from classes import *
 class root2pCatsVsEyrie:
     def __init__(self, board_comp:list, deck_composition:list):
         self.n_players = N_PLAYERS
-        self.player = 1
+        self.current_player = 1
         self.players = [Marquise(0), Eyrie(1)]
-        self.points = [0,0]
+        self.victory_points = [0,0]
 
         self.board = Board(board_comp)
         self.deck = Deck(deck_composition)
-        self.discard = []
+        self.discard_pile = []
         self.available_items = {
             ITEM_COINS: 2,
             ITEM_BOOT: 2,
@@ -25,16 +25,16 @@ class root2pCatsVsEyrie:
         # self.available_dominances = set()
 
     def to_play(self):
-        return 0 if self.player == 1 else 1
+        return 0 if self.current_player == 1 else 1
 
     def reset(self):
-        self.player = 1
+        self.current_player = 1
         self.players = [Marquise(0), Eyrie(1)]
-        self.points = [0,0]
+        self.victory_points = [0,0]
 
         self.board.reset()
         self.deck.reset()
-        self.discard = []
+        self.discard_pile = []
         self.available_items = {
             ITEM_COINS: 2,
             ITEM_BOOT: 2,
@@ -51,20 +51,20 @@ class root2pCatsVsEyrie:
     def step(self, action):
         x = math.floor(action / self.board_size)
         y = action % self.board_size
-        self.board[x][y] = self.player
+        self.board[x][y] = self.current_player
 
         done = self.is_finished()
 
         reward = 1 if done else 0
 
-        self.player *= -1
+        self.current_player *= -1
 
         return self.get_observation(), reward, done
 
     def get_observation(self):
         board_player1 = np.where(self.board == 1, 1.0, 0.0)
         board_player2 = np.where(self.board == -1, 1.0, 0.0)
-        board_to_play = np.full((11, 11), self.player, dtype="int32")
+        board_to_play = np.full((11, 11), self.current_player, dtype="int32")
         return np.array([board_player1, board_player2, board_to_play])
 
     def legal_actions(self):
@@ -74,8 +74,65 @@ class root2pCatsVsEyrie:
                 if self.board[i][j] == 0:
                     legal.append(i * self.board_size + j)
         return legal
+    
+    def draw_cards(self,player_index:int,amount:int):
+        """
+        Draws a number of cards from the top of the deck and then
+        adds them to a player's hand.
 
-    def resolve_action(self,action):
+        If the deck runs out, it automatically uses up the
+        discard pile to refresh the deck and then continues drawing.
+        """
+        p = self.players[player_index]
+        while amount:
+            if self.deck.size() == 0:
+                self.deck.add(self.discard_pile)
+                self.discard_pile = []
+            p.hand += self.deck.draw(1)
+            amount -= 1
+    
+    def discard_card(self,player_index:int,card_id:int):
+        "Makes a player discard a card of the matching id from their hand, assuming they have it."
+        player_hand = self.players[player_index].hand
+        for i,c in enumerate(player_hand):
+            if c.id == card_id:
+                c_to_discard = player_hand.pop(i)
+                self.discard_pile.append(c_to_discard)
+                return
+    
+    def change_score(self,player_index:int,amount:int):
+        "Makes a player score some amount of points. Use a negative amount to lose points."
+        p = self.victory_points[player_index]
+        self.victory_points[player_index] = max(0, p + amount)
+
+    def craft_card(self,player_index:int,card_id:int):
+        "Makes the player craft the given card, assuming the action is legal."
+        p = self.players[player_index]
+        for i,c in enumerate(p.hand):
+            if c.id == card_id:
+                card_to_craft = c
+                hand_i = i
+                break
+
+        item_id = card_to_craft.crafting_item
+        if item_id != ITEM_NONE:
+            # we are crafting an item
+            self.available_items[item_id] -= 1
+            p.crafted_items[item_id] += 1
+            
+            points_scored = 1 if (player_index == PIND_EYRIE and p.chosen_leader_index != LEADER_BUILDER) else card_to_craft.points
+            self.change_score(player_index,points_scored)
+            
+            self.discard_card(player_index,card_id)
+        elif card_to_craft.is_persistent:
+            # we are crafting a persistent card
+            p.persistent_cards.append(card_to_craft)
+            p.hand.pop(hand_i)
+        elif card_id in CID_FAVORS:
+            # a favor card has been activated
+            pass
+
+    def resolve_action(self,action:int):
         """
         The big one.
         Given an action number, alters the board itself according
@@ -85,36 +142,6 @@ class root2pCatsVsEyrie:
         """
         p = self.players[self.to_play()]
         # if action
-
-    def is_finished(self):
-        has_legal_actions = False
-        directions = ((1, -1), (1, 0), (1, 1), (0, 1))
-        for i in range(self.board_size):
-            for j in range(self.board_size):
-                # if no stone is on the position, don't need to consider this position
-                if self.board[i][j] == 0:
-                    has_legal_actions = True
-                    continue
-                # value-value at a coord, i-row, j-col
-                player = self.board[i][j]
-                # check if there exist 5 in a line
-                for d in directions:
-                    x, y = i, j
-                    count = 0
-                    for _ in range(5):
-                        if (x not in range(self.board_size)) or (
-                            y not in range(self.board_size)
-                        ):
-                            break
-                        if self.board[x][y] != player:
-                            break
-                        x += d[0]
-                        y += d[1]
-                        count += 1
-                        # if 5 in a line, store positions of all stones, return value
-                        if count == 5:
-                            return True
-        return not has_legal_actions
 
     def render(self):
         marker = "  "
