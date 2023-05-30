@@ -1,5 +1,4 @@
 import numpy as np
-import copy
 import math
 from classes import *
 
@@ -9,6 +8,7 @@ class root2pCatsVsEyrie:
         self.n_players = N_PLAYERS
         self.player = 1
         self.players = [Marquise(0), Eyrie(1)]
+        self.points = [0,0]
 
         self.board = Board(board_comp)
         self.deck = Deck(deck_composition)
@@ -30,6 +30,7 @@ class root2pCatsVsEyrie:
     def reset(self):
         self.player = 1
         self.players = [Marquise(0), Eyrie(1)]
+        self.points = [0,0]
 
         self.board.reset()
         self.deck.reset()
@@ -73,6 +74,17 @@ class root2pCatsVsEyrie:
                 if self.board[i][j] == 0:
                     legal.append(i * self.board_size + j)
         return legal
+
+    def resolve_action(self,action):
+        """
+        The big one.
+        Given an action number, alters the board itself according
+        to the current player.
+
+        TODO: Return info about which player's turn it is / other things
+        """
+        p = self.players[self.to_play()]
+        # if action
 
     def is_finished(self):
         has_legal_actions = False
@@ -120,25 +132,3 @@ class root2pCatsVsEyrie:
                 elif ch == -1:
                     print("O", end=" ")
             print()
-
-    def human_input_to_action(self):
-        human_input = input("Enter an action: ")
-        if (
-            len(human_input) == 2
-            and human_input[0] in self.board_markers
-            and human_input[1] in self.board_markers
-        ):
-            x = ord(human_input[0]) - 65
-            y = ord(human_input[1]) - 65
-            if self.board[x][y] == 0:
-                return True, x * self.board_size + y
-        return False, -1
-
-    def action_to_human_input(self, action):
-        x = math.floor(action / self.board_size)
-        y = action % self.board_size
-        x = chr(x + 65)
-        y = chr(y + 65)
-        return x + y
-
-

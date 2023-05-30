@@ -146,6 +146,10 @@ class Clearing:
         by the Marquise's Keep, which blocks other Factions from placing pieces in its clearing.
         """
         return (faction_index == PIND_MARQUISE) or (TIND_KEEP not in self.tokens[PIND_MARQUISE])
+    
+    def is_adjacent_to(self,other_index:int):
+        "Returns True only if this clearing is connected to the clearing with the other index given."
+        return (other_index in self.adjacent_clearing_ids)
 
 
 class Board:
@@ -224,9 +228,13 @@ class Board:
         "Adds the given number of warriors of the faction to the clearing, assuming it is legal to do so."
         self.clearings[clearing_index].change_num_warriors(faction_index,amount)
     
-    def add_building(self,faction_index:int,building_index:int,clearing_index:int):
+    def place_building(self,faction_index:int,building_index:int,clearing_index:int):
         "Adds one of the given building type to the given clearing, assuming it's legal to do so."
         self.clearings[clearing_index].place_building(faction_index,building_index)
+
+    def place_token(self,faction_index:int,token_index:int,clearing_index:int):
+        "Adds one of the given building type to the given clearing, assuming it's legal to do so."
+        self.clearings[clearing_index].place_token(faction_index,token_index)
 
     def deal_hits(self,faction_index:int,amount:int,clearing_index:int):
         """
@@ -242,6 +250,34 @@ class Board:
             else:
                 break
     
+    def get_wood_available(self):
+        """
+        For the Marquise, returns a list of integers, one for each clearing.
+        The integer for clearing i is the amount of wood tokens available
+        to use to Build in clearing i, either from that clearing or using
+        any number of connected clearings ruled by the cats.
+        """
+        ans = [0 for i in range(12)]
+        # find out which clearings the Marquise rule - which is where wood actually counts
+        foo = [(x == PIND_MARQUISE) for x in self.get_rulers()]
+        clearings_left_to_assign = {i for i,ruled in enumerate(foo) if ruled}
+
+        # make groups of connected clearings ruled by the Marquise
+        while clearings_left_to_assign:
+            i = clearings_left_to_assign.pop()
+            new_group = {i}
+            total = self.clearings[i].get_num_tokens(PIND_MARQUISE,TIND_WOOD)
+            c_to_add_to_group = {j for j in self.clearings[i].adjacent_clearing_ids if j in clearings_left_to_assign}
+            while c_to_add_to_group:
+                j = c_to_add_to_group.pop()
+                clearings_left_to_assign.remove(j)
+                new_group.add(j)
+                total += self.clearings[j].get_num_tokens(PIND_MARQUISE,TIND_WOOD)
+                c_to_add_to_group.update( {k for k in self.clearings[j].adjacent_clearing_ids if k in (clearings_left_to_assign - c_to_add_to_group)} )
+
+            for i in new_group:
+                ans[i] = total
+        return ans
     
 
 class Card:
@@ -287,10 +323,13 @@ class Deck:
         return drawn
     
     def add(self, cards:list[Card]):
+        "Adds the given cards in the input to the deck and then shuffles the deck."
         for card in cards:
             self.cards.append(card)
+        self.shuffle()
                 
     def size(self):
+        "Returns the current number of cards in the deck."
         return len(self.cards)
 
 
