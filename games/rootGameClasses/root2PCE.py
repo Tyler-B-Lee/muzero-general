@@ -130,7 +130,10 @@ class root2pCatsVsEyrie:
             p.hand.pop(hand_i)
         elif card_id in CID_FAVORS:
             # a favor card has been activated
-            pass
+            points_scored = self.board.resolve_favor(player_index,CLEARING_SUITS[card_to_craft.suit])
+            self.change_score(player_index,points_scored)
+
+            self.discard_card(player_index, card_id)
 
     def resolve_action(self,action:int):
         """

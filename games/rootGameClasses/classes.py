@@ -150,6 +150,24 @@ class Clearing:
     def is_adjacent_to(self,other_index:int):
         "Returns True only if this clearing is connected to the clearing with the other index given."
         return (other_index in self.adjacent_clearing_ids)
+    
+    def favor_helper(self,safe_faction_index:int) -> int:
+        """
+        Helps with the process of resolving a favor card. Removes any
+        and all warriors, buildings, and tokens of all factions that are
+        not the safe faction given.
+
+        Returns an integer: the total number of points that
+        should be scored from removing tokens/buildings in this clearing.
+        """
+        ans = 0
+        for faction_i in {j for j in range(N_PLAYERS) if j != safe_faction_index}:
+            ans += self.get_num_buildings(faction_i) + self.get_num_tokens(faction_i)
+            
+            self.change_num_warriors(faction_i, -self.get_num_warriors(faction_i))
+            self.buildings[faction_i] = []
+            self.tokens[faction_i] = []
+        return ans
 
 
 class Board:
@@ -253,6 +271,19 @@ class Board:
                 target_clearing.change_num_warriors(faction_index,-1)
             else:
                 break
+    
+    def resolve_favor(self,safe_faction_index:int,clearing_indexes:list[int]) -> int:
+        """
+        Resolves the effects of the safe faction crafting a favor card. The
+        Effect is carried out in each clearing in the given list of indexes.
+
+        Returns an integer: the total number of points scored by the
+        activating player for removing buildings and tokens.
+        """
+        ans = 0
+        for i in clearing_indexes:
+            ans += self.clearings[i].favor_helper(safe_faction_index)
+        return ans
     
     def get_wood_available(self):
         """
@@ -591,3 +622,9 @@ MAP_AUTUMN = [
     Clearing(10, SUIT_MOUSE,   2,                 0,         -1,                  {5,9,11}),
     Clearing(11, SUIT_RABBIT,  1,                 0,         0,                   {6,7,10})
 ]
+
+CLEARING_SUITS = {
+    SUIT_FOX: [c.id for c in MAP_AUTUMN if c.suit == SUIT_FOX],
+    SUIT_MOUSE: [c.id for c in MAP_AUTUMN if c.suit == SUIT_MOUSE],
+    SUIT_RABBIT: [c.id for c in MAP_AUTUMN if c.suit == SUIT_RABBIT]
+}
