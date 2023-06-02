@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import random
 from classes import *
 
 
@@ -12,6 +13,7 @@ class root2pCatsVsEyrie:
 
         self.board = Board(board_comp)
         self.deck = Deck(deck_composition)
+        self.battle = Battle(-1,-1,-1)
         self.discard_pile = []
         self.available_items = {
             ITEM_COINS: 2,
@@ -34,6 +36,7 @@ class root2pCatsVsEyrie:
 
         self.board.reset()
         self.deck.reset()
+        self.battle = Battle(-1,-1,-1)
         self.discard_pile = []
         self.available_items = {
             ITEM_COINS: 2,
@@ -91,15 +94,23 @@ class root2pCatsVsEyrie:
             p.hand += self.deck.draw(1)
             amount -= 1
     
+    def get_card(self,player_index:int,card_id:int,location:str):
+        "Removes and returns the card from the given location for the player. location can be 'hand' or 'persistent'."
+        loc = self.players[player_index].hand if (location == 'hand') else self.players[player_index].persistent_cards
+        for i,c in enumerate(loc):
+            if c.id == card_id:
+                return loc.pop(i)
+            
     def discard_card(self,player_index:int,card_id:int):
         "Makes a player discard a card of the matching id from their hand, assuming they have it."
-        player_hand = self.players[player_index].hand
-        for i,c in enumerate(player_hand):
-            if c.id == card_id:
-                c_to_discard = player_hand.pop(i)
-                self.discard_pile.append(c_to_discard)
-                return
+        c_to_discard = self.get_card(player_index,card_id,"hand")
+        self.discard_pile.append(c_to_discard)
     
+    def discard_from_persistent(self,player_index:int,card_id:int):
+        "Makes a player discard a card of the matching id from their persistent cards, assuming they have it."
+        c_to_discard = self.get_card(player_index,card_id,"persistent")
+        self.discard_pile.append(c_to_discard)
+
     def change_score(self,player_index:int,amount:int):
         "Makes a player score some amount of points. Use a negative amount to lose points."
         p = self.victory_points[player_index]
@@ -120,6 +131,7 @@ class root2pCatsVsEyrie:
             self.available_items[item_id] -= 1
             p.crafted_items[item_id] += 1
             
+            # Disdain for Trade for the Eyrie (unless they have Builder leader)
             points_scored = 1 if (player_index == PIND_EYRIE and p.chosen_leader_index != LEADER_BUILDER) else card_to_craft.points
             self.change_score(player_index,points_scored)
             
@@ -134,6 +146,72 @@ class root2pCatsVsEyrie:
             self.change_score(player_index,points_scored)
 
             self.discard_card(player_index, card_id)
+    
+    # BATTLE FUNCTIONS
+    def resolve_battle_action(self,action):
+        """
+        Given an action number, performs the given action given the
+        current information stored about any battles currently going on.
+
+        Assumes that self.battle points to an existing Battle object.
+        """
+        defender = self.players[self.battle.defender_id]
+        attacker = self.players[self.battle.attacker_id]
+        if self.battle.stage is None:
+            # the battle just started
+            if defender.has_ambush_in_hand():
+                self.battle.stage = Battle.STAGE_DEF_AMBUSH
+                return self.battle.defender_id
+            else:
+                self.battle.stage = Battle.STAGE_DICE_ROLL
+
+        clearing = self.board.clearings[self.battle.clearing_id]
+        if self.battle.stage == Battle.STAGE_DEF_AMBUSH:
+            # action is the defender's choice to ambush or not
+            if action == AID_AMBUSH_NONE:
+                self.battle.stage = Battle.STAGE_DICE_ROLL
+            elif action == AID_AMBUSH_BIRD:
+                pass
+
+        
+        if self.battle.stage == Battle.STAGE_ATT_AMBUSH:
+            # action is the defender's choice to counter ambush or not
+            pass
+        
+        if self.battle.stage == Battle.STAGE_DICE_ROLL:
+
+            # the dice must be rolled before continuing
+            roll = [random.randint(0,3) for i in range(2)]
+            self.battle.att_rolled_hits = min(clearing.get_num_warriors(self.battle.attacker_id), max(roll))
+            self.battle.def_rolled_hits = min(clearing.get_num_warriors(self.battle.defender_id), min(roll))
+        
+
+    # Activating Card Effects
+    def activate_royal_claim(self,player_index:int):
+        "In Birdsong, may discard this to score one point per clearing you rule."
+        points = sum((i == player_index) for i in self.board.get_rulers())
+        self.change_score(player_index,points)
+        self.discard_from_persistent(player_index, CID_ROYAL_CLAIM)
+    
+    def activate_stand_and_deliver(self,player_index:int,target_index:int):
+        "In Birdsong, may take a random card from another player. That player scores one point."
+        target_p_hand = self.players[target_index].hand
+        chosen_i = random.randint(0,len(target_p_hand) - 1)
+        chosen_card = target_p_hand.pop(chosen_i)
+
+        self.players[player_index].hand.append(chosen_card)
+        self.change_score(target_index,1)
+
+    def activate_tax_collector(self,player_index:int,clearing_index:int):
+        "Once in Daylight, may remove one of your warriors from the map to draw a card."
+        self.board.clearings[clearing_index].change_num_warriors(player_index,-1)
+        self.draw_cards(player_index,1)
+
+    def activate_better_burrow(self,player_index:int,target_index:int):
+        "At start of Birdsong, you and another player draw a card."
+        self.draw_cards(player_index,1)
+        self.draw_cards(target_index,1)
+
 
     def resolve_action(self,action:int):
         """

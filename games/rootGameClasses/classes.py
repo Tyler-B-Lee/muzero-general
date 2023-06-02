@@ -41,6 +41,13 @@ DECREE_MOVE = 1
 DECREE_BATTLE = 2
 DECREE_BUILD = 3
 
+# Action IDs
+AID_AMBUSH_MOUSE = 4278
+AID_AMBUSH_RABBIT = 4279
+AID_AMBUSH_FOX = 4280
+AID_AMBUSH_BIRD = 4281
+AID_AMBUSH_NONE = 4282
+
 class Clearing:
     def __init__(self,id:int,suit:int,num_building_slots:int,num_ruins:int,opposite_corner_id:int,adj_clearing_ids:set[int]) -> None:
         self.id = id
@@ -414,6 +421,10 @@ class Player:
     def has_suit_in_hand(self, suit_id:int):
         "Returns True only if any card in the players hand is the given suit."
         return any((c.suit == suit_id) for c in self.hand)
+
+    def has_ambush_in_hand(self):
+        "Returns True only if this player has any ambush in their hand."
+        return any(c.is_ambush for c in self.hand)
     
 
 class Marquise(Player):
@@ -555,12 +566,40 @@ class Eyrie(Player):
         return cards_to_discard, num_bird_cards
 
 
+class Battle:
+    # a choice must be made about using an ambush card
+    STAGE_DEF_AMBUSH = 0
+    STAGE_ATT_AMBUSH = 1
+    # choosing what extra effects/cards to activate
+    STAGE_ATT_EFFECTS = 2
+    STAGE_DEF_EFFECTS = 3
+    # choosing the order in which their pieces will be damaged
+    STAGE_ATT_ORDER = 4
+    STAGE_DEF_ORDER = 5
+    # the cats are given a choice whether to activate field hospitals or not
+    STAGE_FIELD_HOSPITALS = 6
+    # waiting for the dice roll
+    STAGE_DICE_ROLL = 7
+
+    def __init__(self,att_id:int,def_id:int,clearing_id:int) -> None:
+        self.attacker_id = att_id
+        self.defender_id = def_id
+        self.clearing_id = clearing_id
+        self.stage = None
+        self.att_rolled_hits = None
+        self.att_extra_hits = None
+        self.def_rolled_hits = None
+        self.def_extra_hits = None
+        self.att_ambush_card = None
+        self.def_ambush_card = None
+
+
 # (Card info, Amount in deck)
 # Recipe amounts are (Mouse, Bunny, Fox, Wild)
 STANDARD_DECK_COMP = [
     # (id,   Suit,        Name,                    Recipe,    is_ambush, is_dom, is_persistent    item,          points), Amount
     (Card(0, SUIT_BIRD,   "Ambush! (Bird)",        (0,0,0,0),   True,      False,   False,      ITEM_NONE,        0),      2),
-    (Card(1, SUIT_RABBIT,  "Ambush! (Bunny)",      (0,0,0,0),   True,      False,   False,      ITEM_NONE,        0),      1),
+    (Card(1, SUIT_RABBIT,  "Ambush! (Rabbit)",      (0,0,0,0),   True,      False,   False,      ITEM_NONE,        0),      1),
     (Card(2, SUIT_FOX,    "Ambush! (Fox)",         (0,0,0,0),   True,      False,   False,      ITEM_NONE,        0),      1),
     (Card(3, SUIT_MOUSE,  "Ambush! (Mouse)",       (0,0,0,0),   True,      False,   False,      ITEM_NONE,        0),      1),
     (Card(4, SUIT_FOX,    "Anvil",                 (0,0,1,0),   False,     False,   False,      ITEM_HAMMER,      2),      1),
@@ -603,6 +642,10 @@ STANDARD_DECK_COMP = [
 #    (Card(40,SUIT_MOUSE,  "Mouse Dominance",       (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
 #    (Card(41,SUIT_FOX,    "Fox Dominance",         (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
 ]
+CID_AMBUSH_BIRD = 0
+CID_AMBUSH_RABBIT = 1
+CID_AMBUSH_FOX = 2
+CID_AMBUSH_MOUSE = 3
 CID_ROYAL_CLAIM = 37
 CID_FAVORS = {17,18,19}
 CID_LOYAL_VIZIER = len(STANDARD_DECK_COMP)
