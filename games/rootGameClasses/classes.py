@@ -115,9 +115,13 @@ class Clearing:
 
 
     ### TOKEN METHODS
-    def get_num_tokens(self,faction_index:int,token_index:int) -> int:
-        "Returns the number of tokens of the given type for the given faction in the clearing."
-        return sum(x == token_index for x in self.tokens[faction_index])
+    def get_num_tokens(self,faction_index:int,token_index:int = -1) -> int:
+        """Returns the number of tokens of the given type for the given faction in the clearing.
+
+        If no token index is specified, returns the total number of tokens
+        for the given faction, regardless of their type.
+        """
+        return len(self.tokens[faction_index]) if (token_index == -1) else sum(x == token_index for x in self.tokens[faction_index])
 
     def place_token(self,faction_index:int,token_index:int) -> None:
         "Place the given token in this clearing. Assumes the move is legal, performing no checks."
@@ -204,6 +208,14 @@ class Board:
         """
         return self.clearings[clearing_index].get_num_buildings(faction_index,building_index)
     
+    def get_clearing_token_counts(self,faction_index:int,clearing_index:int,token_index:int = -1):
+        """
+        Returns the number of buildings of the given faction of the given type in the GIVEN clearing.
+        If no building type is specified, returns the total number
+        of buildings belonging to the given faction in the ONE clearing.
+        """
+        return self.clearings[clearing_index].get_num_tokens(faction_index,token_index)
+    
     def get_rulers(self):
         """
         Finds the current ruling faction of each clearing. Returns a list of integers,
@@ -268,16 +280,49 @@ class Board:
     def deal_hits(self,faction_index:int,amount:int,clearing_index:int):
         """
         Make the given faction take a certain number of hits in the given clearing.
-        Removes warriors first, then buildings/tokens if necessary. 
+        Removes warriors first, then buildings/tokens if necessary.
 
-        TODO: Have some system to tell it which buildings/tokens to take out first?
+        Returns the remaining number of hits that still need to be dealt, but
+        cannot because a choice must be made.
         """
         target_clearing = self.clearings[clearing_index]
-        for i in range(amount):
-            if target_clearing.get_num_warriors(faction_index):
+        while amount > 0:
+            # first take out warriors
+            if target_clearing.get_num_warriors(faction_index) > 0:
                 target_clearing.change_num_warriors(faction_index,-1)
-            else:
-                break
+                amount -= 1
+            # then check if there is a choice of building / token
+            elif faction_index == PIND_MARQUISE:
+                # find how many choices the Marquise have of removing tokens/buildings
+                building_choices = sum((target_clearing.get_num_buildings(faction_index,bid) > 0) for bid in range(3))
+                token_choices = sum((target_clearing.get_num_tokens(faction_index,tid) > 0) for tid in range(2))
+                # if they have a choice at all, then leave with 'amount' > 0 to indicate this
+                if (building_choices + token_choices) > 1:
+                    break
+                # otherwise, there is no choice in what to remove
+                # if it is a building, remove one of them
+                elif building_choices == 1:
+                    for bid in range(3):
+                        if target_clearing.get_num_buildings(faction_index,bid) > 0:
+                            target_clearing.remove_building(faction_index,bid)
+                            amount -= 1
+                # if it is a token, remove one of them
+                elif token_choices == 1:
+                    for tid in range(2):
+                        if target_clearing.get_num_tokens(faction_index,tid) > 0:
+                            target_clearing.remove_token(faction_index,tid)
+                            amount -= 1
+                # if no other item is present, the remaining hits are lost
+                else:
+                    amount = 0
+            elif faction_index == PIND_EYRIE:
+                # the Eyrie can only have roosts, and have no tokens
+                if target_clearing.get_num_buildings(faction_index,BIND_ROOST) > 0:
+                    target_clearing.remove_building(faction_index,BIND_ROOST)
+                    amount -= 1
+                else:
+                    amount = 0
+        return amount
     
     def resolve_favor(self,safe_faction_index:int,clearing_indexes:list[int]) -> int:
         """
@@ -580,6 +625,8 @@ class Battle:
     STAGE_FIELD_HOSPITALS = 6
     # waiting for the dice roll
     STAGE_DICE_ROLL = 7
+    # battle is done
+    STAGE_DONE = 8
 
     def __init__(self,att_id:int,def_id:int,clearing_id:int) -> None:
         self.attacker_id = att_id
@@ -590,8 +637,10 @@ class Battle:
         self.att_extra_hits = None
         self.def_rolled_hits = None
         self.def_extra_hits = None
-        self.att_ambush_card = None
-        self.def_ambush_card = None
+        self.att_hits_to_deal = None
+        self.def_hits_to_deal = None
+        self.att_ambush_id = None
+        self.def_ambush_id = None
 
 
 # (Card info, Amount in deck)
@@ -646,6 +695,16 @@ CID_AMBUSH_BIRD = 0
 CID_AMBUSH_RABBIT = 1
 CID_AMBUSH_FOX = 2
 CID_AMBUSH_MOUSE = 3
+CID_ARMORERS = 5
+CID_BRUTAL_TACTICS = 11
+CID_SAPPERS = 28
+CID_SCOUTING_PARTY = 29
+CID_COBBLER = 12
+CID_COMMAND_WARREN = 14
+CID_CODEBREAKERS = 13
+CID_STAND_AND_DELIVER = 31
+CID_TAX_COLLECTOR = 33
+CID_BBB = 9
 CID_ROYAL_CLAIM = 37
 CID_FAVORS = {17,18,19}
 CID_LOYAL_VIZIER = len(STANDARD_DECK_COMP)

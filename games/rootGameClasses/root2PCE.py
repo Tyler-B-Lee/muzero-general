@@ -169,9 +169,42 @@ class root2pCatsVsEyrie:
         if self.battle.stage == Battle.STAGE_DEF_AMBUSH:
             # action is the defender's choice to ambush or not
             if action == AID_AMBUSH_NONE:
+                # we immediately go to the dice roll
                 self.battle.stage = Battle.STAGE_DICE_ROLL
-            elif action == AID_AMBUSH_BIRD:
-                pass
+            else:
+                # save which ambush card is played
+                if action == AID_AMBUSH_BIRD:
+                    self.battle.def_ambush_id = CID_AMBUSH_BIRD
+                elif action == AID_AMBUSH_MOUSE:
+                    self.battle.def_ambush_id = CID_AMBUSH_MOUSE
+                elif action == AID_AMBUSH_RABBIT:
+                    self.battle.def_ambush_id = CID_AMBUSH_RABBIT
+                elif action == AID_AMBUSH_FOX:
+                    self.battle.def_ambush_id = CID_AMBUSH_FOX
+                # make the defender discard this card
+                self.discard_card(self.battle.attacker_id,self.battle.def_ambush_id)
+
+                # check if the attacker has Scouting Party (nullifies ambush cards used up)
+                if any((c.id == CID_SCOUTING_PARTY) for c in attacker.hand):
+                    self.battle.stage = Battle.STAGE_DICE_ROLL
+                # otherwise, see if attacker can choose to counter ambush
+                elif attacker.has_ambush_in_hand():
+                    self.battle.stage = Battle.STAGE_ATT_AMBUSH
+                    return self.battle.attacker_id
+                # otherwise, the ambush triggers and 2 hits are dealt
+                else:
+                    self.battle.def_hits_to_deal = self.board.deal_hits(self.battle.attacker_id, 2, self.battle.clearing_id)
+                    # check if a choice must be made from hits
+                    if self.battle.def_hits_to_deal > 0:
+                        self.battle.stage = Battle.STAGE_ATT_ORDER
+                        return self.battle.attacker_id
+                    # if the hits are all dealt, we check if a battle can still occur
+                    elif clearing.get_num_warriors(self.battle.attacker_id) > 0:
+                        self.battle.stage = Battle.STAGE_DICE_ROLL
+                    # otherwise, the ambush wiped out all attackers
+                    else:
+                        self.battle.stage = Battle.STAGE_DONE
+                        return self.battle.attacker_id
 
         
         if self.battle.stage == Battle.STAGE_ATT_AMBUSH:
