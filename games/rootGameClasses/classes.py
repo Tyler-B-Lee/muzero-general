@@ -1,6 +1,6 @@
 import random
 import copy
-from typing import List, Tuple
+from typing import Tuple
 
 Recipe = Tuple[int,int,int,int]
 
@@ -47,6 +47,19 @@ AID_AMBUSH_RABBIT = 4279
 AID_AMBUSH_FOX = 4280
 AID_AMBUSH_BIRD = 4281
 AID_AMBUSH_NONE = 4282
+
+AID_ORDER_WOOD = 128
+AID_ORDER_KEEP = 128
+AID_ORDER_SAWMILL = 128
+AID_ORDER_RECRUITER = 128
+AID_ORDER_WORKSHOP = 128
+
+AID_EFFECTS_NONE = 4284
+AID_EFFECTS_ARMORERS = 4284
+AID_EFFECTS_BRUTTACT = 4284
+AID_EFFECTS_SAPPERS = 4284
+AID_EFFECTS_ARM_BT = 4284
+AID_EFFECTS_ARMSAP = 4284
 
 class Clearing:
     def __init__(self,id:int,suit:int,num_building_slots:int,num_ruins:int,opposite_corner_id:int,adj_clearing_ids:set[int]) -> None:
@@ -486,6 +499,7 @@ class Marquise(Player):
             self.buildings[i] = 6
         self.tokens[TIND_KEEP] = 1
         self.tokens[TIND_WOOD] = 8
+        self.keep_clearing_id = -1
 
     def get_num_cards_to_draw(self) -> int:
         "Returns the number of cards to draw at the end of the turn (In Evening)."
@@ -634,11 +648,11 @@ class Battle:
         self.clearing_id = clearing_id
         self.stage = None
         self.att_rolled_hits = None
-        self.att_extra_hits = None
+        self.att_extra_hits = 0
         self.def_rolled_hits = None
-        self.def_extra_hits = None
-        self.att_hits_to_deal = None
-        self.def_hits_to_deal = None
+        self.def_extra_hits = 0
+        self.att_hits_to_deal = 0
+        self.def_hits_to_deal = 0
         self.att_ambush_id = None
         self.def_ambush_id = None
 

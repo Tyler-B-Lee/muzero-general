@@ -101,7 +101,7 @@ class root2pCatsVsEyrie:
             if c.id == card_id:
                 return loc.pop(i)
             
-    def discard_card(self,player_index:int,card_id:int):
+    def discard_from_hand(self,player_index:int,card_id:int):
         "Makes a player discard a card of the matching id from their hand, assuming they have it."
         c_to_discard = self.get_card(player_index,card_id,"hand")
         self.discard_pile.append(c_to_discard)
@@ -135,7 +135,7 @@ class root2pCatsVsEyrie:
             points_scored = 1 if (player_index == PIND_EYRIE and p.chosen_leader_index != LEADER_BUILDER) else card_to_craft.points
             self.change_score(player_index,points_scored)
             
-            self.discard_card(player_index,card_id)
+            self.discard_from_hand(player_index,card_id)
         elif card_to_craft.is_persistent:
             # we are crafting a persistent card
             p.persistent_cards.append(card_to_craft)
@@ -145,9 +145,15 @@ class root2pCatsVsEyrie:
             points_scored = self.board.resolve_favor(player_index,CLEARING_SUITS[card_to_craft.suit])
             self.change_score(player_index,points_scored)
 
-            self.discard_card(player_index, card_id)
+            self.discard_from_hand(player_index, card_id)
     
     # BATTLE FUNCTIONS
+    def activate_field_hospitals(self,amount:int,payment_card_id:int):
+        "Places 'amount' of warriors at the Marquise's Keep and discards the given card from their hand."
+        keep_clearing = self.players[PIND_MARQUISE].keep_clearing_id
+        self.board.clearings[keep_clearing].change_num_warriors(PIND_MARQUISE,amount)
+        self.discard_from_hand(PIND_MARQUISE,payment_card_id)
+
     def resolve_battle_action(self,action):
         """
         Given an action number, performs the given action given the
@@ -156,16 +162,61 @@ class root2pCatsVsEyrie:
         Assumes that self.battle points to an existing Battle object.
         """
         defender = self.players[self.battle.defender_id]
-        attacker = self.players[self.battle.attacker_id]
         if self.battle.stage is None:
-            # the battle just started
+            # the battle just started, assume a brand new Battle object was just created
             if defender.has_ambush_in_hand():
+                # the defender chooses to ambush or not
                 self.battle.stage = Battle.STAGE_DEF_AMBUSH
                 return self.battle.defender_id
-            else:
-                self.battle.stage = Battle.STAGE_DICE_ROLL
+            # no ambush is possible, so we move straight to the dice roll
+            self.battle.stage = Battle.STAGE_DICE_ROLL
 
         clearing = self.board.clearings[self.battle.clearing_id]
+        if self.battle.stage == Battle.STAGE_DEF_ORDER:
+            # action is what defender building/token to hit with the next hit
+            if action in {1,2,2,5,5,31,3}:
+                clearing.remove_token(self.battle.defender_id,action - 235235)
+            else:
+                clearing.remove_building(self.battle.defender_id,action - 23452)
+            # see if there is a choice anymore
+            self.battle.att_hits_to_deal = self.board.deal_hits(self.battle.defender_id, self.battle.att_hits_to_deal - 1, self.battle.clearing_id)
+            if self.battle.att_hits_to_deal > 0:
+                # defender still has a choice of what to remove
+                return self.battle.defender_id
+            
+            # all hits needed have been dealt to defender
+            # it is now the attacker's turn to take hits
+            self.battle.def_hits_to_deal = self.board.deal_hits(self.battle.attacker_id, self.battle.def_hits_to_deal, self.battle.clearing_id)
+            if self.battle.def_hits_to_deal > 0:
+                # attacker has a choice on what to remove
+                self.battle.stage = Battle.STAGE_ATT_ORDER
+            else:
+                # the battle is over
+                self.battle.stage = Battle.STAGE_DONE
+            return self.battle.attacker_id
+            
+        if self.battle.stage == Battle.STAGE_ATT_ORDER:
+            # action is what attacker building/token to hit with the next hit
+            if action in {1,2,2,5,5,31,3}:
+                clearing.remove_token(self.battle.attacker_id,action - 235235)
+            else:
+                clearing.remove_building(self.battle.attacker_id,action - 23452)
+            # see if there is a choice anymore
+            self.battle.def_hits_to_deal = self.board.deal_hits(self.battle.attacker_id, self.battle.def_hits_to_deal - 1, self.battle.clearing_id)
+            if self.battle.def_hits_to_deal > 0:
+                # attacker still has a choice of what to remove
+                return self.battle.attacker_id
+            
+            # All hits have been dealt, so we are in one of two possible situations:
+            # 1. The dice have not been rolled. If the -attacker- is choosing buildings to destroy,
+            #    then that means they attacked with 1 warrior and were ambushed, and now had to
+            #    choose one of their buildings to remove. They have no warriors and the battle is over.
+            # 2. The dice have been rolled and extra effects have been chosen. However, the attacker is
+            #    last to pick which things get hit in what order, so the battle must be over.
+            self.battle.stage = Battle.STAGE_DONE
+            return self.battle.attacker_id
+        
+        attacker = self.players[self.battle.attacker_id]
         if self.battle.stage == Battle.STAGE_DEF_AMBUSH:
             # action is the defender's choice to ambush or not
             if action == AID_AMBUSH_NONE:
@@ -182,7 +233,7 @@ class root2pCatsVsEyrie:
                 elif action == AID_AMBUSH_FOX:
                     self.battle.def_ambush_id = CID_AMBUSH_FOX
                 # make the defender discard this card
-                self.discard_card(self.battle.attacker_id,self.battle.def_ambush_id)
+                self.discard_from_hand(self.battle.defender_id,self.battle.def_ambush_id)
 
                 # check if the attacker has Scouting Party (nullifies ambush cards used up)
                 if any((c.id == CID_SCOUTING_PARTY) for c in attacker.hand):
@@ -192,32 +243,140 @@ class root2pCatsVsEyrie:
                     self.battle.stage = Battle.STAGE_ATT_AMBUSH
                     return self.battle.attacker_id
                 # otherwise, the ambush triggers and 2 hits are dealt
+                self.battle.def_hits_to_deal = self.board.deal_hits(self.battle.attacker_id, 2, self.battle.clearing_id)
+                # check if a choice must be made from hits
+                if self.battle.def_hits_to_deal > 0:
+                    self.battle.stage = Battle.STAGE_ATT_ORDER
+                    return self.battle.attacker_id
+                # if the hits are all dealt, we check if a battle can still occur
+                elif clearing.get_num_warriors(self.battle.attacker_id) > 0:
+                    self.battle.stage = Battle.STAGE_DICE_ROLL
+                # otherwise, the ambush wiped out all attackers
                 else:
-                    self.battle.def_hits_to_deal = self.board.deal_hits(self.battle.attacker_id, 2, self.battle.clearing_id)
-                    # check if a choice must be made from hits
-                    if self.battle.def_hits_to_deal > 0:
-                        self.battle.stage = Battle.STAGE_ATT_ORDER
-                        return self.battle.attacker_id
-                    # if the hits are all dealt, we check if a battle can still occur
-                    elif clearing.get_num_warriors(self.battle.attacker_id) > 0:
-                        self.battle.stage = Battle.STAGE_DICE_ROLL
-                    # otherwise, the ambush wiped out all attackers
-                    else:
-                        self.battle.stage = Battle.STAGE_DONE
-                        return self.battle.attacker_id
+                    self.battle.stage = Battle.STAGE_DONE
+                    return self.battle.attacker_id
 
-        
         if self.battle.stage == Battle.STAGE_ATT_AMBUSH:
-            # action is the defender's choice to counter ambush or not
-            pass
-        
-        if self.battle.stage == Battle.STAGE_DICE_ROLL:
+            # action is the attacker's choice to counter ambush or not
+            if action == AID_AMBUSH_NONE:
+                # the ambush triggers and 2 hits are dealt
+                # deal_hits returns the number of remaining hits there are; if >0, it means a choice is possible for the one getting hit
+                self.battle.def_hits_to_deal = self.board.deal_hits(self.battle.attacker_id, 2, self.battle.clearing_id)
+                # check if a choice must be made from hits
+                if self.battle.def_hits_to_deal > 0:
+                    self.battle.stage = Battle.STAGE_ATT_ORDER
+                    return self.battle.attacker_id
+                # if the hits are all dealt, we check if a battle can still occur
+                elif clearing.get_num_warriors(self.battle.attacker_id) > 0:
+                    self.battle.stage = Battle.STAGE_DICE_ROLL
+                # otherwise, the ambush wiped out all attackers
+                else:
+                    self.battle.stage = Battle.STAGE_DONE
+                    return self.battle.attacker_id
+            else:
+                # save which ambush card is played
+                if action == AID_AMBUSH_BIRD:
+                    self.battle.att_ambush_id = CID_AMBUSH_BIRD
+                elif action == AID_AMBUSH_MOUSE:
+                    self.battle.att_ambush_id = CID_AMBUSH_MOUSE
+                elif action == AID_AMBUSH_RABBIT:
+                    self.battle.att_ambush_id = CID_AMBUSH_RABBIT
+                elif action == AID_AMBUSH_FOX:
+                    self.battle.att_ambush_id = CID_AMBUSH_FOX
+                # make the attacker discard this card
+                self.discard_from_hand(self.battle.attacker_id,self.battle.att_ambush_id)
+                # we immediately go to the dice roll, since the defender's ambush is cancelled
+                self.battle.stage = Battle.STAGE_DICE_ROLL
 
+        if self.battle.stage == Battle.STAGE_DICE_ROLL:
             # the dice must be rolled before continuing
             roll = [random.randint(0,3) for i in range(2)]
             self.battle.att_rolled_hits = min(clearing.get_num_warriors(self.battle.attacker_id), max(roll))
             self.battle.def_rolled_hits = min(clearing.get_num_warriors(self.battle.defender_id), min(roll))
+            # defenseless
+            if clearing.get_num_warriors(self.battle.defender_id) == 0:
+                self.battle.att_extra_hits = 1
+            # check if the attacker can choose extra effects
+            if any((c.id in {CID_ARMORERS,CID_BRUTAL_TACTICS}) for c in attacker.persistent_cards):
+                self.battle.stage = Battle.STAGE_ATT_EFFECTS
+                return self.battle.attacker_id
+            # check if the defender can choose extra effects
+            if any((c.id in {CID_ARMORERS,CID_SAPPERS}) for c in defender.persistent_cards):
+                self.battle.stage = Battle.STAGE_DEF_EFFECTS
+                return self.battle.defender_id
+            # no extra effects can be chosen, so deal the hits next
+            # next, the defender takes hits first
+            self.battle.att_hits_to_deal = self.board.deal_hits(self.battle.defender_id,self.battle.att_extra_hits+self.battle.att_rolled_hits,self.battle.clearing_id)
+            if self.battle.att_hits_to_deal > 0:
+                # defender has a choice of what to remove
+                self.battle.stage = Battle.STAGE_DEF_ORDER
+                return self.battle.defender_id
+            # lastly, attacker takes hits
+            self.battle.def_hits_to_deal = self.board.deal_hits(self.battle.attacker_id,self.battle.def_rolled_hits,self.battle.clearing_id)
+            if self.battle.def_hits_to_deal > 0:
+                # attacker has a choice of what to remove
+                self.battle.stage = Battle.STAGE_ATT_ORDER
+                return self.battle.attacker_id
+            # battle is over
+            self.battle.stage = Battle.STAGE_DONE
+            return self.battle.attacker_id
         
+        if self.battle.stage == Battle.STAGE_ATT_EFFECTS:
+            # the attacker has chosen what extra effects to use
+            if action in {AID_EFFECTS_ARMORERS,AID_EFFECTS_ARM_BT}:
+                # Armorers is used up
+                self.battle.def_rolled_hits = 0
+                self.discard_from_persistent(self.battle.attacker_id,CID_ARMORERS)
+            if action in {AID_EFFECTS_BRUTTACT,AID_EFFECTS_ARM_BT}:
+                # brutal tactics is used
+                self.battle.att_extra_hits += 1
+                self.change_score(self.battle.defender_id,1)
+            # check if the defender can choose extra effects
+            if any((c.id in {CID_ARMORERS,CID_SAPPERS}) for c in defender.persistent_cards):
+                self.battle.stage = Battle.STAGE_DEF_EFFECTS
+                return self.battle.defender_id
+            # next, the defender takes hits first
+            self.battle.att_hits_to_deal = self.board.deal_hits(self.battle.defender_id,self.battle.att_extra_hits+self.battle.att_rolled_hits,self.battle.clearing_id)
+            if self.battle.att_hits_to_deal > 0:
+                # defender has a choice of what to remove
+                self.battle.stage = Battle.STAGE_DEF_ORDER
+                return self.battle.defender_id
+            # lastly, attacker takes hits
+            self.battle.def_hits_to_deal = self.board.deal_hits(self.battle.attacker_id,self.battle.def_rolled_hits,self.battle.clearing_id)
+            if self.battle.def_hits_to_deal > 0:
+                # attacker has a choice of what to remove
+                self.battle.stage = Battle.STAGE_ATT_ORDER
+                return self.battle.attacker_id
+            # battle is over
+            self.battle.stage = Battle.STAGE_DONE
+            return self.battle.attacker_id
+        
+        if self.battle.stage == Battle.STAGE_DEF_EFFECTS:
+            # the defender has chosen what extra effects to use
+            if action in {AID_EFFECTS_ARMORERS,AID_EFFECTS_ARMSAP}:
+                # Armorers is used up
+                self.battle.att_rolled_hits = 0
+                self.discard_from_persistent(self.battle.defender_id,CID_ARMORERS)
+            if action in {AID_EFFECTS_SAPPERS,AID_EFFECTS_ARMSAP}:
+                # sappers is used
+                self.battle.def_extra_hits += 1
+                self.discard_from_persistent(self.battle.defender_id,CID_SAPPERS)
+            # next, the defender takes hits first
+            self.battle.att_hits_to_deal = self.board.deal_hits(self.battle.defender_id,self.battle.att_extra_hits+self.battle.att_rolled_hits,self.battle.clearing_id)
+            if self.battle.att_hits_to_deal > 0:
+                # defender has a choice of what to remove
+                self.battle.stage = Battle.STAGE_DEF_ORDER
+                return self.battle.defender_id
+            # lastly, attacker takes hits
+            self.battle.def_hits_to_deal = self.board.deal_hits(self.battle.attacker_id,self.battle.def_extra_hits+self.battle.def_rolled_hits,self.battle.clearing_id)
+            if self.battle.def_hits_to_deal > 0:
+                # attacker has a choice of what to remove
+                self.battle.stage = Battle.STAGE_ATT_ORDER
+                return self.battle.attacker_id
+            # battle is over
+            self.battle.stage = Battle.STAGE_DONE
+            return self.battle.attacker_id
+
 
     # Activating Card Effects
     def activate_royal_claim(self,player_index:int):
