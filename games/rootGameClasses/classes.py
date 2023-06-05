@@ -61,6 +61,11 @@ AID_EFFECTS_SAPPERS = 4284
 AID_EFFECTS_ARM_BT = 4284
 AID_EFFECTS_ARMSAP = 4284
 
+AID_CARD_BBB = 4290
+AID_CARD_ROYAL_CLAIM = 4291
+AID_CARD_STAND_DELIVER = 4292
+AID_CARD_CODEBREAKERS = 4293
+
 class Clearing:
     def __init__(self,id:int,suit:int,num_building_slots:int,num_ruins:int,opposite_corner_id:int,adj_clearing_ids:set[int]) -> None:
         self.id = id
@@ -175,23 +180,26 @@ class Clearing:
         "Returns True only if this clearing is connected to the clearing with the other index given."
         return (other_index in self.adjacent_clearing_ids)
     
-    def favor_helper(self,safe_faction_index:int) -> int:
+    def favor_helper(self,safe_faction_index:int):
         """
         Helps with the process of resolving a favor card. Removes any
         and all warriors, buildings, and tokens of all factions that are
         not the safe faction given.
 
-        Returns an integer: the total number of points that
-        should be scored from removing tokens/buildings in this clearing.
+        Returns a 2-tuple: the total number of points that
+        should be scored from removing tokens/buildings in this clearing,
+        and the number of Marquise warriors removed (for Field Hospitals).
         """
-        ans = 0
+        ans = marqwar = 0
         for faction_i in {j for j in range(N_PLAYERS) if j != safe_faction_index}:
             ans += self.get_num_buildings(faction_i) + self.get_num_tokens(faction_i)
             
+            if faction_i == PIND_MARQUISE:
+                marqwar = self.get_num_warriors(faction_i)
             self.change_num_warriors(faction_i, -self.get_num_warriors(faction_i))
             self.buildings[faction_i] = []
             self.tokens[faction_i] = []
-        return ans
+        return ans,marqwar
 
 
 class Board:
@@ -295,14 +303,18 @@ class Board:
         Make the given faction take a certain number of hits in the given clearing.
         Removes warriors first, then buildings/tokens if necessary.
 
-        Returns the remaining number of hits that still need to be dealt, but
-        cannot because a choice must be made.
+        Returns a 3-tuple:
+        - 1. The number of hits left to deal. A positive amount means a choice must be made.
+        - 2. The number of warriors killed.
+        - 3. The number of pieces of cardboard removed (buildings + tokens)
         """
         target_clearing = self.clearings[clearing_index]
+        warriors_removed = cardboard_removed = 0
         while amount > 0:
             # first take out warriors
             if target_clearing.get_num_warriors(faction_index) > 0:
                 target_clearing.change_num_warriors(faction_index,-1)
+                warriors_removed += 1
                 amount -= 1
             # then check if there is a choice of building / token
             elif faction_index == PIND_MARQUISE:
@@ -318,12 +330,14 @@ class Board:
                     for bid in range(3):
                         if target_clearing.get_num_buildings(faction_index,bid) > 0:
                             target_clearing.remove_building(faction_index,bid)
+                            cardboard_removed += 1
                             amount -= 1
                 # if it is a token, remove one of them
                 elif token_choices == 1:
                     for tid in range(2):
                         if target_clearing.get_num_tokens(faction_index,tid) > 0:
                             target_clearing.remove_token(faction_index,tid)
+                            cardboard_removed += 1
                             amount -= 1
                 # if no other item is present, the remaining hits are lost
                 else:
@@ -332,23 +346,27 @@ class Board:
                 # the Eyrie can only have roosts, and have no tokens
                 if target_clearing.get_num_buildings(faction_index,BIND_ROOST) > 0:
                     target_clearing.remove_building(faction_index,BIND_ROOST)
+                    cardboard_removed += 1
                     amount -= 1
                 else:
                     amount = 0
-        return amount
+        return amount, warriors_removed, cardboard_removed
     
-    def resolve_favor(self,safe_faction_index:int,clearing_indexes:list[int]) -> int:
+    def resolve_favor(self,safe_faction_index:int,clearing_indexes:list[int]):
         """
         Resolves the effects of the safe faction crafting a favor card. The
         Effect is carried out in each clearing in the given list of indexes.
 
-        Returns an integer: the total number of points scored by the
-        activating player for removing buildings and tokens.
+        Returns a 2-tuple: the total number of points scored by the
+        activating player for removing buildings and tokens, and
+        the total number of Marquise warriors removed (for Field Hospitals)
         """
-        ans = 0
+        ans = total_marqwars = 0
         for i in clearing_indexes:
-            ans += self.clearings[i].favor_helper(safe_faction_index)
-        return ans
+            pts,marqwars = self.clearings[i].favor_helper(safe_faction_index)
+            ans += pts
+            total_marqwars += marqwars
+        return ans,total_marqwars
     
     def get_wood_available(self):
         """
@@ -477,8 +495,11 @@ class Player:
         self.crafted_items[item_index] += change
     
     def has_suit_in_hand(self, suit_id:int):
-        "Returns True only if any card in the players hand is the given suit."
-        return any((c.suit == suit_id) for c in self.hand)
+        """
+        Returns True only if any card in the player's hand is
+        either of the exact given suit OR is a BIRD card.
+        """
+        return any((c.suit in {suit_id, SUIT_BIRD}) for c in self.hand)
 
     def has_ambush_in_hand(self):
         "Returns True only if this player has any ambush in their hand."
@@ -655,6 +676,8 @@ class Battle:
         self.def_hits_to_deal = 0
         self.att_ambush_id = None
         self.def_ambush_id = None
+        self.att_cardboard_removed = False
+        self.def_cardboard_removed = False
 
 
 # (Card info, Amount in deck)
@@ -662,7 +685,7 @@ class Battle:
 STANDARD_DECK_COMP = [
     # (id,   Suit,        Name,                    Recipe,    is_ambush, is_dom, is_persistent    item,          points), Amount
     (Card(0, SUIT_BIRD,   "Ambush! (Bird)",        (0,0,0,0),   True,      False,   False,      ITEM_NONE,        0),      2),
-    (Card(1, SUIT_RABBIT,  "Ambush! (Rabbit)",      (0,0,0,0),   True,      False,   False,      ITEM_NONE,        0),      1),
+    (Card(1, SUIT_RABBIT,  "Ambush! (Rabbit)",     (0,0,0,0),   True,      False,   False,      ITEM_NONE,        0),      1),
     (Card(2, SUIT_FOX,    "Ambush! (Fox)",         (0,0,0,0),   True,      False,   False,      ITEM_NONE,        0),      1),
     (Card(3, SUIT_MOUSE,  "Ambush! (Mouse)",       (0,0,0,0),   True,      False,   False,      ITEM_NONE,        0),      1),
     (Card(4, SUIT_FOX,    "Anvil",                 (0,0,1,0),   False,     False,   False,      ITEM_HAMMER,      2),      1),
