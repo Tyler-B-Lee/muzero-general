@@ -42,6 +42,27 @@ DECREE_BATTLE = 2
 DECREE_BUILD = 3
 
 # Action IDs
+AID_GENERIC_SKIP = 0
+AID_CRAFT_CARD = 61
+AID_CRAFT_ROYAL_CLAIM = 102
+AID_CRAFT_RC_MAPPING = {
+    AID_CRAFT_ROYAL_CLAIM:      (4,0,0),
+    AID_CRAFT_ROYAL_CLAIM + 1:  (0,4,0),
+    AID_CRAFT_ROYAL_CLAIM + 2:  (0,0,4),
+    AID_CRAFT_ROYAL_CLAIM + 3:  (3,1,0),
+    AID_CRAFT_ROYAL_CLAIM + 4:  (3,0,1),
+    AID_CRAFT_ROYAL_CLAIM + 5:  (1,3,0),
+    AID_CRAFT_ROYAL_CLAIM + 6:  (1,0,3),
+    AID_CRAFT_ROYAL_CLAIM + 7:  (0,3,1),
+    AID_CRAFT_ROYAL_CLAIM + 8:  (0,1,3),
+    AID_CRAFT_ROYAL_CLAIM + 9:  (2,2,0),
+    AID_CRAFT_ROYAL_CLAIM + 10: (2,0,2),
+    AID_CRAFT_ROYAL_CLAIM + 11: (0,2,2),
+    AID_CRAFT_ROYAL_CLAIM + 12: (2,1,1),
+    AID_CRAFT_ROYAL_CLAIM + 13: (1,2,1),
+    AID_CRAFT_ROYAL_CLAIM + 14: (1,1,2),
+}
+
 AID_AMBUSH_MOUSE = 4278
 AID_AMBUSH_RABBIT = 4279
 AID_AMBUSH_FOX = 4280
@@ -65,6 +86,8 @@ AID_CARD_BBB = 4290
 AID_CARD_ROYAL_CLAIM = 4291
 AID_CARD_STAND_DELIVER = 4292
 AID_CARD_CODEBREAKERS = 4293
+AID_CARD_TAX_COLLECTOR = 4294
+AID_CARD_COMMAND_WARREN = 4306
 
 class Clearing:
     def __init__(self,id:int,suit:int,num_building_slots:int,num_ruins:int,opposite_corner_id:int,adj_clearing_ids:set[int]) -> None:
@@ -465,6 +488,10 @@ class Player:
     def get_num_buildings_on_track(self, building_index:int) -> int:
         "Returns the number of buildings of the given type left on this player's track."
         return self.buildings[building_index]
+    
+    def get_num_tokens_in_store(self, token_index:int) -> int:
+        "Returns the number of tokens of the given type left in this player's store."
+        return self.tokens[token_index]
 
     def change_num_warriors(self, change:int) -> None:
         """
@@ -504,6 +531,10 @@ class Player:
     def has_ambush_in_hand(self):
         "Returns True only if this player has any ambush in their hand."
         return any(c.is_ambush for c in self.hand)
+    
+    def has_card_id_in_hand(self,id:int):
+        "Returns True only if this player has a card with the given ID in their hand."
+        return any(c.id == id for c in self.hand)
     
 
 class Marquise(Player):
