@@ -1,5 +1,5 @@
-import random
 import copy
+import random
 from typing import Tuple
 
 Recipe = Tuple[int,int,int,int]
@@ -30,6 +30,15 @@ BIND_RECRUITER = 2
 TIND_KEEP = 0
 TIND_WOOD = 1
 
+AID_SPEND_BIRD = 117
+AID_ORDER_WOOD = 128
+AID_ORDER_KEEP = 129
+AID_ORDER_SAWMILL = 130
+AID_ORDER_RECRUITER = 131
+AID_ORDER_WORKSHOP = 132
+AID_RECRUIT = 127
+AID_OVERWORK = 133
+
 # EYRIE
 BIND_ROOST = 0
 LEADER_BUILDER = 0
@@ -41,8 +50,19 @@ DECREE_MOVE = 1
 DECREE_BATTLE = 2
 DECREE_BUILD = 3
 
+AID_CHOOSE_LEADER = 4358
+AID_DECREE_RECRUIT = 4362
+AID_DECREE_MOVE = 4404
+AID_DECREE_BATTLE = 4446
+AID_DECREE_BUILD = 4488
+
 # Action IDs
 AID_GENERIC_SKIP = 0
+AID_CHOOSE_CLEARING = 1
+AID_BATTLE = 13
+AID_BUILD1 = 25
+AID_BUILD2 = 37
+AID_BUILD3 = 49
 AID_CRAFT_CARD = 61
 AID_CRAFT_ROYAL_CLAIM = 102
 AID_CRAFT_RC_MAPPING = {
@@ -62,18 +82,14 @@ AID_CRAFT_RC_MAPPING = {
     AID_CRAFT_ROYAL_CLAIM + 13: (1,2,1),
     AID_CRAFT_ROYAL_CLAIM + 14: (1,1,2),
 }
+AID_DISCARD_CARD = 637
+AID_MOVE = 679
 
-AID_AMBUSH_MOUSE = 4278
-AID_AMBUSH_RABBIT = 4279
-AID_AMBUSH_FOX = 4280
-AID_AMBUSH_BIRD = 4281
-AID_AMBUSH_NONE = 4282
-
-AID_ORDER_WOOD = 128
-AID_ORDER_KEEP = 128
-AID_ORDER_SAWMILL = 128
-AID_ORDER_RECRUITER = 128
-AID_ORDER_WORKSHOP = 128
+AID_AMBUSH_MOUSE = 4279
+AID_AMBUSH_RABBIT = 4280
+AID_AMBUSH_FOX = 4281
+AID_AMBUSH_BIRD = 4282
+AID_AMBUSH_NONE = 4283
 
 AID_EFFECTS_NONE = 4284
 AID_EFFECTS_ARMORERS = 4284
@@ -420,6 +436,29 @@ class Board:
                 ans[i] = total
         return ans
     
+    def get_wood_to_build_in(self, clearing_index:int):
+        """
+        For the Marquise, returns a list of integers, one for each clearing.
+        Assuming that we are building in the given input clearing index, the
+        integer in index i of the returned list is the number of wood tokens
+        available to legally take out of clearing i for contributing to the build.
+
+        Thus, a clearing that has 1+ wood tokens, but is NOT connected by rule to
+        the building clearing will show up as 0, as it has no usable wood for this build.
+        """
+        ans = [0 for i in range(12)]
+        # it is assumed that the given clearing is ruled by the Marquise (required to build)
+        clearings_checked = set()
+        clearings_to_check = {clearing_index}
+        while clearings_to_check:
+            i = clearings_to_check.pop()
+            clearings_checked.add(i)
+            ans[i] = self.clearings[i].get_num_tokens(PIND_MARQUISE,TIND_WOOD)
+            for j in self.clearings[i].adjacent_clearing_ids:
+                if (j not in clearings_checked) and (self.clearings[j].get_ruler() == PIND_MARQUISE):
+                    clearings_to_check.add(j)
+        return ans
+    
 
 class Card:
     def __init__(self,id:int,suit:int,name:str,recipe:Recipe,is_ambush:bool,is_dominance:bool,is_persistent:bool,item:int,points:int) -> None:
@@ -562,20 +601,19 @@ class Marquise(Player):
             return 2
         return 3
 
-    def update_from_building_placed(self, building_index:int) -> int:
+    def update_from_building_placed(self, building_index:int) -> tuple[int,int]:
         """
         Updates the player board as if the given building was placed:
         - Removes 1 building from the corresponding track
-        - Adds the amount of wood that would be spent back to the token storage
+        - Wood token amounts should be handled outside when they are
+        properly removed from the board
 
-        Returns the number of Victory Points scored.
+        Returns the number of wood to use and Victory Points scored.
         """
         i = 6 - self.get_num_buildings_on_track(building_index)
-        building_cost = Marquise.building_costs[i]
         self.change_num_buildings(building_index,-1)
-        self.change_num_tokens(TIND_WOOD, building_cost)
 
-        return Marquise.point_tracks[building_index][i]
+        return Marquise.building_costs[i], Marquise.point_tracks[building_index][i]
     
 
 class Eyrie(Player):
@@ -616,6 +654,10 @@ class Eyrie(Player):
     def place_roost(self) -> None:
         "Removes 1 roost from the track, as if it was placed on the board."
         self.change_num_buildings(BIND_ROOST,-1)
+    
+    def add_to_decree(self,card_to_add:Card,decree_index:int):
+        "Adds the given card object to the decree."
+        self.decree[decree_index].append(card_to_add)
     
     def choose_new_leader(self, leader_index:int) -> None:
         """
@@ -759,6 +801,7 @@ STANDARD_DECK_COMP = [
 #    (Card(40,SUIT_MOUSE,  "Mouse Dominance",       (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
 #    (Card(41,SUIT_FOX,    "Fox Dominance",         (0,0,0,0),   False,     True,   ITEM_NONE,     0),      1),
 ]
+
 CID_AMBUSH_BIRD = 0
 CID_AMBUSH_RABBIT = 1
 CID_AMBUSH_FOX = 2
@@ -776,6 +819,19 @@ CID_BBB = 9
 CID_ROYAL_CLAIM = 37
 CID_FAVORS = {17,18,19}
 CID_LOYAL_VIZIER = len(STANDARD_DECK_COMP)
+
+ACTION_TO_BIRD_ID = {
+    AID_SPEND_BIRD: CID_AMBUSH_BIRD,
+    AID_SPEND_BIRD + 1: CID_ARMORERS,
+    AID_SPEND_BIRD + 2: 6, # arms trader
+    AID_SPEND_BIRD + 3: 10, # birdy bindle
+    AID_SPEND_BIRD + 4: CID_BRUTAL_TACTICS,
+    AID_SPEND_BIRD + 5: 15, # bird crossbow
+    AID_SPEND_BIRD + 6: CID_SAPPERS,
+    AID_SPEND_BIRD + 7: 36,
+    AID_SPEND_BIRD + 8: CID_ROYAL_CLAIM,
+    AID_SPEND_BIRD + 9: 38,
+}
 
 MAP_AUTUMN = [
     #        id, suit,         num_building_slots, num_ruins, opposite_corner_id, set of adj clearings

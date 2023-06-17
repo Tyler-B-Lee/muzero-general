@@ -1,6 +1,6 @@
-import numpy as np
 import math
 import random
+import numpy as np
 from classes import *
 
 
@@ -30,9 +30,22 @@ class root2pCatsVsEyrie:
         self.phase_steps = 0
         self.persistent_used_this_turn = set()
         self.remaining_craft_power = [0,0,0]
-        self.available_sawmills = [0]
+
+        self.available_wood_spots = [0]
         self.available_recruiters = [0]
         self.marquise_actions = 0
+        self.marquise_moves = 2
+        self.recruited_this_turn = 0
+        self.remaining_wood_cost = 0
+
+        self.eyrie_cards_added = 0
+        self.eyrie_bird_added = 0
+        self.remaining_decree = {
+            DECREE_RECRUIT: [0,0,0,0],
+            DECREE_MOVE: [0,0,0,0],
+            DECREE_BATTLE: [0,0,0,0],
+            DECREE_BUILD: [0,0,0,0]
+        }
 
         self.board = Board(board_comp)
         self.deck = Deck(deck_composition)
@@ -61,9 +74,22 @@ class root2pCatsVsEyrie:
         self.phase_steps = 0
         self.persistent_used_this_turn = set()
         self.remaining_craft_power = [0,0,0]
-        self.available_sawmills = [0]
+
+        self.available_wood_spots = [0]
         self.available_recruiters = [0]
         self.marquise_actions = 0
+        self.marquise_moves = 2
+        self.recruited_this_turn = 0
+        self.remaining_wood_cost = 0
+
+        self.eyrie_cards_added = 0
+        self.eyrie_bird_added = 0
+        self.remaining_decree = {
+            DECREE_RECRUIT: [0,0,0,0],
+            DECREE_MOVE: [0,0,0,0],
+            DECREE_BATTLE: [0,0,0,0],
+            DECREE_BUILD: [0,0,0,0]
+        }
 
         self.board.reset()
         self.deck.reset()
@@ -119,13 +145,13 @@ class root2pCatsVsEyrie:
         """
         p = self.players[player_index]
         while amount:
-            if self.deck.size() == 0:
-                self.deck.add(self.discard_pile)
-                self.discard_pile = []
             p.hand += self.deck.draw(1)
+            if self.deck.size() == 0:
+                self.deck.add(self.discard_pile) # includes shuffling
+                self.discard_pile = []
             amount -= 1
     
-    def get_card(self,player_index:int,card_id:int,location:str):
+    def get_card(self,player_index:int,card_id:int,location:str) -> Card:
         "Removes and returns the card from the given location for the player. location can be 'hand' or 'persistent'."
         loc = self.players[player_index].hand if (location == 'hand') else self.players[player_index].persistent_cards
         for i,c in enumerate(loc):
@@ -199,7 +225,7 @@ class root2pCatsVsEyrie:
     def activate_field_hospitals(self,amount:int,payment_card_id:int):
         "Places 'amount' of warriors at the Marquise's Keep and discards the given card from their hand."
         keep_clearing = self.players[PIND_MARQUISE].keep_clearing_id
-        self.board.clearings[keep_clearing].change_num_warriors(PIND_MARQUISE,amount)
+        self.board.place_warriors(PIND_MARQUISE,amount,keep_clearing)
         self.discard_from_hand(PIND_MARQUISE,payment_card_id)
         self.num_field_hospitals = 0
 
@@ -527,7 +553,7 @@ class root2pCatsVsEyrie:
 
     def activate_tax_collector(self,player_index:int,clearing_index:int):
         "Once in Daylight, may remove one of your warriors from the map to draw a card."
-        self.board.clearings[clearing_index].change_num_warriors(player_index,-1)
+        self.board.place_warriors(player_index,-1,clearing_index)
         self.draw_cards(player_index,1)
         self.num_field_hospitals = 1
 
@@ -569,18 +595,81 @@ class root2pCatsVsEyrie:
         """
         sawmill_counts = self.board.get_total_building_counts(PIND_MARQUISE,BIND_SAWMILL)
         if sum(sawmill_counts) > mplayer.get_num_tokens_in_store(TIND_WOOD):
-            self.available_sawmills = sawmill_counts
+            self.available_wood_spots = sawmill_counts
             return False
         # place a wood token for each sawmill at each clearing with a sawmill
         clearings_with_sawmill_ids = {i for i,n in enumerate(sawmill_counts) if n > 0}
         for i in clearings_with_sawmill_ids:
-            c = self.board.clearings[i]
             n_sawmills = sawmill_counts[i]
             while n_sawmills:
                 mplayer.change_num_tokens(TIND_WOOD, -1)
-                c.place_token(PIND_MARQUISE,TIND_WOOD)
+                self.board.place_token(PIND_MARQUISE,TIND_WOOD,i)
                 n_sawmills -= 1
         return True
+
+    def place_marquise_warriors(self,mplayer:Marquise):
+        """
+        Places 1 Marquise warrior at each Recruiter, unless there is not enough warriors in store.
+
+        Returns True only if all of the warriors could be automatically placed, False otherwise.
+        """
+        recruiter_counts = self.board.get_total_building_counts(PIND_MARQUISE,BIND_RECRUITER)
+        if sum(recruiter_counts) > mplayer.warrior_storage:
+            self.available_recruiters = recruiter_counts
+            return False
+        # place a warrior for each recruiter at each clearing with a recruiter
+        clearings_with_recruiter_ids = {i for i,n in enumerate(recruiter_counts) if n > 0}
+        for i in clearings_with_recruiter_ids:
+            n_recruiters = recruiter_counts[i]
+            mplayer.change_num_warriors(-n_recruiters)
+            self.board.place_warriors(PIND_MARQUISE,n_recruiters,i)
+        return True
+    
+    def place_marquise_building(self,mplayer:Marquise,building_index:int,clearing_index:int):
+        """
+        Tries to automatically place the given building in the given clearing. Assumes that
+        there is an open building slot, that the Marquise player can build this building,
+        that there is enough connected wood, etc. Places the given building / adjusts points
+        and everything automatically before checking wood.
+
+        Returns True only if there was no choice in where to spend wood:
+        - All the wood connected would have to be spent
+        - All the available wood is in only one clearing
+        """
+        # place the building
+        wood_cost,points_scored = mplayer.update_from_building_placed(building_index)
+        self.board.place_building(PIND_MARQUISE,building_index,clearing_index)
+        self.change_score(PIND_MARQUISE,points_scored)
+
+        usable_wood = self.board.get_wood_to_build_in(clearing_index)
+        one_clearing_id = -1
+        total_usable = 0
+        for i,amount in enumerate(usable_wood):
+            if amount > 0:
+                total_usable += amount
+                if one_clearing_id == -1:
+                    one_clearing_id = i
+                else:
+                    one_clearing_id = None
+        # if there is only one clearing with wood, just take the cost from that clearing
+        if one_clearing_id is not None:
+            for i in range(wood_cost):
+                self.board.clearings[one_clearing_id].remove_token(PIND_MARQUISE,TIND_WOOD)
+            mplayer.change_num_tokens(TIND_WOOD,wood_cost)
+            return True
+        # if we have exactly enough wood to pay, then use up all of the usable wood
+        if total_usable == wood_cost:
+            for i,amount in enumerate(usable_wood):
+                while amount > 0:
+                    self.board.clearings[i].remove_token(PIND_MARQUISE,TIND_WOOD)
+            mplayer.change_num_tokens(TIND_WOOD,wood_cost)
+            return True
+        # wood is in more than 1 clearing and we have too much, so
+        # we have to choose where to take it from
+        self.available_wood_spots = usable_wood
+        self.remaining_wood_cost = wood_cost
+        return False
+
 
     def resolve_action(self,action:int):
         """
@@ -618,50 +707,48 @@ class root2pCatsVsEyrie:
         elif self.phase == self.PHASE_BIRDSONG_MARQUISE:
             self.marquise_birdsong(action,current_player)
 
-    def marquise_setup(self,action:int,current_index:int,current_player:Marquise):
+    def marquise_setup(self,action:int,current_player:Marquise):
         "Performs the corresponding Marquise setup action."
         s = self.phase_steps
         if s == 0: # choosing where to put the Keep
             chosen_clearing = action - 1
             current_player.keep_clearing_id = chosen_clearing
             current_player.change_num_tokens(TIND_KEEP,-1)
-            self.board.place_token(current_index,TIND_KEEP,chosen_clearing)
+            self.board.place_token(PIND_MARQUISE,TIND_KEEP,chosen_clearing)
             # Garrison
             skip = self.board.clearings[chosen_clearing].opposite_corner_id
             for i in range(12):
                 if i != skip:
-                    self.board.place_warriors(current_index,1,i)
+                    self.board.place_warriors(PIND_MARQUISE,1,i)
             current_player.change_num_warriors(-11)
         elif s == 1: # choosing where to place a sawmill
-            chosen_clearing = action - 25
+            chosen_clearing = action - AID_BUILD1
             current_player.update_from_building_placed(BIND_SAWMILL)
-            self.board.place_building(current_index,BIND_SAWMILL,chosen_clearing)
+            self.board.place_building(PIND_MARQUISE,BIND_SAWMILL,chosen_clearing)
         elif s == 2: # choosing where to place a workshop
-            chosen_clearing = action - 49
+            chosen_clearing = action - AID_BUILD3
             current_player.update_from_building_placed(BIND_WORKSHOP)
-            self.board.place_building(current_index,BIND_WORKSHOP,chosen_clearing)
+            self.board.place_building(PIND_MARQUISE,BIND_WORKSHOP,chosen_clearing)
         elif s == 3: # choosing where to place a recruiter
-            chosen_clearing = action - 37
+            chosen_clearing = action - AID_BUILD2
             current_player.update_from_building_placed(BIND_RECRUITER)
-            self.board.place_building(current_index,BIND_RECRUITER,chosen_clearing)
+            self.board.place_building(PIND_MARQUISE,BIND_RECRUITER,chosen_clearing)
         self.phase_steps += 1
 
     def marquise_birdsong(self,action:int,current_player:Marquise):
         "Performs the action during the Marquise's birdsong / changes the turn stage."
-        if action in range(1,13): # choose where to place wood
-            self.available_sawmills[action - 1] -= 1
+        if action >= AID_CHOOSE_CLEARING and action <= AID_CHOOSE_CLEARING + 11: # choose where to place wood
+            self.available_wood_spots[action - AID_CHOOSE_CLEARING] -= 1
             current_player.change_num_tokens(TIND_WOOD,-1)
-            self.board.clearings[action - 1].place_token(PIND_MARQUISE,TIND_WOOD)
+            self.board.place_token(PIND_MARQUISE,TIND_WOOD,action - AID_CHOOSE_CLEARING)
+            if current_player.get_num_tokens_in_store(TIND_WOOD) == 0: # finished placing wood
+                self.phase_steps = 2
         elif action == AID_CARD_BBB:
             self.activate_better_burrow(PIND_MARQUISE,PIND_EYRIE)
             self.persistent_used_this_turn.add(CID_BBB)
             self.phase_steps = 1
         elif action == AID_GENERIC_SKIP:
             self.phase_steps = 3
-        # if self.phase_steps == 0: # sawmills have not generated wood yet
-        #     wood_placed = self.place_marquise_wood(current_player)
-        #     self.phase_steps = 1 if (not wood_placed) else 2 # 1 means waiting to place wood, 2 means wood placed, waiting for daylight
-        #     return
         elif action == AID_CARD_STAND_DELIVER:
             self.activate_stand_and_deliver(PIND_MARQUISE,PIND_EYRIE)
             self.persistent_used_this_turn.add(CID_STAND_AND_DELIVER)
@@ -671,22 +758,110 @@ class root2pCatsVsEyrie:
     
     def marquise_daylight(self,action:int,current_player:Marquise):
         "Performs the given daylight action for the Marquise."
-        if action == AID_CARD_CODEBREAKERS:
+        if action >= AID_CRAFT_CARD and action <= AID_CRAFT_CARD + 40: # craft a card
+            self.craft_card(PIND_MARQUISE,action - AID_CRAFT_CARD)
+        elif action == AID_GENERIC_SKIP:
+            if self.phase_steps in {0,1}: # skipping using CWARREN / crafting / using cards 
+                self.phase_steps += 1
+            elif self.phase_steps == 2:
+                self.phase_steps = 6
+            elif self.phase_steps == 3: # we forfeit second move of a march
+                self.phase_steps = 2
+                self.marquise_moves = 2
+
+        elif action >= AID_SPEND_BIRD and action <= AID_SPEND_BIRD + 9:
+            self.discard_from_hand(PIND_MARQUISE, ACTION_TO_BIRD_ID[action])
+            self.marquise_actions += 1
+        elif action >= AID_BATTLE and action <= AID_BATTLE + 11:
+            self.battle = Battle(PIND_MARQUISE,PIND_EYRIE,action - AID_BATTLE)
+            self.marquise_actions -= 1
+        elif action >= AID_MOVE and action <= AID_MOVE + 3599:
+            start,foo = divmod(action - AID_MOVE,300)
+            end,amount = divmod(foo,25)
+            self.board.move_warriors(PIND_MARQUISE,amount + 1,start,end)
+            if self.marquise_moves == 1: # we just marched a second time
+                self.marquise_moves = 2
+                self.phase_steps = 2
+            else: # we just made the first move in a march
+                self.marquise_actions -= 1
+                self.marquise_moves = 1
+                self.phase_steps = 3
+        elif action == AID_RECRUIT:
+            all_recruited = self.place_marquise_warriors(current_player)
+            self.recruited_this_turn = 1
+            self.marquise_actions -= 1
+            if not all_recruited:
+                self.phase_steps = 4
+        elif action >= AID_BUILD1 and action <= AID_BUILD1 + 11:
+            # building a Sawmill
+            wood_spent = self.place_marquise_building(current_player, BIND_SAWMILL, action - AID_BUILD1)
+            self.marquise_actions -= 1
+            if not wood_spent:
+                self.phase_steps = 5
+        elif action >= AID_BUILD2 and action <= AID_BUILD2 + 11:
+            # building a Recruiter
+            wood_spent = self.place_marquise_building(current_player, BIND_RECRUITER, action - AID_BUILD2)
+            self.marquise_actions -= 1
+            if not wood_spent:
+                self.phase_steps = 5
+        elif action >= AID_BUILD3 and action <= AID_BUILD3 + 11:
+            # building a Workshop
+            wood_spent = self.place_marquise_building(current_player, BIND_WORKSHOP, action - AID_BUILD3)
+            self.marquise_actions -= 1
+            if not wood_spent:
+                self.phase_steps = 5
+        elif action >= AID_OVERWORK and action <= AID_OVERWORK + 503:
+            card_id,clearing_id = divmod(action - AID_OVERWORK, 12)
+            self.marquise_actions -= 1
+            self.discard_from_hand(PIND_MARQUISE,card_id)
+            current_player.change_num_tokens(TIND_WOOD,-1)
+            self.board.place_token(PIND_MARQUISE,TIND_WOOD,clearing_id)
+        elif self.phase_steps == 5:
+            # we are choosing where to take wood from
+            self.board.clearings[action - AID_CHOOSE_CLEARING].remove_token(PIND_MARQUISE,TIND_WOOD)
+            current_player.change_num_tokens(TIND_WOOD,1)
+            self.remaining_wood_cost -= 1
+            self.available_wood_spots[action - AID_CHOOSE_CLEARING] -= 1
+            if self.remaining_wood_cost == 0:
+                # we have taken the last wood needed to spend
+                self.phase_steps = 2
+        elif self.phase_steps == 4:
+            # we are choosing where to recruit
+            current_player.change_num_warriors(-1)
+            self.board.place_warriors(PIND_MARQUISE,1,action - AID_CHOOSE_CLEARING)
+            self.available_recruiters[action - AID_CHOOSE_CLEARING] -= 1
+            if current_player.warrior_storage == 0:
+                # we are done recruiting
+                self.phase_steps = 2
+
+        elif action == AID_CARD_CODEBREAKERS:
             self.persistent_used_this_turn.add(CID_CODEBREAKERS)
             self.activate_codebreakers(PIND_MARQUISE,PIND_EYRIE)
-        elif action in range(AID_CARD_TAX_COLLECTOR,AID_CARD_TAX_COLLECTOR + 12): # activate tax collector
+        elif action >= AID_CARD_TAX_COLLECTOR and action <= AID_CARD_TAX_COLLECTOR + 11: # activate tax collector
             self.persistent_used_this_turn.add(CID_TAX_COLLECTOR)
             self.activate_tax_collector(PIND_MARQUISE,action - AID_CARD_TAX_COLLECTOR)
-        elif action in range(AID_CARD_COMMAND_WARREN,AID_CARD_COMMAND_WARREN + 12): # activate command warren
+        elif action >= AID_CARD_COMMAND_WARREN and action <= AID_CARD_COMMAND_WARREN + 11: # activate command warren
             self.phase_steps = 1
             self.persistent_used_this_turn.add(CID_COMMAND_WARREN)
             self.battle = Battle(PIND_MARQUISE,PIND_EYRIE,action - AID_CARD_COMMAND_WARREN)
-        elif action in range(AID_CRAFT_CARD,AID_CRAFT_CARD + 41): # craft a card
-            self.craft_card(PIND_MARQUISE,action - AID_CRAFT_CARD)
-        elif action in range(AID_CRAFT_ROYAL_CLAIM,AID_CRAFT_ROYAL_CLAIM + 15): # craft Royal Claim
+        elif action >= AID_CRAFT_ROYAL_CLAIM and action <= AID_CRAFT_ROYAL_CLAIM + 14: # craft Royal Claim
             self.craft_royal_claim(PIND_MARQUISE,action)
+    
+    def marquise_evening(self,action:int):
+        "Performs the given action for the Marquise in Evening."
+        if action >= AID_MOVE and action <= AID_MOVE + 3599: # Cobbler
+            start,foo = divmod(action - AID_MOVE,300)
+            end,amount = divmod(foo,25)
+            self.board.move_warriors(PIND_MARQUISE,amount + 1,start,end)
+            self.persistent_used_this_turn.add(CID_COBBLER)
+            self.phase_steps = 1
+        elif action == AID_GENERIC_SKIP: # choose not to use cobbler
+            self.phase_steps = 1
+        elif action >= AID_DISCARD_CARD and action <= AID_DISCARD_CARD + 41: # Discard excess card
+            self.discard_from_hand(PIND_MARQUISE, action - AID_DISCARD_CARD)
 
-    def eyrie_setup(self,action:int,current_index:int,current_player:Eyrie):
+
+    def eyrie_setup(self,action:int,current_player:Eyrie):
         "Performs the corresponding Eyrie setup action."
         s = self.phase_steps
         if s == 0: # choosing which leader to setup
@@ -695,11 +870,67 @@ class root2pCatsVsEyrie:
             setup_id = self.board.clearings[keep_id].opposite_corner_id
             current_player.place_roost()
             current_player.change_num_warriors(-6)
-            self.board.place_building(current_index,BIND_ROOST,setup_id)
-            self.board.place_warriors(current_index,6,setup_id)
+            self.board.place_building(PIND_EYRIE,BIND_ROOST,setup_id)
+            self.board.place_warriors(PIND_EYRIE,6,setup_id)
             # action is the leader that was chosen
-            current_player.choose_new_leader(action - 4358)
+            current_player.choose_new_leader(action - AID_CHOOSE_LEADER)
         self.phase_steps += 1
+    
+    def eyrie_birdsong(self,action:int,current_player:Eyrie):
+        "Performs the action during the Eyrie's birdsong / changes the turn stage."
+        if action == AID_CARD_BBB:
+            self.activate_better_burrow(PIND_EYRIE,PIND_MARQUISE)
+            self.persistent_used_this_turn.add(CID_BBB)
+            self.phase_steps = 1
+        elif action == AID_GENERIC_SKIP: # don't use BBB OR Don't add second card to decree
+            self.phase_steps += 1
+
+        elif action >= AID_DECREE_RECRUIT and action <= AID_DECREE_RECRUIT + 41: # add card to RECRUIT
+            c = self.get_card(PIND_EYRIE,action - AID_DECREE_RECRUIT,'hand')
+            current_player.add_to_decree(c, DECREE_RECRUIT)
+            self.eyrie_cards_added += 1
+            if c.suit == SUIT_BIRD:
+                self.eyrie_bird_added = 1
+            if self.eyrie_cards_added == 2:
+                self.phase_steps = 2
+        elif action >= AID_DECREE_MOVE and action <= AID_DECREE_MOVE + 41: # add card to MOVE
+            c = self.get_card(PIND_EYRIE,action - AID_DECREE_MOVE,'hand')
+            current_player.add_to_decree(c, DECREE_MOVE)
+            self.eyrie_cards_added += 1
+            if c.suit == SUIT_BIRD:
+                self.eyrie_bird_added = 1
+            if self.eyrie_cards_added == 2:
+                self.phase_steps = 2
+        elif action >= AID_DECREE_BATTLE and action <= AID_DECREE_BATTLE + 41: # add card to BATTLE
+            c = self.get_card(PIND_EYRIE,action - AID_DECREE_BATTLE,'hand')
+            current_player.add_to_decree(c, DECREE_BATTLE)
+            self.eyrie_cards_added += 1
+            if c.suit == SUIT_BIRD:
+                self.eyrie_bird_added = 1
+            if self.eyrie_cards_added == 2:
+                self.phase_steps = 2
+        elif action >= AID_DECREE_BUILD and action <= AID_DECREE_BUILD + 41: # add card to BUILD
+            c = self.get_card(PIND_EYRIE,action - AID_DECREE_BUILD,'hand')
+            current_player.add_to_decree(c, DECREE_BUILD)
+            self.eyrie_cards_added += 1
+            if c.suit == SUIT_BIRD:
+                self.eyrie_bird_added = 1
+            if self.eyrie_cards_added == 2:
+                self.phase_steps = 2
+
+        elif action == AID_CARD_STAND_DELIVER:
+            self.activate_stand_and_deliver(PIND_EYRIE,PIND_MARQUISE)
+            self.persistent_used_this_turn.add(CID_STAND_AND_DELIVER)
+        elif action == AID_CARD_ROYAL_CLAIM:
+            self.activate_royal_claim(PIND_EYRIE)
+            self.persistent_used_this_turn.add(CID_ROYAL_CLAIM)
+        elif action >= AID_BUILD1 and action <= AID_BUILD1 + 11: # choose new roost location with no roosts
+            current_player.place_roost()
+            self.board.place_building(PIND_EYRIE, BIND_ROOST, action - AID_BUILD1)
+            n_warriors = min(3,current_player.warrior_storage)
+            self.board.place_warriors(PIND_EYRIE, n_warriors, action - AID_BUILD1)
+            current_player.change_num_warriors(-n_warriors)
+            self.phase_steps = 3
 
     def render(self):
         marker = "  "
