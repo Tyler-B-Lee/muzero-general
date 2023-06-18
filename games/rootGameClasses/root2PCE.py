@@ -7,18 +7,12 @@ from classes import *
 class root2pCatsVsEyrie:
     PHASE_SETUP_MARQUISE = 0
     PHASE_SETUP_EYRIE = 1
-    PHASE_BIRDSONG_START_MARQUISE = 2
-    PHASE_BIRDSONG_START_EYRIE = 3
-    PHASE_BIRDSONG_MARQUISE = 4
-    PHASE_BIRDSONG_EYRIE = 5
-    PHASE_DAYLIGHT_START_MARQUISE = 6
-    PHASE_DAYLIGHT_START_EYRIE = 7
-    PHASE_DAYLIGHT_MARQUISE = 8
-    PHASE_DAYLIGHT_EYRIE = 9
-    PHASE_EVENING_START_MARQUISE = 10
-    PHASE_EVENING_START_EYRIE= 11
-    PHASE_EVENING_MARQUISE = 12
-    PHASE_EVENING_EYRIE= 13
+    PHASE_BIRDSONG_MARQUISE = 2
+    PHASE_BIRDSONG_EYRIE = 3
+    PHASE_DAYLIGHT_MARQUISE = 4
+    PHASE_DAYLIGHT_EYRIE = 5
+    PHASE_EVENING_MARQUISE = 6
+    PHASE_EVENING_EYRIE= 7
 
     def __init__(self, board_comp:list, deck_composition:list):
         self.n_players = N_PLAYERS
@@ -669,6 +663,18 @@ class root2pCatsVsEyrie:
         self.available_wood_spots = usable_wood
         self.remaining_wood_cost = wood_cost
         return False
+    
+    def reduce_decree_count(self,decree_index:int,suit:int):
+        """
+        Marks a certain required action on the current decree as completed
+        by subtracting one from the counter, given the suit of the clearing.
+
+        Prioritizes the exact suit before counting an action as a bird action.
+        """
+        if self.remaining_decree[decree_index][suit] > 0:
+            self.remaining_decree[decree_index][suit] -= 1
+        else:
+            self.remaining_decree[decree_index][SUIT_BIRD] -= 1
 
 
     def resolve_action(self,action:int):
@@ -685,27 +691,36 @@ class root2pCatsVsEyrie:
         current_index = self.to_play()
         current_player = self.players[current_index]
         # go by current phase of the current turn
-        ### INITIAL SETUP
-        if self.phase == self.PHASE_SETUP_MARQUISE:
-            self.marquise_setup(action,current_index,current_player)
-
-        elif self.phase == self.PHASE_SETUP_EYRIE:
-            self.eyrie_setup(action,current_index,current_player)
-            if self.phase_steps == 1:
-                # START GAME - Random Starting Player?
-                if (random.randint(0,1)):# Marquise start
-                    self.place_marquise_wood(self.players[PIND_MARQUISE])
-
-                    self.phase = self.PHASE_DAYLIGHT_MARQUISE
-                    return True
-                else: # Eyrie start
-                    self.phase = self.PHASE_BIRDSONG_START_EYRIE
-                    return False
-        
         ### STANDARD TURNS
-        # TODO check for Marquise's Field Hospitals
+        if self.phase == self.PHASE_DAYLIGHT_MARQUISE:
+            self.marquise_daylight(action,current_player)
+        elif self.phase == self.PHASE_DAYLIGHT_EYRIE:
+            self.eyrie_daylight(action,current_player)
         elif self.phase == self.PHASE_BIRDSONG_MARQUISE:
             self.marquise_birdsong(action,current_player)
+        elif self.phase == self.PHASE_BIRDSONG_EYRIE:
+            self.eyrie_birdsong(action,current_player)
+        elif self.phase == self.PHASE_EVENING_MARQUISE:
+            self.marquise_evening(action)
+        elif self.phase == self.PHASE_EVENING_EYRIE:
+            self.eyrie_evening(action)
+        ### INITIAL SETUP
+        elif self.phase == self.PHASE_SETUP_MARQUISE:
+            self.marquise_setup(action,current_player)
+        elif self.phase == self.PHASE_SETUP_EYRIE:
+            self.eyrie_setup(action,current_player)
+            # if self.phase_steps == 1:
+            #     # START GAME - Random Starting Player?
+            #     if (random.randint(0,1)):# Marquise start
+            #         self.place_marquise_wood(self.players[PIND_MARQUISE])
+
+            #         self.phase = self.PHASE_DAYLIGHT_MARQUISE
+            #         return True
+            #     else: # Eyrie start
+            #         self.phase = self.PHASE_BIRDSONG_START_EYRIE
+            #         return False
+        
+
 
     def marquise_setup(self,action:int,current_player:Marquise):
         "Performs the corresponding Marquise setup action."
@@ -931,6 +946,62 @@ class root2pCatsVsEyrie:
             self.board.place_warriors(PIND_EYRIE, n_warriors, action - AID_BUILD1)
             current_player.change_num_warriors(-n_warriors)
             self.phase_steps = 3
+    
+    def eyrie_daylight(self,action:int,current_player:Eyrie):
+        "Performs the given daylight action for the Eyrie."
+        if action >= AID_CRAFT_CARD and action <= AID_CRAFT_CARD + 40: # craft a card
+            self.craft_card(PIND_EYRIE,action - AID_CRAFT_CARD)
+        elif action == AID_GENERIC_SKIP:
+            self.phase_steps += 1 # skipping using command warren / skipping crafting cards
+
+        elif action >= AID_BATTLE and action <= AID_BATTLE + 11:
+            self.battle = Battle(PIND_EYRIE,PIND_MARQUISE,action - AID_BATTLE)
+            self.reduce_decree_count(DECREE_BATTLE, self.board.clearings[action - AID_BATTLE].suit)
+        elif action >= AID_MOVE and action <= AID_MOVE + 3599:
+            start,foo = divmod(action - AID_MOVE,300)
+            end,amount = divmod(foo,25)
+            self.board.move_warriors(PIND_EYRIE,amount + 1,start,end)
+            self.reduce_decree_count(DECREE_MOVE, self.board.clearings[start].suit)
+        elif action >= AID_CHOOSE_CLEARING and action <= AID_CHOOSE_CLEARING + 11:
+            # choosing where to recruit (assuming we have the warriors to place ALL (even charismatic))
+            amount = 2 if (current_player.chosen_leader_index == LEADER_CHARISMATIC) else 1
+            current_player.change_num_warriors(-amount)
+            self.board.place_warriors(PIND_EYRIE,amount,action - AID_CHOOSE_CLEARING)
+            self.reduce_decree_count(DECREE_RECRUIT, self.board.clearings[action - AID_CHOOSE_CLEARING].suit)
+        elif action >= AID_BUILD1 and action <= AID_BUILD1 + 11:
+            # building a Roost
+            self.board.place_building(PIND_EYRIE,BIND_ROOST,action - AID_BUILD1)
+            self.reduce_decree_count(DECREE_BUILD, self.board.clearings[action - AID_BUILD1].suit)
+        elif self.phase_steps == 3:
+            # we are turmoiling and choosing a new leader
+            current_player.choose_new_leader(action - AID_CHOOSE_LEADER)
+            self.phase_steps = 4
+
+        elif action == AID_CARD_CODEBREAKERS:
+            self.persistent_used_this_turn.add(CID_CODEBREAKERS)
+            self.activate_codebreakers(PIND_EYRIE,PIND_MARQUISE)
+        elif action >= AID_CARD_TAX_COLLECTOR and action <= AID_CARD_TAX_COLLECTOR + 11: # activate tax collector
+            self.persistent_used_this_turn.add(CID_TAX_COLLECTOR)
+            self.activate_tax_collector(PIND_EYRIE,action - AID_CARD_TAX_COLLECTOR)
+        elif action >= AID_CARD_COMMAND_WARREN and action <= AID_CARD_COMMAND_WARREN + 11: # activate command warren
+            self.phase_steps = 1
+            self.persistent_used_this_turn.add(CID_COMMAND_WARREN)
+            self.battle = Battle(PIND_EYRIE,PIND_MARQUISE,action - AID_CARD_COMMAND_WARREN)
+        elif action >= AID_CRAFT_ROYAL_CLAIM and action <= AID_CRAFT_ROYAL_CLAIM + 14: # craft Royal Claim
+            self.craft_royal_claim(PIND_EYRIE,action)
+    
+    def eyrie_evening(self,action:int):
+        "Performs the given action for the Eyrie in Evening."
+        if action >= AID_MOVE and action <= AID_MOVE + 3599: # Cobbler
+            start,foo = divmod(action - AID_MOVE,300)
+            end,amount = divmod(foo,25)
+            self.board.move_warriors(PIND_EYRIE,amount + 1,start,end)
+            self.persistent_used_this_turn.add(CID_COBBLER)
+            self.phase_steps = 1
+        elif action == AID_GENERIC_SKIP: # choose not to use cobbler
+            self.phase_steps = 1
+        elif action >= AID_DISCARD_CARD and action <= AID_DISCARD_CARD + 41: # Discard excess card
+            self.discard_from_hand(PIND_EYRIE, action - AID_DISCARD_CARD)
 
     def render(self):
         marker = "  "
