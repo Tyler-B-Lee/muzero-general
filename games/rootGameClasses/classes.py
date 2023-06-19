@@ -322,17 +322,17 @@ class Board:
                 power[c.suit] += num_buildings
         return power
     
-    def get_legal_move_actions(self,faction_index:int):
+    def get_legal_move_actions(self,faction_index:int,starting_suits:set[int]):
         """
         Finds every possible distinct legal move that the given faction can currently
-        make on the board.
+        make on the board. The start clearing of each move must have its suit in starting_suits.
 
         Returns a list of integers: the AID's of each distinct move possible.
         """
         ans = []
         for i,start_clearing in enumerate(self.clearings):
             n_warriors = start_clearing.get_num_warriors(faction_index)
-            if n_warriors == 0:
+            if (n_warriors == 0) or (start_clearing.suit not in starting_suits):
                 continue
             valid_dest_ids = []
             if start_clearing.is_ruler(faction_index):

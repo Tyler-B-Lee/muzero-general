@@ -583,10 +583,6 @@ class root2pCatsVsEyrie:
                 return False # not enough crafting power left
         return True
     
-    def can_craft_any_card(self,player:Player):
-        "Returns True only if the given player can craft ANY card in their hand given the remaining crafting power."
-        return any(self.can_craft(c,player) for c in player.hand)
-
     def get_craftable_ids(self,player:Player):
         "Returns a list of every card ID that the given player can currently craft, given the remaining crafting power."
         return [c.id for c in player.hand if self.can_craft(c,player)]
@@ -730,6 +726,12 @@ class root2pCatsVsEyrie:
         else:
             self.remaining_decree[decree_index][SUIT_BIRD] -= 1
     
+    def setup_decree_counter(self,eplayer:Eyrie):
+        "Sets up the self.remaining_decree object given the eplayer's decree."
+        for decree_index,card_list in eplayer.decree.items():
+            for card in card_list:
+                self.remaining_decree[decree_index][card.suit] += 1
+
     def get_eyrie_decree_add_actions(self,eplayer:Eyrie):
         "Returns a list of int: All of the legal Add to Decree AID's for the Eyrie."
         ans = []
@@ -738,6 +740,63 @@ class root2pCatsVsEyrie:
             if (card.suit == SUIT_BIRD) and (self.eyrie_bird_added == 1):
                 continue
             ans += [i+card.id for i in ids]
+        return ans
+
+    def get_decree_resolving_actions(self,eplayer:Eyrie):
+        """
+        Assuming that there are still actions to do in the decree, finds all
+        of the AID's that will help resolve the current step in the decree, if
+        any are currently possible. 
+        """
+        ans = []
+        valid_suits = set()
+        if sum(self.remaining_decree[DECREE_RECRUIT]) > 0:
+            if eplayer.warrior_storage == 0:
+                return ans
+            remaining = self.remaining_decree[DECREE_RECRUIT]
+            if remaining[SUIT_BIRD] > 0:
+                valid_suits = {SUIT_MOUSE,SUIT_RABBIT,SUIT_FOX}
+            else:
+                for i in range(3):
+                    if remaining[i] > 0:
+                        valid_suits.add(i)
+            roost_clearing_indices = [i for i,count in enumerate(self.board.get_total_building_counts(PIND_EYRIE,BIND_ROOST)) if (count > 0)]
+            for i in roost_clearing_indices:
+                if self.board.clearings[i].suit in valid_suits:
+                    ans.append(i + AID_CHOOSE_CLEARING)
+        elif sum(self.remaining_decree[DECREE_MOVE]) > 0:
+            remaining = self.remaining_decree[DECREE_MOVE]
+            if remaining[SUIT_BIRD] > 0:
+                valid_suits = {SUIT_MOUSE,SUIT_RABBIT,SUIT_FOX}
+            else:
+                for i in range(3):
+                    if remaining[i] > 0:
+                        valid_suits.add(i)
+            ans += self.board.get_legal_move_actions(PIND_EYRIE,valid_suits)
+        elif sum(self.remaining_decree[DECREE_BATTLE]) > 0:
+            remaining = self.remaining_decree[DECREE_BATTLE]
+            if remaining[SUIT_BIRD] > 0:
+                valid_suits = {SUIT_MOUSE,SUIT_RABBIT,SUIT_FOX}
+            else:
+                for i in range(3):
+                    if remaining[i] > 0:
+                        valid_suits.add(i)
+            possible_battle_clearings = [i for i,x in enumerate(self.board.get_possible_battles(PIND_EYRIE,PIND_MARQUISE)) if x]
+            for i in possible_battle_clearings:
+                if self.board.clearings[i].suit in valid_suits:
+                    ans.append(i + AID_BATTLE)
+        elif sum(self.remaining_decree[DECREE_BUILD]) > 0:
+            remaining = self.remaining_decree[DECREE_BUILD]
+            if remaining[SUIT_BIRD] > 0:
+                valid_suits = {SUIT_MOUSE,SUIT_RABBIT,SUIT_FOX}
+            else:
+                for i in range(3):
+                    if remaining[i] > 0:
+                        valid_suits.add(i)
+            for i in range(12):
+                c = self.board.clearings[i]
+                if (c.suit in valid_suits) and (c.is_ruler(PIND_EYRIE)) and (c.get_num_buildings(PIND_EYRIE,BIND_ROOST) == 0):
+                    ans.append(i + AID_BUILD1)
         return ans
 
     # GAME ADVANCEMENT
@@ -818,7 +877,8 @@ class root2pCatsVsEyrie:
                 # can they use Command Warren?
                 if CID_COMMAND_WARREN in {c.id for c in current_player.persistent_cards}:
                     foo = self.board.get_possible_battles(PIND_MARQUISE,PIND_EYRIE)
-                    return [AID_GENERIC_SKIP] + [i+AID_CARD_COMMAND_WARREN for i,x in enumerate(foo) if x]
+                    if bool(foo):
+                        return [AID_GENERIC_SKIP] + [i+AID_CARD_COMMAND_WARREN for i,x in enumerate(foo) if x]
                 self.phase_steps = 1
             if self.phase_steps == 1:
                 if len(self.remaining_craft_power) == 1:
@@ -884,8 +944,6 @@ class root2pCatsVsEyrie:
                     return [i+AID_CHOOSE_CLEARING for i,count in enumerate(self.available_recruiters) if (count > 0)]
                 if self.phase_steps == 5:
                     return [i+AID_CHOOSE_CLEARING for i,count in enumerate(self.available_wood_spots) if (count > 0)]
-                if self.marquise_actions == 0:
-                    pass
             if self.phase_steps == 6:
                 self.phase_steps = 0
                 self.phase = self.PHASE_EVENING_MARQUISE
@@ -936,6 +994,23 @@ class root2pCatsVsEyrie:
                 else:
                     return [AID_GENERIC_SKIP] + ans
             if self.phase_steps == 3:
+                # setup decree to complete
+                self.setup_decree_counter(current_player)
+                # a new roost (no roosts on map)
+                if current_player.get_num_buildings_on_track(BIND_ROOST) == 7:
+                    total_warriors = [self.board.get_num_warriors(PIND_MARQUISE)[i] + self.board.get_num_warriors(PIND_EYRIE)[i] for i in range(12)]
+                    ans = [i+AID_BUILD1 for i,count in enumerate(total_warriors) if (count == min(total_warriors))]
+                    if len(ans) == 1:
+                        # automatically place the roost
+                        current_player.place_roost()
+                        self.board.place_building(PIND_EYRIE, BIND_ROOST, ans[0] - AID_BUILD1)
+                        n_warriors = min(3,current_player.warrior_storage)
+                        self.board.place_warriors(PIND_EYRIE, n_warriors, ans[0] - AID_BUILD1)
+                        current_player.change_num_warriors(-n_warriors)
+                    else:
+                        return ans
+                self.phase_steps = 4
+            if self.phase_steps == 4:
                 # can they use Royal Claim or Stand/Deliver?
                 unused_pers = {c.id for c in current_player.persistent_cards} - self.persistent_used_this_turn
                 ans = []
@@ -945,21 +1020,21 @@ class root2pCatsVsEyrie:
                     ans.append(AID_CARD_ROYAL_CLAIM)
                 if bool(ans):
                     return [AID_GENERIC_SKIP] + ans
-                self.phase_steps = 4
-            if self.phase_steps == 4:
+                self.phase_steps = 5
+            if self.phase_steps == 5:
                 self.phase_steps = 0
                 self.phase = self.PHASE_DAYLIGHT_EYRIE
-                
         if self.phase == self.PHASE_DAYLIGHT_EYRIE:
             if self.phase_steps == 0:
                 # can they use Command Warren?
                 if CID_COMMAND_WARREN in {c.id for c in current_player.persistent_cards}:
-                    foo = self.board.get_possible_battles(PIND_MARQUISE,PIND_EYRIE)
-                    return [AID_GENERIC_SKIP] + [i+AID_CARD_COMMAND_WARREN for i,x in enumerate(foo) if x]
+                    foo = self.board.get_possible_battles(PIND_EYRIE,PIND_MARQUISE)
+                    if bool(foo):
+                        return [AID_GENERIC_SKIP] + [i+AID_CARD_COMMAND_WARREN for i,x in enumerate(foo) if x]
                 self.phase_steps = 1
             if self.phase_steps == 1:
                 if len(self.remaining_craft_power) == 1:
-                    self.remaining_craft_power = self.board.get_crafting_power(PIND_MARQUISE)
+                    self.remaining_craft_power = self.board.get_crafting_power(PIND_EYRIE)
                 ans = [i+AID_CRAFT_CARD for i in self.get_craftable_ids(current_player)]
                 if (CID_ROYAL_CLAIM+AID_CRAFT_CARD) in ans:
                     # find all ways to craft royal claim
@@ -970,62 +1045,34 @@ class root2pCatsVsEyrie:
                     if CID_CODEBREAKERS in unused_pers:
                         ans.append(AID_CARD_CODEBREAKERS)
                     if CID_TAX_COLLECTOR in unused_pers:
-                        foo = self.board.get_num_warriors(PIND_MARQUISE)
+                        foo = self.board.get_num_warriors(PIND_EYRIE)
                         ans += [i+AID_CARD_TAX_COLLECTOR for i,amount in enumerate(foo) if (amount > 0)]
                     return [AID_GENERIC_SKIP] + ans
                 else:
-                    # no crafting possible, so move onto the main phase
+                    # no crafting possible, so move onto resolving the decree
                     self.phase_steps = 2
-            while self.phase_steps < 6:
-                if self.phase_steps == 2:
-                    ans = []
-                    # check for persistent cards to use
-                    unused_pers = {c.id for c in current_player.persistent_cards} - self.persistent_used_this_turn
-                    if CID_CODEBREAKERS in unused_pers:
-                        ans.append(AID_CARD_CODEBREAKERS)
-                    if CID_TAX_COLLECTOR in unused_pers:
-                        foo = self.board.get_num_warriors(PIND_MARQUISE)
-                        ans += [i+AID_CARD_TAX_COLLECTOR for i,amount in enumerate(foo) if (amount > 0)]
-                    # check for spending bird cards
-                    seen = set()
-                    for c in current_player.hand:
-                        if (c.suit == SUIT_BIRD) and (c.id not in seen):
-                            ans.append(BIRD_ID_TO_ACTION[c.id])
-                            seen.add(c.id)
-                    # standard actions
-                    if self.marquise_actions > 0:
-                        # starting a battle
-                        foo = self.board.get_possible_battles(PIND_MARQUISE,PIND_EYRIE)
-                        ans += [i+AID_BATTLE for i,x in enumerate(foo) if x]
-                        # starting a march
-                        ans += self.board.get_legal_move_actions(PIND_MARQUISE)
-                        # recruiting
-                        if (not self.recruited_this_turn) and (current_player.warrior_storage > 0) and (current_player.get_num_buildings_on_track(BIND_RECRUITER) < 6):
-                            ans.append(AID_RECRUIT)
-                        # building
-                        ans += self.get_marquise_building_actions(current_player)
-                        # overworking
-                        ans += self.get_marquise_overwork_actions(current_player)
-                    if bool(ans):
-                        return [AID_GENERIC_SKIP] + ans
-                    # if we get here, then we are done with the daylight phase
-                    self.phase_steps = 6
-                if self.phase_steps == 3: # we are mid-march
-                    ans = self.board.get_legal_move_actions(PIND_MARQUISE)
-                    if not bool(ans):
-                        self.marquise_moves = 2
-                        self.phase_steps = 2
-                    else:
-                        return [AID_GENERIC_SKIP] + ans
-                if self.phase_steps == 4: # choosing where to recruit
-                    return [i+AID_CHOOSE_CLEARING for i,count in enumerate(self.available_recruiters) if (count > 0)]
-                if self.phase_steps == 5:
-                    return [i+AID_CHOOSE_CLEARING for i,count in enumerate(self.available_wood_spots) if (count > 0)]
-                if self.marquise_actions == 0:
-                    pass
-            if self.phase_steps == 6:
+            if self.phase_steps == 2:
+                # RESOLVING THE DECREE
+                # an action must be taken if possible!
+                ans = []
+                # check for persistent cards to use
+                unused_pers = {c.id for c in current_player.persistent_cards} - self.persistent_used_this_turn
+                if CID_CODEBREAKERS in unused_pers:
+                    ans.append(AID_CARD_CODEBREAKERS)
+                if CID_TAX_COLLECTOR in unused_pers:
+                    foo = self.board.get_num_warriors(PIND_MARQUISE)
+                    ans += [i+AID_CARD_TAX_COLLECTOR for i,amount in enumerate(foo) if (amount > 0)]
+                
+            if self.phase_steps == 3: # we are mid-march
+                ans = self.board.get_legal_move_actions(PIND_MARQUISE)
+                if not bool(ans):
+                    self.marquise_moves = 2
+                    self.phase_steps = 2
+                else:
+                    return [AID_GENERIC_SKIP] + ans
+            if self.phase_steps == 4: # End of daylight
                 self.phase_steps = 0
-                self.phase = self.PHASE_EVENING_MARQUISE
+                self.phase = self.PHASE_EVENING_EYRIE
         if self.phase == self.PHASE_EVENING_EYRIE:
             if self.phase_steps == 0:
                 unused_pers = {c.id for c in current_player.persistent_cards} - self.persistent_used_this_turn
