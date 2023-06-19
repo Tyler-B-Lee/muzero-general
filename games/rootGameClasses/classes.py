@@ -267,7 +267,7 @@ class Board:
         of buildings belonging to the given faction in the ONE clearing.
         """
         return self.clearings[clearing_index].get_num_buildings(faction_index,building_index)
-    
+
     def get_clearing_token_counts(self,faction_index:int,clearing_index:int,token_index:int = -1):
         """
         Returns the number of buildings of the given faction of the given type in the GIVEN clearing.
@@ -276,6 +276,13 @@ class Board:
         """
         return self.clearings[clearing_index].get_num_tokens(faction_index,token_index)
     
+    def get_empty_building_slot_counts(self):
+        """
+        Finds the number of empty building slots in each clearing on
+        the board. Returns a list of integers, one for each corresponding clearing.
+        """
+        return [x.get_num_empty_slots() for x in self.clearings]
+
     def get_rulers(self):
         """
         Finds the current ruling faction of each clearing. Returns a list of integers,
@@ -314,6 +321,29 @@ class Board:
                 c = self.clearings[clearing_i]
                 power[c.suit] += num_buildings
         return power
+    
+    def get_legal_move_actions(self,faction_index:int):
+        """
+        Finds every possible distinct legal move that the given faction can currently
+        make on the board.
+
+        Returns a list of integers: the AID's of each distinct move possible.
+        """
+        ans = []
+        for i,start_clearing in enumerate(self.clearings):
+            n_warriors = start_clearing.get_num_warriors(faction_index)
+            if n_warriors == 0:
+                continue
+            valid_dest_ids = []
+            if start_clearing.is_ruler(faction_index):
+                valid_dest_ids += list(start_clearing.adjacent_clearing_ids)
+            else:
+                for dest_id in start_clearing.adjacent_clearing_ids:
+                    if self.clearings[dest_id].is_ruler(faction_index):
+                        valid_dest_ids.append(dest_id)
+
+            ans += [(i*300+j*25+a+AID_MOVE) for j in valid_dest_ids for a in range(n_warriors)]
+        return ans
     
     def move_warriors(self,faction_index:int,amount:int,start_index:int,end_index:int):
         """
@@ -413,8 +443,11 @@ class Board:
         The integer for clearing i is the amount of wood tokens available
         to use to Build in clearing i, either from that clearing or using
         any number of connected clearings ruled by the cats.
+
+        If the Marquise do NOT rule clearing i, the amount of wood
+        in that clearing is given as -1.
         """
-        ans = [0 for i in range(12)]
+        ans = [-1 for i in range(12)]
         # find out which clearings the Marquise rule - which is where wood actually counts
         foo = [(x == PIND_MARQUISE) for x in self.get_rulers()]
         clearings_left_to_assign = {i for i,ruled in enumerate(foo) if ruled}
@@ -832,6 +865,7 @@ ACTION_TO_BIRD_ID = {
     AID_SPEND_BIRD + 8: CID_ROYAL_CLAIM,
     AID_SPEND_BIRD + 9: 38,
 }
+BIRD_ID_TO_ACTION = {i:a for (a,i) in ACTION_TO_BIRD_ID.items()}
 
 MAP_AUTUMN = [
     #        id, suit,         num_building_slots, num_ruins, opposite_corner_id, set of adj clearings
