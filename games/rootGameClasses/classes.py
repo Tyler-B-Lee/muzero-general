@@ -1,14 +1,25 @@
 import copy
 import random
 from typing import Tuple
+import logging
 
 Recipe = Tuple[int,int,int,int]
+
+logging.basicConfig(filename='file.log',format="%(asctime)s|%(levelname)s|%(name)s|%(message)s")
+logger = logging.getLogger("classes")
+logger.setLevel(logging.DEBUG)
 
 ### Named Constants
 SUIT_MOUSE = 0
 SUIT_RABBIT = 1
 SUIT_FOX = 2
 SUIT_BIRD = 3
+ID_TO_SUIT = {
+    SUIT_MOUSE: "Mouse",
+    SUIT_RABBIT: "Rabbit",
+    SUIT_FOX: "Fox",
+    SUIT_BIRD: "Bird"
+}
 
 ITEM_HAMMER = 0
 ITEM_SWORD = 1
@@ -18,10 +29,25 @@ ITEM_COINS = 4
 ITEM_BAG = 5
 ITEM_CROSSBOW = 6
 ITEM_NONE = 7
+ID_TO_ITEM = {
+    ITEM_HAMMER: "Hammer",
+    ITEM_SWORD: "Sword",
+    ITEM_BOOT: "Boot",
+    ITEM_TEA: "Tea",
+    ITEM_COINS: "Coins",
+    ITEM_BAG: "Bag",
+    ITEM_CROSSBOW: "Crossbow",
+    ITEM_NONE: "None"
+}
 
 N_PLAYERS = 2
 PIND_MARQUISE = 0
 PIND_EYRIE = 1
+ID_TO_PLAYER = {
+    PIND_MARQUISE: "Marquise de Cat",
+    PIND_EYRIE: "Eyrie Dynasties",
+    -1: "None"
+}
 
 # MARQUISE
 BIND_SAWMILL = 0
@@ -49,6 +75,19 @@ DECREE_RECRUIT = 0
 DECREE_MOVE = 1
 DECREE_BATTLE = 2
 DECREE_BUILD = 3
+ID_TO_LEADER = {
+    LEADER_BUILDER: "Builder",
+    LEADER_CHARISMATIC: "Charismatic",
+    LEADER_COMMANDER: "Commander",
+    LEADER_DESPOT: "Despot",
+    None: "None"
+}
+ID_TO_DECREE = {
+    DECREE_RECRUIT: "Recruit",
+    DECREE_MOVE: "Move",
+    DECREE_BATTLE: "Battle",
+    DECREE_BUILD: "Build"
+}
 
 AID_CHOOSE_LEADER = 4358
 AID_DECREE_RECRUIT = 4362
@@ -117,6 +156,12 @@ class Clearing:
         self.buildings = {i:[] for i in range(N_PLAYERS)}
         self.adjacent_clearing_ids = adj_clearing_ids
     
+    def __str__(self) -> str:
+        return f"""Clearing {self.id} ({ID_TO_SUIT[self.suit]}) - Ruler: {ID_TO_PLAYER[self.get_ruler()]}
+    Warriors:  {self.warriors}
+    Tokens:    {self.tokens}
+    Buildings: {self.buildings}\n"""
+
     def get_num_empty_slots(self) -> int:
         "Returns the number of empty slots available to build in for the clearing."
         return self.num_building_slots - sum(len(x) for x in self.buildings.values())
@@ -147,7 +192,7 @@ class Clearing:
             return -1
         # the Eyrie rule tied clearings they have a piece in with "Lords of the Forest"
         return PIND_EYRIE if (num_eyrie >= num_marquise) else PIND_MARQUISE
-
+    
     def is_ruler(self,faction_index:int) -> bool:
         "Returns True if the given faction IS the ruler of this clearing, False otherwise."
         return self.get_ruler() == faction_index
@@ -164,10 +209,12 @@ class Clearing:
     
     def place_building(self,faction_index:int,building_index:int) -> None:
         "Place the given building in this clearing. Assumes the move is legal, performing no checks."
+        logger.debug(f"\t\tBuilding {building_index} added for {ID_TO_PLAYER[faction_index]} in clearing {self.id}")
         self.buildings[faction_index].append(building_index)
     
     def remove_building(self,faction_index:int,building_index:int) -> None:
         "Removes the given building in this clearing, assuming it exists. Does not handle points."
+        logger.debug(f"\t\tBuilding {building_index} removed for {ID_TO_PLAYER[faction_index]} in clearing {self.id}")
         self.buildings[faction_index].remove(building_index)
 
 
@@ -182,11 +229,13 @@ class Clearing:
 
     def place_token(self,faction_index:int,token_index:int) -> None:
         "Place the given token in this clearing. Assumes the move is legal, performing no checks."
-        self.buildings[faction_index].append(token_index)
+        logger.debug(f"\t\tToken {token_index} added for {ID_TO_PLAYER[faction_index]} in clearing {self.id}")
+        self.tokens[faction_index].append(token_index)
     
     def remove_token(self,faction_index:int,token_index:int) -> None:
-        "Removes the given building in this clearing, assuming it exists. Does not handle points."
-        self.buildings[faction_index].remove(token_index)
+        "Removes the given token in this clearing, assuming it exists. Does not handle points."
+        logger.debug(f"\t\tToken {token_index} removed for {ID_TO_PLAYER[faction_index]} in clearing {self.id}")
+        self.tokens[faction_index].remove(token_index)
     
     ### WARRIOR METHODS
     def get_num_warriors(self,faction_index:int) -> int:
@@ -198,6 +247,7 @@ class Clearing:
         Adds the specified number of warriors of the specified faction to the clearing.
         Use a negative number to remove warriors. Does NOT change faction supply counts.
         """
+        logger.debug(f"\t\tWarriors changed by {change} for {ID_TO_PLAYER[faction_index]} in clearing {self.id}")
         self.warriors[faction_index] += change
     
 
@@ -229,6 +279,7 @@ class Clearing:
         should be scored from removing tokens/buildings in this clearing,
         and the number of Marquise warriors removed (for Field Hospitals).
         """
+        logger.debug("\t\tHelping with a favor card...")
         ans = marqwar = 0
         for faction_i in {j for j in range(N_PLAYERS) if j != safe_faction_index}:
             ans += self.get_num_buildings(faction_i) + self.get_num_tokens(faction_i)
@@ -246,10 +297,16 @@ class Board:
         self.board_comp = board_comp
         self.reset()
     
+    def __str__(self) -> str:
+        s = "Current Board:\n"
+        for c in self.clearings:
+            s += str(c)
+        return s
+
     def reset(self):
         "Resets the map to the cleared starting state."
         self.clearings = copy.deepcopy(self.board_comp)
-    
+        
     def get_total_building_counts(self,faction_index:int,building_index:int = -1):
         """
         Finds the number of buildings of the given faction in each clearing.
@@ -350,6 +407,7 @@ class Board:
         Subtracts warriors of a faction from one clearing, and adds them to another.
         Performs no other checks / assumes the move will be legal.
         """
+        logger.debug(f"\tMoving {amount} warriors of {ID_TO_PLAYER[faction_index]} from {start_index} to {end_index}")
         start_c,end_c = self.clearings[start_index],self.clearings[end_index]
         
         start_c.change_num_warriors(faction_index,-amount)
@@ -504,11 +562,17 @@ class Card:
         self.is_persistent = is_persistent
         self.crafting_item = item
         self.points = points
+    
+    def __str__(self) -> str:
+        return f"{self.name} ({ID_TO_SUIT[self.suit]}) (ID {self.id}) ({self.points} Points) (Recipe {self.crafting_recipe})"
 
 class Deck:
     def __init__(self, deck_comp:list[tuple[Card,int]]):
         self.deck_comp = deck_comp
         self.reset()
+    
+    def __str__(self) -> str:
+        return f" - Deck - {self.size()} Cards\n"
     
     def shuffle(self):
         random.shuffle(self.cards)
@@ -556,6 +620,15 @@ class Player:
         self.crafted_items = {i:0 for i in range(7)}
         self.persistent_cards = []
         self.hand = []
+    
+    def __str__(self) -> str:
+        ret = f"""Player ID {self.id}
+    Warriors: {self.warrior_storage} - Buildings: {self.buildings} - Tokens: {self.tokens}
+    Crafted Items: {self.crafted_items} - Crafted Cards: {[i.name for i in self.persistent_cards]}
+    Hand:\n"""
+        for card in self.hand:
+            ret += f"\t- {str(card)}\n"
+        return ret
 
     def get_num_buildings_on_track(self, building_index:int) -> int:
         "Returns the number of buildings of the given type left on this player's track."
@@ -570,6 +643,7 @@ class Player:
         Changes the number of warriors in this faction's supply by adding 'change'.
         Use a negative number to remove warriors.
         """
+        logger.debug(f"\t\t{ID_TO_PLAYER[self.id]} warrior storage changed by {change}")
         self.warrior_storage += change
     
     def change_num_buildings(self, building_index:int, change:int) -> None:
@@ -577,6 +651,7 @@ class Player:
         Changes the number of buildings of the given type in this faction's supply by adding 'change'.
         Use a negative number to remove buildings of the given type.
         """
+        logger.debug(f"\t\t{ID_TO_PLAYER[self.id]} buildings ID {building_index} changed by {change}")
         self.buildings[building_index] += change
     
     def change_num_tokens(self, token_index:int, change:int) -> None:
@@ -584,6 +659,7 @@ class Player:
         Changes the number of tokens of the given type in this faction's supply by adding 'change'.
         Use a negative number to remove tokens of the given type.
         """
+        logger.debug(f"\t\t{ID_TO_PLAYER[self.id]} tokens ID {token_index} changed by {change}")
         self.tokens[token_index] += change
     
     def change_num_items(self, item_index:int, change:int) -> None:
@@ -591,6 +667,7 @@ class Player:
         Changes the number of items of the given type in this faction's supply by adding 'change'.
         Use a negative number to remove items of the given type.
         """
+        logger.debug(f"\t\t{ID_TO_PLAYER[self.id]} items ID {item_index} changed by {change}")
         self.crafted_items[item_index] += change
     
     def has_suit_in_hand(self, suit_id:int):
@@ -624,6 +701,9 @@ class Marquise(Player):
         self.tokens[TIND_KEEP] = 1
         self.tokens[TIND_WOOD] = 8
         self.keep_clearing_id = -1
+    
+    def __str__(self) -> str:
+        return "--- Marquise de Cat ---\n" + super().__str__() + f"\nKeep placed in clearing {self.keep_clearing_id}"
 
     def get_num_cards_to_draw(self) -> int:
         "Returns the number of cards to draw at the end of the turn (In Evening)."
@@ -662,18 +742,25 @@ class Eyrie(Player):
         super().__init__(id)
         self.warrior_storage = 20
         self.buildings[BIND_ROOST] = 7
-        self.available_leaders = {0,1,2,3}
-        self.deposed_leaders = set()
+        self.available_leaders = [0,1,2,3]
+        self.deposed_leaders = []
         self.chosen_leader_index = None
         self.decree = {i:[] for i in range(4)}
-        self.viziers = [Card(CID_LOYAL_VIZIER,SUIT_BIRD,"Loyal Vizier",(0,0,0,0),False,False,ITEM_NONE,0) for i in range(2)]
+        self.viziers = [Card(CID_LOYAL_VIZIER,SUIT_BIRD,"Loyal Vizier",(0,0,0,0),False,False,False,ITEM_NONE,0) for i in range(2)]
     
+    def __str__(self) -> str:
+        ret = "--- Eyrie Dynasties ---\n" + super().__str__() + f"\nCurrent Leader: {ID_TO_LEADER[self.chosen_leader_index]} - Leaders Available: {[ID_TO_LEADER[i] for i in self.available_leaders]}\n"
+        ret += "Decree:\n"
+        for i,lst in self.decree.items():
+            ret += f"\t{ID_TO_DECREE[i]}: {[(card.name,ID_TO_SUIT[card.suit]) for card in lst]}\n"
+        return ret
+
     def get_num_cards_to_draw(self) -> int:
         "Returns the number of cards to draw at the end of the turn (In Evening)."
-        recruiters_left = self.get_num_buildings_on_track(BIND_ROOST)
-        if recruiters_left > 4:
+        roosts_left = self.get_num_buildings_on_track(BIND_ROOST)
+        if roosts_left > 4:
             return 1
-        elif recruiters_left > 1:
+        elif roosts_left > 1:
             return 2
         return 3
     
@@ -690,6 +777,7 @@ class Eyrie(Player):
     
     def add_to_decree(self,card_to_add:Card,decree_index:int):
         "Adds the given card object to the decree."
+        logger.debug(f"\t\tCard {card_to_add.name} added to decree at {ID_TO_DECREE[decree_index]}")
         self.decree[decree_index].append(card_to_add)
     
     def choose_new_leader(self, leader_index:int) -> None:
@@ -698,13 +786,14 @@ class Eyrie(Player):
         Loyal Vizier Cards are in the factions list of viziers, and will attempt to
         place them in the corresponding Decree columns for the given leader.
         """
+        logger.debug(f"\tNew Leader Chosen: {ID_TO_LEADER[leader_index]}")
         self.chosen_leader_index = leader_index
         self.available_leaders.remove(leader_index)
 
         # Place the starting viziers for the new leader
         for i, place_vizier in enumerate(Eyrie.leader_starting_viziers[leader_index]):
             if place_vizier:
-                self.decree[i].append(self.viziers.pop())
+                self.add_to_decree(self.viziers.pop(),i)
     
     def turmoil_helper(self):
         """
@@ -742,12 +831,12 @@ class Eyrie(Player):
         self.decree = {i:[] for i in range(4)}
 
         # depose the current leader
-        self.deposed_leaders.add(self.chosen_leader_index)
+        self.deposed_leaders.append(self.chosen_leader_index)
         self.chosen_leader_index = None
         if len(self.deposed_leaders) == 4:
             # reset available leaders if all 4 have been deposed
-            self.available_leaders = {0,1,2,3}
-            self.deposed_leaders.clear()
+            self.available_leaders = [0,1,2,3]
+            self.deposed_leaders = []
 
         return cards_to_discard, num_bird_cards
 

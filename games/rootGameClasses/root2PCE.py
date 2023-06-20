@@ -14,81 +14,30 @@ class root2pCatsVsEyrie:
     PHASE_EVENING_MARQUISE = 6
     PHASE_EVENING_EYRIE= 7
 
-    def __init__(self, board_comp:list, deck_composition:list):
+    def __init__(self, board_composition:list, deck_composition:list):
         self.n_players = N_PLAYERS
-        self.current_player = 1
-        self.players = [Marquise(0), Eyrie(1)]
-        self.victory_points = [0,0]
-        self.phase = self.PHASE_SETUP_MARQUISE
-        self.num_field_hospitals = 0
-        self.phase_steps = 0
-        self.persistent_used_this_turn = set()
-        self.remaining_craft_power = [0]
-
-        self.wood_placement_started = False
-        self.starting_build_spots = [0]
-        self.available_wood_spots = [0]
-        self.available_recruiters = [0]
-        self.marquise_actions = 0
-        self.marquise_moves = 2
-        self.recruited_this_turn = 0
-        self.remaining_wood_cost = 0
-
-        self.eyrie_cards_added = 0
-        self.eyrie_bird_added = 0
-        self.remaining_decree = {
-            DECREE_RECRUIT: [0,0,0,0],
-            DECREE_MOVE: [0,0,0,0],
-            DECREE_BATTLE: [0,0,0,0],
-            DECREE_BUILD: [0,0,0,0]
-        }
-
-        self.board = Board(board_comp)
+        self.board = Board(board_composition)
         self.deck = Deck(deck_composition)
-        self.battle = Battle(-1,-1,-1)
-        self.discard_pile = []
-        self.available_items = {
-            ITEM_COINS: 2,
-            ITEM_BOOT: 2,
-            ITEM_BAG: 2,
-            ITEM_TEA: 2,
-            ITEM_SWORD: 2,
-            ITEM_CROSSBOW: 1,
-            ITEM_HAMMER: 1
-        }
-        # self.available_dominances = set()
+
+        self.reset_general_items()
+        self.reset_for_marquise()
+        self.reset_for_eyrie()
 
     def to_play(self):
         return 0 if self.current_player == 1 else 1
-
-    def reset(self):
+    
+    def reset_general_items(self):
+        self.saved_actions = None
+        self.points_scored_this_turn = 0
         self.current_player = 1
         self.players = [Marquise(0), Eyrie(1)]
         self.victory_points = [0,0]
         self.phase = self.PHASE_SETUP_MARQUISE
-        self.num_field_hospitals = 0
         self.phase_steps = 0
+        self.num_field_hospitals = 0
         self.persistent_used_this_turn = set()
+        # self.available_dominances = set()
         self.remaining_craft_power = [0]
-
-        self.wood_placement_started = False
-        self.starting_build_spots = [0]
-        self.available_wood_spots = [0]
-        self.available_recruiters = [0]
-        self.marquise_actions = 0
-        self.marquise_moves = 2
-        self.recruited_this_turn = 0
-        self.remaining_wood_cost = 0
-
-        self.eyrie_cards_added = 0
-        self.eyrie_bird_added = 0
-        self.remaining_decree = {
-            DECREE_RECRUIT: [0,0,0,0],
-            DECREE_MOVE: [0,0,0,0],
-            DECREE_BATTLE: [0,0,0,0],
-            DECREE_BUILD: [0,0,0,0]
-        }
-
         self.board.reset()
         self.deck.reset()
         self.battle = Battle(-1,-1,-1)
@@ -102,20 +51,40 @@ class root2pCatsVsEyrie:
             ITEM_CROSSBOW: 1,
             ITEM_HAMMER: 1
         }
-        # self.available_dominances = set()
+        self.draw_cards(PIND_MARQUISE,3)
+        self.draw_cards(PIND_EYRIE,3)
+    def reset_for_marquise(self):
+        self.wood_placement_started = False
+        self.starting_build_spots = [0]
+        self.available_wood_spots = [0]
+        self.available_recruiters = [0]
+        self.marquise_actions = 0
+        self.marquise_moves = 2
+        self.recruited_this_turn = 0
+        self.remaining_wood_cost = 0
+    def reset_for_eyrie(self):
+        self.eyrie_cards_added = 0
+        self.eyrie_bird_added = 0
+        self.remaining_decree = {
+            DECREE_RECRUIT: [0,0,0,0],
+            DECREE_MOVE: [0,0,0,0],
+            DECREE_BATTLE: [0,0,0,0],
+            DECREE_BUILD: [0,0,0,0]
+        }
 
+    def reset(self):
+        self.reset_general_items()
+        self.reset_for_marquise()
+        self.reset_for_eyrie()
         return self.get_observation()
 
     def step(self, action):
-        x = math.floor(action / self.board_size)
-        y = action % self.board_size
-        self.board[x][y] = self.current_player
+        self.resolve_action(action)
+        self.saved_actions = self.advance_game()
 
         done = self.is_finished()
 
         reward = 1 if done else 0
-
-        self.current_player *= -1
 
         return self.get_observation(), reward, done
 
@@ -126,12 +95,9 @@ class root2pCatsVsEyrie:
         return np.array([board_player1, board_player2, board_to_play])
 
     def legal_actions(self):
-        legal = []
-        for i in range(self.board_size):
-            for j in range(self.board_size):
-                if self.board[i][j] == 0:
-                    legal.append(i * self.board_size + j)
-        return legal
+        while self.saved_actions is None:
+            self.saved_actions = self.advance_game()
+        return self.saved_actions
     
     def draw_cards(self,player_index:int,amount:int):
         """
@@ -143,7 +109,9 @@ class root2pCatsVsEyrie:
         """
         p = self.players[player_index]
         while amount:
-            p.hand += self.deck.draw(1)
+            c_drawn = self.deck.draw(1)[0]
+            logger.debug(f"\t{ID_TO_PLAYER[player_index]} draws {c_drawn.name}")
+            p.hand.append(c_drawn)
             if self.deck.size() == 0:
                 self.deck.add(self.discard_pile) # includes shuffling
                 self.discard_pile = []
@@ -154,22 +122,28 @@ class root2pCatsVsEyrie:
         loc = self.players[player_index].hand if (location == 'hand') else self.players[player_index].persistent_cards
         for i,c in enumerate(loc):
             if c.id == card_id:
+                logger.debug(f"\t{c.name} removed from {location} of {ID_TO_PLAYER[player_index]}")
                 return loc.pop(i)
             
     def discard_from_hand(self,player_index:int,card_id:int):
         "Makes a player discard a card of the matching id from their hand, assuming they have it."
         c_to_discard = self.get_card(player_index,card_id,"hand")
+        logger.debug(f"\t{c_to_discard.name} added to discard pile")
         self.discard_pile.append(c_to_discard)
     
     def discard_from_persistent(self,player_index:int,card_id:int):
         "Makes a player discard a card of the matching id from their persistent cards, assuming they have it."
         c_to_discard = self.get_card(player_index,card_id,"persistent")
+        logger.debug(f"\t{c_to_discard.name} added to discard pile")
         self.discard_pile.append(c_to_discard)
 
     def change_score(self,player_index:int,amount:int):
         "Makes a player score some amount of points. Use a negative amount to lose points."
         p = self.victory_points[player_index]
         self.victory_points[player_index] = max(0, p + amount)
+        logger.debug(f"\t{ID_TO_PLAYER[player_index]} Points changed by {amount}")
+        logger.debug(f"\t\tNew Score: {self.victory_points}")
+        self.points_scored_this_turn += amount
 
     def craft_card(self,player_index:int,card_id:int):
         "Makes the player craft the given card, assuming the action is legal."
@@ -183,6 +157,7 @@ class root2pCatsVsEyrie:
         item_id = card_to_craft.crafting_item
         if item_id != ITEM_NONE:
             # we are crafting an item
+            logger.debug(f"\t{ID_TO_PLAYER[player_index]} crafts {ID_TO_ITEM[item_id]}")
             self.available_items[item_id] -= 1
             p.crafted_items[item_id] += 1
             
@@ -193,10 +168,12 @@ class root2pCatsVsEyrie:
             self.discard_from_hand(player_index,card_id)
         elif card_to_craft.is_persistent:
             # we are crafting a persistent card
+            logger.debug(f"\t{ID_TO_PLAYER[player_index]} crafts {card_to_craft.name}")
             p.persistent_cards.append(card_to_craft)
             p.hand.pop(hand_i)
         elif card_id in CID_FAVORS:
             # a favor card has been activated
+            logger.debug(f"\t{ID_TO_PLAYER[player_index]} crafts {card_to_craft.name}")
             points_scored,total_marqwars = self.board.resolve_favor(player_index,CLEARING_SUITS[card_to_craft.suit])
             self.change_score(player_index,points_scored)
             if total_marqwars:
@@ -216,12 +193,14 @@ class root2pCatsVsEyrie:
         p.persistent_cards.append(card_to_craft)
         p.hand.pop(hand_i)
         recipe_used = AID_CRAFT_RC_MAPPING[action]
+        logger.debug(f"\t{ID_TO_PLAYER[player_index]} crafts {card_to_craft.name} with recipe {recipe_used}")
         for i in range(3):
             self.remaining_craft_power[i] -= recipe_used[i]
 
     # BATTLE FUNCTIONS
     def activate_field_hospitals(self,amount:int,payment_card_id:int):
         "Places 'amount' of warriors at the Marquise's Keep and discards the given card from their hand."
+        logger.debug("\tField Hospitals activated...")
         keep_clearing = self.players[PIND_MARQUISE].keep_clearing_id
         self.board.place_warriors(PIND_MARQUISE,amount,keep_clearing)
         self.discard_from_hand(PIND_MARQUISE,payment_card_id)
@@ -536,33 +515,39 @@ class root2pCatsVsEyrie:
     # Activating Card Effects
     def activate_royal_claim(self,player_index:int):
         "In Birdsong, may discard this to score one point per clearing you rule."
+        logger.debug(f"\t{ID_TO_PLAYER[player_index]} activates Royal Claim...")
         points = sum((i == player_index) for i in self.board.get_rulers())
         self.change_score(player_index,points)
         self.discard_from_persistent(player_index, CID_ROYAL_CLAIM)
     
     def activate_stand_and_deliver(self,player_index:int,target_index:int):
         "In Birdsong, may take a random card from another player. That player scores one point."
+        logger.debug(f"\t{ID_TO_PLAYER[player_index]} activates Stand and Deliver on {ID_TO_PLAYER[target_index]}...")
         target_p_hand = self.players[target_index].hand
         chosen_i = random.randint(0,len(target_p_hand) - 1)
         chosen_card = target_p_hand.pop(chosen_i)
+        logger.debug(f"\t\tCard Taken: {chosen_card.name}")
 
         self.players[player_index].hand.append(chosen_card)
         self.change_score(target_index,1)
 
     def activate_tax_collector(self,player_index:int,clearing_index:int):
         "Once in Daylight, may remove one of your warriors from the map to draw a card."
+        logger.debug(f"\t{ID_TO_PLAYER[player_index]} activates Tax Collector...")
         self.board.place_warriors(player_index,-1,clearing_index)
         self.draw_cards(player_index,1)
         self.num_field_hospitals = 1
 
     def activate_better_burrow(self,player_index:int,target_index:int):
         "At start of Birdsong, you and another player draw a card."
+        logger.debug(f"\t{ID_TO_PLAYER[player_index]} activates Better Burrow Bank...")
         self.draw_cards(player_index,1)
         self.draw_cards(target_index,1)
     
     def activate_codebreakers(self,player_index:int,target_index:int):
         "TODO: Implement"
-        pass
+        logger.debug(f"\t{ID_TO_PLAYER[player_index]} activates Codebreakers...")
+        
 
     def can_craft(self,card:Card,player:Player):
         "Returns True only if the current player can currently craft the given card. Checks the remaining crafting power."
@@ -607,12 +592,14 @@ class root2pCatsVsEyrie:
         sawmill_counts = self.board.get_total_building_counts(PIND_MARQUISE,BIND_SAWMILL)
         wood_in_store = mplayer.get_num_tokens_in_store(TIND_WOOD)
         if wood_in_store == 0 or sum(sawmill_counts) == 0:
+            logger.debug("\tNo wood to be placed / No sawmills to generate wood at")
             return True
         # there is at least 1 wood and at least 1 sawmill to place at
         if sum(sawmill_counts) > wood_in_store:
             self.available_wood_spots = sawmill_counts
             return False
         # place a wood token for each sawmill at each clearing with a sawmill
+        logger.debug("\tWood can be placed automatically...")
         clearings_with_sawmill_ids = {i for i,n in enumerate(sawmill_counts) if n > 0}
         for i in clearings_with_sawmill_ids:
             n_sawmills = sawmill_counts[i]
@@ -633,6 +620,7 @@ class root2pCatsVsEyrie:
             self.available_recruiters = recruiter_counts
             return False
         # place a warrior for each recruiter at each clearing with a recruiter
+        logger.debug("\tWarriors can be recruited automatically...")
         clearings_with_recruiter_ids = {i for i,n in enumerate(recruiter_counts) if n > 0}
         for i in clearings_with_recruiter_ids:
             n_recruiters = recruiter_counts[i]
@@ -668,12 +656,14 @@ class root2pCatsVsEyrie:
                     one_clearing_id = None
         # if there is only one clearing with wood, just take the cost from that clearing
         if one_clearing_id is not None:
+            logger.debug(f"\tRemoving wood cost solely from clearing {one_clearing_id}...")
             for i in range(wood_cost):
                 self.board.clearings[one_clearing_id].remove_token(PIND_MARQUISE,TIND_WOOD)
             mplayer.change_num_tokens(TIND_WOOD,wood_cost)
             return True
         # if we have exactly enough wood to pay, then use up all of the usable wood
         if total_usable == wood_cost:
+            logger.debug(f"\tRemoving all usable wood to pay...")
             for i,amount in enumerate(usable_wood):
                 while amount > 0:
                     self.board.clearings[i].remove_token(PIND_MARQUISE,TIND_WOOD)
@@ -722,12 +712,15 @@ class root2pCatsVsEyrie:
         Prioritizes the exact suit before counting an action as a bird action.
         """
         if self.remaining_decree[decree_index][suit] > 0:
+            logger.debug(f"\tFulfilled {ID_TO_SUIT[suit]} {ID_TO_DECREE[decree_index]} requirement on Decree")
             self.remaining_decree[decree_index][suit] -= 1
         else:
+            logger.debug(f"\tFulfilled Bird {ID_TO_DECREE[decree_index]} requirement on Decree")
             self.remaining_decree[decree_index][SUIT_BIRD] -= 1
     
     def setup_decree_counter(self,eplayer:Eyrie):
         "Sets up the self.remaining_decree object given the eplayer's decree."
+        logger.debug("\tTallying required decree...")
         for decree_index,card_list in eplayer.decree.items():
             for card in card_list:
                 self.remaining_decree[decree_index][card.suit] += 1
@@ -807,6 +800,8 @@ class root2pCatsVsEyrie:
         there is no choice (as much as possible).
         """
         if self.phase == self.PHASE_SETUP_MARQUISE:
+            if self.phase_steps == 0:
+                return [i+AID_CHOOSE_CLEARING for i,x in enumerate(self.board.clearings) if (x.opposite_corner_id >= 0)]
             if self.phase_steps == 1:
                 i = self.players[PIND_MARQUISE].keep_clearing_id
                 starting_clearing = self.board.clearings[i]
@@ -921,7 +916,7 @@ class root2pCatsVsEyrie:
                         foo = self.board.get_possible_battles(PIND_MARQUISE,PIND_EYRIE)
                         ans += [i+AID_BATTLE for i,x in enumerate(foo) if x]
                         # starting a march
-                        ans += self.board.get_legal_move_actions(PIND_MARQUISE)
+                        ans += self.board.get_legal_move_actions(PIND_MARQUISE,{0,1,2})
                         # recruiting
                         if (not self.recruited_this_turn) and (current_player.warrior_storage > 0) and (current_player.get_num_buildings_on_track(BIND_RECRUITER) < 6):
                             ans.append(AID_RECRUIT)
@@ -934,7 +929,7 @@ class root2pCatsVsEyrie:
                     # if we get here, then we are done with the daylight phase
                     self.phase_steps = 6
                 if self.phase_steps == 3: # we are mid-march
-                    ans = self.board.get_legal_move_actions(PIND_MARQUISE)
+                    ans = self.board.get_legal_move_actions(PIND_MARQUISE,{0,1,2})
                     if not bool(ans):
                         self.marquise_moves = 2
                         self.phase_steps = 2
@@ -951,7 +946,7 @@ class root2pCatsVsEyrie:
             if self.phase_steps == 0:
                 unused_pers = {c.id for c in current_player.persistent_cards} - self.persistent_used_this_turn
                 if CID_COBBLER in unused_pers:
-                    ans = self.board.get_legal_move_actions(PIND_MARQUISE)
+                    ans = self.board.get_legal_move_actions(PIND_MARQUISE,{0,1,2})
                     if not bool(ans):
                         self.phase_steps = 1
                     else:
@@ -991,8 +986,10 @@ class root2pCatsVsEyrie:
                 ans += self.get_eyrie_decree_add_actions(current_player)
                 if not bool(ans):
                     self.phase_steps = 3
-                else:
+                elif self.eyrie_cards_added > 0:
                     return [AID_GENERIC_SKIP] + ans
+                else:
+                    return ans
             if self.phase_steps == 3:
                 # setup decree to complete
                 self.setup_decree_counter(current_player)
@@ -1053,23 +1050,35 @@ class root2pCatsVsEyrie:
                     self.phase_steps = 2
             if self.phase_steps == 2:
                 # RESOLVING THE DECREE
-                # an action must be taken if possible!
                 ans = []
                 # check for persistent cards to use
                 unused_pers = {c.id for c in current_player.persistent_cards} - self.persistent_used_this_turn
                 if CID_CODEBREAKERS in unused_pers:
                     ans.append(AID_CARD_CODEBREAKERS)
                 if CID_TAX_COLLECTOR in unused_pers:
-                    foo = self.board.get_num_warriors(PIND_MARQUISE)
+                    foo = self.board.get_num_warriors(PIND_EYRIE)
                     ans += [i+AID_CARD_TAX_COLLECTOR for i,amount in enumerate(foo) if (amount > 0)]
-                
-            if self.phase_steps == 3: # we are mid-march
-                ans = self.board.get_legal_move_actions(PIND_MARQUISE)
-                if not bool(ans):
-                    self.marquise_moves = 2
-                    self.phase_steps = 2
+                if any(any(x) for x in self.remaining_decree.values()):
+                    # an action must be taken if possible!
+                    # some of decree still remains to resolve
+                    decree_actions = self.get_decree_resolving_actions(current_player)
+                    if bool(decree_actions): # there is an action to take for the decree
+                        return ans + decree_actions
+                    # otherwise, we will turmoil
+                    if bool(ans): # give them one last chance to use cards
+                        return [AID_GENERIC_SKIP] + ans
+                    # if no persistent to use, turmoil now
+                    self.phase_steps = 3
                 else:
-                    return [AID_GENERIC_SKIP] + ans
+                    # decree is done
+                    if bool(ans):
+                        return [AID_GENERIC_SKIP] + ans
+                    self.phase_steps = 4
+            if self.phase_steps == 3: # we are turmoiling
+                to_discard,pts = current_player.turmoil_helper()
+                self.change_score(PIND_EYRIE,-pts)
+                self.discard_pile += to_discard
+                return [i+AID_CHOOSE_LEADER for i in current_player.available_leaders]
             if self.phase_steps == 4: # End of daylight
                 self.phase_steps = 0
                 self.phase = self.PHASE_EVENING_EYRIE
@@ -1077,14 +1086,15 @@ class root2pCatsVsEyrie:
             if self.phase_steps == 0:
                 unused_pers = {c.id for c in current_player.persistent_cards} - self.persistent_used_this_turn
                 if CID_COBBLER in unused_pers:
-                    ans = self.board.get_legal_move_actions(PIND_MARQUISE)
+                    ans = self.board.get_legal_move_actions(PIND_EYRIE,{0,1,2})
                     if not bool(ans):
                         self.phase_steps = 1
                     else:
                         return [AID_GENERIC_SKIP] + ans
             # Evening Phase
             if self.phase_steps == 1:
-                self.draw_cards(PIND_MARQUISE,current_player.get_num_cards_to_draw())
+                self.change_score(PIND_EYRIE,current_player.get_points_to_score())
+                self.draw_cards(PIND_EYRIE,current_player.get_num_cards_to_draw())
                 self.phase_steps = 2
             if self.phase_steps == 2 and len(current_player.hand) > 5:
                 ans = {c.id+AID_DISCARD_CARD for c in current_player.hand}
@@ -1401,8 +1411,11 @@ class root2pCatsVsEyrie:
         if action >= AID_CRAFT_CARD and action <= AID_CRAFT_CARD + 40: # craft a card
             self.craft_card(PIND_EYRIE,action - AID_CRAFT_CARD)
         elif action == AID_GENERIC_SKIP:
-            if self.phase_steps == 2: # we are choosing not to use cards after successfully resolving the decree
-                self.phase_steps = 4
+            if self.phase_steps == 2: # we are choosing not to use cards when given a last choice
+                if any(any(x) for x in self.remaining_decree.values()):
+                    self.phase_steps = 3
+                else:
+                    self.phase_steps = 4
             else: # skipping using command warren / skipping crafting cards
                 self.phase_steps += 1
 
