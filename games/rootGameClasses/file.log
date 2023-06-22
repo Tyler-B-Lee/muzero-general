@@ -1,0 +1,1296 @@
+2023-06-21 00:49:04,982|DEBUG|classes|	Marquise de Cat draws Armorers
+2023-06-21 00:49:04,982|DEBUG|classes|	Marquise de Cat draws Stand and Deliver!
+2023-06-21 00:49:04,982|DEBUG|classes|	Marquise de Cat draws Bake Sale
+2023-06-21 00:49:04,982|DEBUG|classes|	Eyrie Dynasties draws Ambush! (Bird)
+2023-06-21 00:49:04,982|DEBUG|classes|	Eyrie Dynasties draws Stand and Deliver!
+2023-06-21 00:49:04,982|DEBUG|classes|	Eyrie Dynasties draws Ambush! (Rabbit)
+2023-06-21 00:49:04,982|DEBUG|classes|		--- GAME START ---
+Start Player: Marquise de Cat
+2023-06-21 00:49:04,983|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,983|INFO|classes|> Action 0 - Legal Actions: [1, 3, 9, 12]
+2023-06-21 00:49:04,983|INFO|classes|	> Action Chosen: 3
+2023-06-21 00:49:04,983|DEBUG|classes|		Marquise de Cat tokens ID 0 changed by -1
+2023-06-21 00:49:04,983|DEBUG|classes|		Token 0 added for Marquise de Cat in clearing 2
+2023-06-21 00:49:04,983|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 0
+2023-06-21 00:49:04,983|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 1
+2023-06-21 00:49:04,983|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:04,983|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 3
+2023-06-21 00:49:04,983|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 4
+2023-06-21 00:49:04,983|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 5
+2023-06-21 00:49:04,983|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 6
+2023-06-21 00:49:04,983|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 7
+2023-06-21 00:49:04,983|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 9
+2023-06-21 00:49:04,983|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 10
+2023-06-21 00:49:04,983|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 11
+2023-06-21 00:49:04,983|DEBUG|classes|		Marquise de Cat warrior storage changed by -11
+2023-06-21 00:49:04,984|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,984|INFO|classes|> Action 1 - Legal Actions: [26, 28, 32, 27]
+2023-06-21 00:49:04,984|INFO|classes|	> Action Chosen: 26
+2023-06-21 00:49:04,984|DEBUG|classes|		Marquise de Cat buildings ID 0 changed by -1
+2023-06-21 00:49:04,984|DEBUG|classes|		Building 0 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:04,984|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,984|INFO|classes|> Action 2 - Legal Actions: [38, 40, 44, 39]
+2023-06-21 00:49:04,984|INFO|classes|	> Action Chosen: 38
+2023-06-21 00:49:04,985|DEBUG|classes|		Marquise de Cat buildings ID 1 changed by -1
+2023-06-21 00:49:04,985|DEBUG|classes|		Building 1 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:04,985|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,985|INFO|classes|> Action 3 - Legal Actions: [52, 56, 51]
+2023-06-21 00:49:04,985|INFO|classes|	> Action Chosen: 51
+2023-06-21 00:49:04,985|DEBUG|classes|		Marquise de Cat buildings ID 2 changed by -1
+2023-06-21 00:49:04,985|DEBUG|classes|		Building 2 added for Marquise de Cat in clearing 2
+2023-06-21 00:49:04,985|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:04,985|INFO|classes|> Action 4 - Legal Actions: [4358, 4359, 4360, 4361]
+2023-06-21 00:49:04,985|INFO|classes|	> Action Chosen: 4359
+2023-06-21 00:49:04,985|DEBUG|classes|		Eyrie Dynasties buildings ID 0 changed by -1
+2023-06-21 00:49:04,985|DEBUG|classes|		Eyrie Dynasties warrior storage changed by -6
+2023-06-21 00:49:04,985|DEBUG|classes|		Building 0 added for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:04,985|DEBUG|classes|		Warriors changed by 6 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:04,985|DEBUG|classes|	New Leader Chosen: Charismatic
+2023-06-21 00:49:04,987|DEBUG|classes|		Card Loyal Vizier added to decree at Recruit
+2023-06-21 00:49:04,987|DEBUG|classes|		Card Loyal Vizier added to decree at Battle
+2023-06-21 00:49:04,987|DEBUG|classes|	Wood can be placed automatically...
+2023-06-21 00:49:04,987|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:04,987|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:04,987|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,987|INFO|classes|> Action 5 - Legal Actions: [0, 118, 704, 754, 779, 979, 1029, 1304, 1354, 1454, 1579, 1629, 1704, 1879, 2079, 2004, 2254, 2279, 2329, 2379, 2429, 2754, 2604, 2654, 2829, 3054, 2929, 3579, 3629, 3904, 3954, 3804, 4229, 4129, 4154, 127, 25, 27, 28, 29, 30, 31, 32, 34, 35, 36, 37, 39, 40, 41, 42, 43, 44, 46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 58, 59, 60, 194, 230]
+2023-06-21 00:49:04,987|INFO|classes|	> Action Chosen: 47
+2023-06-21 00:49:04,988|DEBUG|classes|		Marquise de Cat buildings ID 1 changed by -1
+2023-06-21 00:49:04,988|DEBUG|classes|		Building 1 added for Marquise de Cat in clearing 10
+2023-06-21 00:49:04,988|DEBUG|classes|	Marquise de Cat Points changed by 2
+2023-06-21 00:49:04,988|DEBUG|classes|		New Score: [2, 0]
+2023-06-21 00:49:04,988|DEBUG|classes|	Removing wood cost solely from clearing 1...
+2023-06-21 00:49:04,988|DEBUG|classes|		Token 1 removed for Marquise de Cat in clearing 1
+2023-06-21 00:49:04,988|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by 1
+2023-06-21 00:49:04,988|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,988|INFO|classes|> Action 6 - Legal Actions: [0, 118, 704, 754, 779, 979, 1029, 1304, 1354, 1454, 1579, 1629, 1704, 1879, 2079, 2004, 2254, 2279, 2329, 2379, 2429, 2754, 2604, 2654, 2829, 3054, 2929, 3579, 3629, 3904, 3954, 3804, 4229, 4129, 4154, 127, 194, 230]
+2023-06-21 00:49:04,988|INFO|classes|	> Action Chosen: 1704
+2023-06-21 00:49:04,988|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 3 to 5
+2023-06-21 00:49:04,988|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 3
+2023-06-21 00:49:04,988|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 5
+2023-06-21 00:49:04,988|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,989|INFO|classes|> Action 7 - Legal Actions: [0, 704, 754, 779, 979, 1029, 1304, 1354, 1454, 1879, 2079, 2004, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 2754, 2604, 2654, 2829, 3054, 2929, 3579, 3629, 3904, 3954, 3804, 4229, 4129, 4154]
+2023-06-21 00:49:04,990|INFO|classes|	> Action Chosen: 4129
+2023-06-21 00:49:04,990|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 11 to 6
+2023-06-21 00:49:04,990|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 11
+2023-06-21 00:49:04,990|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 6
+2023-06-21 00:49:04,990|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,990|INFO|classes|> Action 8 - Legal Actions: [0, 118, 704, 754, 779, 979, 1029, 1304, 1354, 1454, 1879, 2079, 2004, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 2754, 2755, 2604, 2605, 2654, 2655, 2829, 3054, 2929, 3579, 3629, 3904, 3954, 3804, 127, 194, 230]
+2023-06-21 00:49:04,990|INFO|classes|	> Action Chosen: 2329
+2023-06-21 00:49:04,990|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 5 to 6
+2023-06-21 00:49:04,990|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 5
+2023-06-21 00:49:04,990|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 6
+2023-06-21 00:49:04,991|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,991|INFO|classes|> Action 9 - Legal Actions: [0, 704, 754, 779, 979, 1029, 1304, 1354, 1454, 1879, 2079, 2004, 2254, 2279, 2329, 2379, 2429, 2754, 2755, 2756, 2604, 2605, 2606, 2654, 2655, 2656, 2829, 3054, 2929, 3579, 3629, 3904, 3954, 3804]
+2023-06-21 00:49:04,991|INFO|classes|	> Action Chosen: 1304
+2023-06-21 00:49:04,991|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 2 to 1
+2023-06-21 00:49:04,991|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:04,991|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 1
+2023-06-21 00:49:04,991|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,991|INFO|classes|> Action 10 - Legal Actions: [0, 118]
+2023-06-21 00:49:04,991|INFO|classes|	> Action Chosen: 0
+2023-06-21 00:49:04,991|DEBUG|classes|	Marquise de Cat draws Sword
+2023-06-21 00:49:04,991|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:04,991|INFO|classes|> Action 11 - Legal Actions: [4362, 4404, 4446, 4488, 4393, 4435, 4477, 4519, 4363, 4405, 4447, 4489]
+2023-06-21 00:49:04,992|INFO|classes|	> Action Chosen: 4363
+2023-06-21 00:49:04,992|DEBUG|classes|	Ambush! (Rabbit) removed from hand of Eyrie Dynasties
+2023-06-21 00:49:04,992|DEBUG|classes|		Card Ambush! (Rabbit) added to decree at Recruit
+2023-06-21 00:49:04,992|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:04,992|INFO|classes|> Action 12 - Legal Actions: [0, 4362, 4404, 4446, 4488, 4393, 4435, 4477, 4519]
+2023-06-21 00:49:04,992|INFO|classes|	> Action Chosen: 4477
+2023-06-21 00:49:04,992|DEBUG|classes|	Stand and Deliver! removed from hand of Eyrie Dynasties
+2023-06-21 00:49:04,992|DEBUG|classes|		Card Stand and Deliver! added to decree at Battle
+2023-06-21 00:49:04,992|DEBUG|classes|	Tallying required decree...
+2023-06-21 00:49:04,992|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:04,992|INFO|classes|> Action 13 - Legal Actions: [9]
+2023-06-21 00:49:04,992|INFO|classes|	> Action Chosen: 9
+2023-06-21 00:49:04,992|DEBUG|classes|		Eyrie Dynasties warrior storage changed by -2
+2023-06-21 00:49:04,992|DEBUG|classes|		Warriors changed by 2 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:04,992|DEBUG|classes|	Fulfilled Rabbit Recruit requirement on Decree
+2023-06-21 00:49:04,993|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:04,993|INFO|classes|> Action 14 - Legal Actions: [9]
+2023-06-21 00:49:04,993|INFO|classes|	> Action Chosen: 9
+2023-06-21 00:49:04,993|DEBUG|classes|		Eyrie Dynasties warrior storage changed by -2
+2023-06-21 00:49:04,993|DEBUG|classes|		Warriors changed by 2 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:04,993|DEBUG|classes|	Fulfilled Bird Recruit requirement on Decree
+2023-06-21 00:49:04,993|DEBUG|classes|	Eyrie Dynasties Points changed by -2
+2023-06-21 00:49:04,993|DEBUG|classes|		New Score: [2, 0]
+2023-06-21 00:49:04,993|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:04,993|INFO|classes|> Action 15 - Legal Actions: [4358, 4360, 4361]
+2023-06-21 00:49:04,993|INFO|classes|	> Action Chosen: 4358
+2023-06-21 00:49:04,993|DEBUG|classes|	New Leader Chosen: Builder
+2023-06-21 00:49:04,993|DEBUG|classes|		Card Loyal Vizier added to decree at Recruit
+2023-06-21 00:49:04,993|DEBUG|classes|		Card Loyal Vizier added to decree at Move
+2023-06-21 00:49:04,993|DEBUG|classes|	Eyrie Dynasties Points changed by 0
+2023-06-21 00:49:04,993|DEBUG|classes|		New Score: [2, 0]
+2023-06-21 00:49:04,993|DEBUG|classes|	Eyrie Dynasties draws Root Tea (Mouse)
+2023-06-21 00:49:04,993|DEBUG|classes|	Wood can be placed automatically...
+2023-06-21 00:49:04,993|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:04,993|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:04,993|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,994|INFO|classes|> Action 16 - Legal Actions: [0, 118, 704, 754, 779, 979, 980, 1029, 1030, 1879, 2079, 2004, 2254, 2279, 2329, 2379, 2429, 2754, 2755, 2756, 2604, 2605, 2606, 2654, 2655, 2656, 2829, 3054, 2929, 3579, 3629, 3904, 3954, 3804, 127, 25, 27, 29, 30, 31, 32, 34, 35, 49, 51, 53, 54, 55, 56, 58, 59, 194, 230]
+2023-06-21 00:49:04,994|INFO|classes|	> Action Chosen: 127
+2023-06-21 00:49:04,994|DEBUG|classes|	Warriors can be recruited automatically...
+2023-06-21 00:49:04,994|DEBUG|classes|		Marquise de Cat warrior storage changed by -1
+2023-06-21 00:49:04,994|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:04,994|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,994|INFO|classes|> Action 17 - Legal Actions: [0, 118, 704, 754, 779, 979, 980, 1029, 1030, 1304, 1354, 1454, 1879, 2079, 2004, 2254, 2279, 2329, 2379, 2429, 2754, 2755, 2756, 2604, 2605, 2606, 2654, 2655, 2656, 2829, 3054, 2929, 3579, 3629, 3904, 3954, 3804, 25, 27, 29, 30, 31, 32, 34, 35, 49, 51, 53, 54, 55, 56, 58, 59, 194, 230]
+2023-06-21 00:49:04,994|INFO|classes|	> Action Chosen: 3904
+2023-06-21 00:49:04,994|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 10 to 9
+2023-06-21 00:49:04,994|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 10
+2023-06-21 00:49:04,994|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 9
+2023-06-21 00:49:04,994|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,994|INFO|classes|> Action 18 - Legal Actions: [0, 704, 754, 779, 979, 980, 1029, 1030, 1304, 1354, 1454, 1879, 2079, 2004, 2254, 2279, 2329, 2379, 2429, 2754, 2755, 2756, 2604, 2605, 2606, 2654, 2655, 2656, 2829, 3054, 2929, 3579, 3580, 3629, 3630]
+2023-06-21 00:49:04,994|INFO|classes|	> Action Chosen: 1354
+2023-06-21 00:49:04,995|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 2 to 3
+2023-06-21 00:49:04,995|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:04,995|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 3
+2023-06-21 00:49:04,995|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,995|INFO|classes|> Action 19 - Legal Actions: [0, 118, 704, 754, 779, 979, 980, 1029, 1030, 1579, 1629, 1704, 1879, 2079, 2004, 2254, 2279, 2329, 2379, 2429, 2754, 2755, 2756, 2604, 2605, 2606, 2654, 2655, 2656, 2829, 3054, 2929, 3579, 3580, 3629, 3630, 25, 27, 28, 29, 30, 31, 32, 34, 35, 49, 51, 52, 53, 54, 55, 56, 58, 59, 194, 230]
+2023-06-21 00:49:04,995|INFO|classes|	> Action Chosen: 979
+2023-06-21 00:49:04,995|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 1 to 0
+2023-06-21 00:49:04,995|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 1
+2023-06-21 00:49:04,995|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 0
+2023-06-21 00:49:04,995|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,995|INFO|classes|> Action 20 - Legal Actions: [0, 704, 705, 754, 755, 779, 780, 979, 1029, 1579, 1629, 1704, 1879, 2079, 2004, 2254, 2279, 2329, 2379, 2429, 2754, 2755, 2756, 2604, 2605, 2606, 2654, 2655, 2656, 2829, 3054, 2929, 3579, 3580, 3629, 3630]
+2023-06-21 00:49:04,995|INFO|classes|	> Action Chosen: 2929
+2023-06-21 00:49:04,995|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 7 to 6
+2023-06-21 00:49:04,995|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 7
+2023-06-21 00:49:04,995|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 6
+2023-06-21 00:49:04,995|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,995|INFO|classes|> Action 21 - Legal Actions: [0, 118]
+2023-06-21 00:49:04,995|INFO|classes|	> Action Chosen: 0
+2023-06-21 00:49:04,995|DEBUG|classes|	Marquise de Cat draws Tax Collector
+2023-06-21 00:49:04,995|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:04,997|INFO|classes|> Action 22 - Legal Actions: [4362, 4404, 4446, 4488, 4389, 4431, 4473, 4515]
+2023-06-21 00:49:04,997|INFO|classes|	> Action Chosen: 4515
+2023-06-21 00:49:04,997|DEBUG|classes|	Root Tea (Mouse) removed from hand of Eyrie Dynasties
+2023-06-21 00:49:04,997|DEBUG|classes|		Card Root Tea (Mouse) added to decree at Build
+2023-06-21 00:49:04,997|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:04,997|INFO|classes|> Action 23 - Legal Actions: [0, 4362, 4404, 4446, 4488]
+2023-06-21 00:49:04,997|INFO|classes|	> Action Chosen: 4362
+2023-06-21 00:49:04,997|DEBUG|classes|	Ambush! (Bird) removed from hand of Eyrie Dynasties
+2023-06-21 00:49:04,997|DEBUG|classes|		Card Ambush! (Bird) added to decree at Recruit
+2023-06-21 00:49:04,997|DEBUG|classes|	Tallying required decree...
+2023-06-21 00:49:04,997|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:04,997|INFO|classes|> Action 24 - Legal Actions: [9]
+2023-06-21 00:49:04,997|INFO|classes|	> Action Chosen: 9
+2023-06-21 00:49:04,997|DEBUG|classes|		Eyrie Dynasties warrior storage changed by -1
+2023-06-21 00:49:04,997|DEBUG|classes|		Warriors changed by 1 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:04,997|DEBUG|classes|	Fulfilled Bird Recruit requirement on Decree
+2023-06-21 00:49:04,997|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:04,997|INFO|classes|> Action 25 - Legal Actions: [9]
+2023-06-21 00:49:04,998|INFO|classes|	> Action Chosen: 9
+2023-06-21 00:49:04,998|DEBUG|classes|		Eyrie Dynasties warrior storage changed by -1
+2023-06-21 00:49:04,998|DEBUG|classes|		Warriors changed by 1 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:04,998|DEBUG|classes|	Fulfilled Bird Recruit requirement on Decree
+2023-06-21 00:49:04,998|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:04,998|INFO|classes|> Action 26 - Legal Actions: [3304, 3305, 3306, 3307, 3308, 3309, 3310, 3311, 3312, 3313, 3314, 3315, 3179, 3180, 3181, 3182, 3183, 3184, 3185, 3186, 3187, 3188, 3189, 3190, 3204, 3205, 3206, 3207, 3208, 3209, 3210, 3211, 3212, 3213, 3214, 3215]
+2023-06-21 00:49:04,998|INFO|classes|	> Action Chosen: 3187
+2023-06-21 00:49:04,998|DEBUG|classes|	Moving 9 warriors of Eyrie Dynasties from 8 to 4
+2023-06-21 00:49:04,998|DEBUG|classes|		Warriors changed by -9 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:04,998|DEBUG|classes|		Warriors changed by 9 for Eyrie Dynasties in clearing 4
+2023-06-21 00:49:04,998|DEBUG|classes|	Fulfilled Bird Move requirement on Decree
+2023-06-21 00:49:04,998|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:04,998|INFO|classes|> Action 27 - Legal Actions: [29]
+2023-06-21 00:49:04,998|INFO|classes|	> Action Chosen: 29
+2023-06-21 00:49:04,998|DEBUG|classes|		Building 0 added for Eyrie Dynasties in clearing 4
+2023-06-21 00:49:04,998|DEBUG|classes|		Eyrie Dynasties buildings ID 0 changed by -1
+2023-06-21 00:49:04,998|DEBUG|classes|	Fulfilled Mouse Build requirement on Decree
+2023-06-21 00:49:04,998|DEBUG|classes|	Eyrie Dynasties Points changed by 1
+2023-06-21 00:49:04,999|DEBUG|classes|		New Score: [2, 1]
+2023-06-21 00:49:04,999|DEBUG|classes|	Eyrie Dynasties draws Sappers
+2023-06-21 00:49:04,999|DEBUG|classes|	Wood can be placed automatically...
+2023-06-21 00:49:04,999|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:04,999|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:04,999|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,999|INFO|classes|> Action 28 - Legal Actions: [0, 118, 17, 704, 705, 754, 755, 779, 780, 979, 1029, 1579, 1629, 1704, 1879, 2004, 2254, 2279, 2329, 2379, 2429, 2754, 2755, 2756, 2757, 2604, 2605, 2606, 2607, 2654, 2655, 2656, 2657, 3579, 3580, 3629, 3630, 127, 25, 27, 28, 30, 31, 34, 35, 37, 39, 40, 42, 43, 46, 47, 49, 51, 52, 54, 55, 58, 59, 194, 230]
+2023-06-21 00:49:04,999|INFO|classes|	> Action Chosen: 27
+2023-06-21 00:49:04,999|DEBUG|classes|		Marquise de Cat buildings ID 0 changed by -1
+2023-06-21 00:49:04,999|DEBUG|classes|		Building 0 added for Marquise de Cat in clearing 2
+2023-06-21 00:49:04,999|DEBUG|classes|	Marquise de Cat Points changed by 1
+2023-06-21 00:49:04,999|DEBUG|classes|		New Score: [3, 1]
+2023-06-21 00:49:04,999|DEBUG|classes|	Removing wood cost solely from clearing 1...
+2023-06-21 00:49:04,999|DEBUG|classes|		Token 1 removed for Marquise de Cat in clearing 1
+2023-06-21 00:49:04,999|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by 1
+2023-06-21 00:49:04,999|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,999|INFO|classes|> Action 29 - Legal Actions: [0, 118, 17, 704, 705, 754, 755, 779, 780, 979, 1029, 1579, 1629, 1704, 1879, 2004, 2254, 2279, 2329, 2379, 2429, 2754, 2755, 2756, 2757, 2604, 2605, 2606, 2607, 2654, 2655, 2656, 2657, 3579, 3580, 3629, 3630, 127, 49, 52, 54, 55, 58, 59, 194, 195, 230, 519]
+2023-06-21 00:49:04,999|INFO|classes|	> Action Chosen: 780
+2023-06-21 00:49:04,999|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 0 to 4
+2023-06-21 00:49:04,999|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 0
+2023-06-21 00:49:04,999|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 4
+2023-06-21 00:49:04,999|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:04,999|INFO|classes|> Action 30 - Legal Actions: [0, 979, 1029, 1579, 1629, 1704, 2004, 2005, 2006, 2254, 2279, 2329, 2379, 2429, 2754, 2755, 2756, 2757, 2604, 2605, 2606, 2607, 2654, 2655, 2656, 2657, 3579, 3580, 3629, 3630]
+2023-06-21 00:49:05,000|INFO|classes|	> Action Chosen: 2005
+2023-06-21 00:49:05,000|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 4 to 5
+2023-06-21 00:49:05,000|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 4
+2023-06-21 00:49:05,000|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,000|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,000|INFO|classes|> Action 31 - Legal Actions: [0, 118, 17, 979, 1029, 1579, 1629, 1704, 2004, 2254, 2255, 2256, 2279, 2280, 2281, 2329, 2330, 2331, 2379, 2380, 2381, 2429, 2430, 2431, 2754, 2755, 2756, 2757, 2604, 2605, 2606, 2607, 2654, 2655, 2656, 2657, 3579, 3580, 3629, 3630, 127, 52, 54, 55, 58, 59, 194, 195, 230, 519]
+2023-06-21 00:49:05,000|INFO|classes|	> Action Chosen: 2329
+2023-06-21 00:49:05,000|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 5 to 6
+2023-06-21 00:49:05,000|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,000|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 6
+2023-06-21 00:49:05,000|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,000|INFO|classes|> Action 32 - Legal Actions: [0, 979, 1029, 1579, 1629, 1704, 2004, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 2754, 2755, 2756, 2757, 2758, 2604, 2605, 2606, 2607, 2608, 2654, 2655, 2656, 2657, 2658, 3579, 3580, 3629, 3630]
+2023-06-21 00:49:05,000|INFO|classes|	> Action Chosen: 2754
+2023-06-21 00:49:05,000|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 6 to 11
+2023-06-21 00:49:05,000|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 6
+2023-06-21 00:49:05,000|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 11
+2023-06-21 00:49:05,001|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,001|INFO|classes|> Action 33 - Legal Actions: [0, 118]
+2023-06-21 00:49:05,001|INFO|classes|	> Action Chosen: 0
+2023-06-21 00:49:05,001|DEBUG|classes|	Marquise de Cat draws Root Tea (Fox)
+2023-06-21 00:49:05,001|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,001|INFO|classes|> Action 34 - Legal Actions: [642, 645, 663, 668, 669, 670]
+2023-06-21 00:49:05,001|INFO|classes|	> Action Chosen: 663
+2023-06-21 00:49:05,001|DEBUG|classes|	Root Tea (Fox) removed from hand of Marquise de Cat
+2023-06-21 00:49:05,001|DEBUG|classes|	Root Tea (Fox) added to discard pile
+2023-06-21 00:49:05,001|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,001|INFO|classes|> Action 35 - Legal Actions: [4390, 4432, 4474, 4516]
+2023-06-21 00:49:05,001|INFO|classes|	> Action Chosen: 4474
+2023-06-21 00:49:05,001|DEBUG|classes|	Sappers removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,001|DEBUG|classes|		Card Sappers added to decree at Battle
+2023-06-21 00:49:05,001|DEBUG|classes|	Tallying required decree...
+2023-06-21 00:49:05,001|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,001|INFO|classes|> Action 36 - Legal Actions: [5, 9]
+2023-06-21 00:49:05,002|INFO|classes|	> Action Chosen: 9
+2023-06-21 00:49:05,002|DEBUG|classes|		Eyrie Dynasties warrior storage changed by -1
+2023-06-21 00:49:05,002|DEBUG|classes|		Warriors changed by 1 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:05,002|DEBUG|classes|	Fulfilled Bird Recruit requirement on Decree
+2023-06-21 00:49:05,002|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,002|INFO|classes|> Action 37 - Legal Actions: [5, 9]
+2023-06-21 00:49:05,002|INFO|classes|	> Action Chosen: 9
+2023-06-21 00:49:05,002|DEBUG|classes|		Eyrie Dynasties warrior storage changed by -1
+2023-06-21 00:49:05,002|DEBUG|classes|		Warriors changed by 1 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:05,002|DEBUG|classes|	Fulfilled Bird Recruit requirement on Decree
+2023-06-21 00:49:05,002|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,002|INFO|classes|> Action 38 - Legal Actions: [1879, 1880, 1881, 1882, 1883, 1884, 1885, 1886, 1887, 2079, 2080, 2081, 2082, 2083, 2084, 2085, 2086, 2087, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 3304, 3305, 3306, 3307, 3308, 3179, 3180, 3181, 3182, 3183, 3204, 3205, 3206, 3207, 3208]
+2023-06-21 00:49:05,002|INFO|classes|	> Action Chosen: 3304
+2023-06-21 00:49:05,002|DEBUG|classes|	Moving 1 warriors of Eyrie Dynasties from 8 to 9
+2023-06-21 00:49:05,002|DEBUG|classes|		Warriors changed by -1 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:05,002|DEBUG|classes|		Warriors changed by 1 for Eyrie Dynasties in clearing 9
+2023-06-21 00:49:05,002|DEBUG|classes|	Fulfilled Bird Move requirement on Decree
+2023-06-21 00:49:05,002|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,002|INFO|classes|> Action 39 - Legal Actions: [17, 22]
+2023-06-21 00:49:05,002|INFO|classes|	> Action Chosen: 22
+2023-06-21 00:49:05,002|DEBUG|classes|	Fulfilled Bird Battle requirement on Decree
+2023-06-21 00:49:05,002|DEBUG|classes|	--- BATTLE STARTED: Eyrie Dynasties Attacks Marquise de Cat in clearing 9
+2023-06-21 00:49:05,002|DEBUG|classes|Marquise de Cat chose not to ambush
+2023-06-21 00:49:05,004|DEBUG|classes|--- DICE ROLL: [2, 0]
+2023-06-21 00:49:05,004|DEBUG|classes|--- Dealing hits to defender...
+2023-06-21 00:49:05,004|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 9
+2023-06-21 00:49:05,004|DEBUG|classes|		Marquise de Cat warrior storage changed by 1
+2023-06-21 00:49:05,004|DEBUG|classes|--- Dealing hits to attacker...
+2023-06-21 00:49:05,004|DEBUG|classes|--- BATTLE FINISHED
+2023-06-21 00:49:05,004|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,004|INFO|classes|> Action 40 - Legal Actions: [0, 642, 668, 670]
+2023-06-21 00:49:05,004|INFO|classes|	> Action Chosen: 668
+2023-06-21 00:49:05,004|DEBUG|classes|	Field Hospitals activated...
+2023-06-21 00:49:05,004|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,004|DEBUG|classes|	Stand and Deliver! removed from hand of Marquise de Cat
+2023-06-21 00:49:05,004|DEBUG|classes|	Stand and Deliver! added to discard pile
+2023-06-21 00:49:05,004|DEBUG|classes|	Eyrie Dynasties Points changed by -4
+2023-06-21 00:49:05,004|DEBUG|classes|		New Score: [3, 0]
+2023-06-21 00:49:05,004|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,004|INFO|classes|> Action 41 - Legal Actions: [4360, 4361]
+2023-06-21 00:49:05,004|INFO|classes|	> Action Chosen: 4360
+2023-06-21 00:49:05,004|DEBUG|classes|	New Leader Chosen: Commander
+2023-06-21 00:49:05,004|DEBUG|classes|		Card Loyal Vizier added to decree at Move
+2023-06-21 00:49:05,004|DEBUG|classes|		Card Loyal Vizier added to decree at Battle
+2023-06-21 00:49:05,004|DEBUG|classes|	Eyrie Dynasties Points changed by 1
+2023-06-21 00:49:05,004|DEBUG|classes|		New Score: [3, 1]
+2023-06-21 00:49:05,004|DEBUG|classes|	Eyrie Dynasties draws Tax Collector
+2023-06-21 00:49:05,004|DEBUG|classes|	Wood can be placed automatically...
+2023-06-21 00:49:05,004|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,004|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,004|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,004|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,005|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,005|INFO|classes|> Action 42 - Legal Actions: [0, 118, 17, 22, 979, 1029, 1304, 1354, 1454, 1579, 1629, 1704, 2004, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 2754, 2755, 2756, 2757, 2604, 2605, 2606, 2607, 2654, 2655, 2656, 2657, 3629, 4229, 4129, 4154, 127, 28, 30, 31, 35, 36, 40, 42, 43, 47, 48, 52, 54, 55, 59, 60, 194, 195, 230, 519]
+2023-06-21 00:49:05,005|INFO|classes|	> Action Chosen: 2654
+2023-06-21 00:49:05,005|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 6 to 7
+2023-06-21 00:49:05,005|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 6
+2023-06-21 00:49:05,005|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 7
+2023-06-21 00:49:05,005|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,005|INFO|classes|> Action 43 - Legal Actions: [0, 979, 1029, 1304, 1354, 1454, 1579, 1629, 1704, 2004, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 2754, 2755, 2756, 2604, 2605, 2606, 2654, 2655, 2656, 2829, 3054, 2929, 3629, 4229, 4129, 4154]
+2023-06-21 00:49:05,005|INFO|classes|	> Action Chosen: 2255
+2023-06-21 00:49:05,005|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 5 to 3
+2023-06-21 00:49:05,005|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,005|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,005|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,005|INFO|classes|> Action 44 - Legal Actions: [0, 118, 17, 22, 979, 1029, 1304, 1354, 1454, 1579, 1580, 1581, 1629, 1630, 1631, 1704, 1705, 1706, 2754, 2755, 2756, 2604, 2605, 2606, 2654, 2655, 2656, 2829, 3054, 2929, 3629, 4229, 4129, 4154, 127, 28, 31, 32, 35, 36, 40, 43, 44, 47, 48, 52, 55, 56, 59, 60, 194, 195, 230, 519]
+2023-06-21 00:49:05,006|INFO|classes|	> Action Chosen: 979
+2023-06-21 00:49:05,006|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 1 to 0
+2023-06-21 00:49:05,006|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,006|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 0
+2023-06-21 00:49:05,006|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,006|INFO|classes|> Action 45 - Legal Actions: [0, 704, 754, 779, 1304, 1354, 1454, 1579, 1580, 1581, 1629, 1630, 1631, 1704, 1705, 1706, 1879, 2754, 2755, 2756, 2604, 2605, 2606, 2654, 2655, 2656, 2829, 3054, 2929, 3629, 4229, 4129, 4154]
+2023-06-21 00:49:05,006|INFO|classes|	> Action Chosen: 2656
+2023-06-21 00:49:05,006|DEBUG|classes|	Moving 3 warriors of Marquise de Cat from 6 to 7
+2023-06-21 00:49:05,006|DEBUG|classes|		Warriors changed by -3 for Marquise de Cat in clearing 6
+2023-06-21 00:49:05,006|DEBUG|classes|		Warriors changed by 3 for Marquise de Cat in clearing 7
+2023-06-21 00:49:05,006|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,006|INFO|classes|> Action 46 - Legal Actions: [0, 118, 17, 22, 704, 754, 779, 1304, 1354, 1454, 1579, 1580, 1581, 1629, 1630, 1631, 1704, 1705, 1706, 1879, 2829, 2830, 2831, 2832, 3054, 3055, 3056, 3057, 2929, 2930, 2931, 2932, 3629, 4229, 4129, 4154, 127, 25, 28, 32, 35, 36, 37, 40, 44, 47, 48, 49, 52, 56, 59, 60, 194, 195, 230, 519]
+2023-06-21 00:49:05,007|INFO|classes|	> Action Chosen: 40
+2023-06-21 00:49:05,007|DEBUG|classes|		Marquise de Cat buildings ID 1 changed by -1
+2023-06-21 00:49:05,007|DEBUG|classes|		Building 1 added for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,007|DEBUG|classes|	Marquise de Cat Points changed by 2
+2023-06-21 00:49:05,007|DEBUG|classes|		New Score: [5, 1]
+2023-06-21 00:49:05,007|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,007|INFO|classes|> Action 47 - Legal Actions: [2, 3]
+2023-06-21 00:49:05,007|INFO|classes|	> Action Chosen: 2
+2023-06-21 00:49:05,007|DEBUG|classes|		Token 1 removed for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,007|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by 1
+2023-06-21 00:49:05,007|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,007|INFO|classes|> Action 48 - Legal Actions: [2, 3]
+2023-06-21 00:49:05,007|INFO|classes|	> Action Chosen: 3
+2023-06-21 00:49:05,007|DEBUG|classes|		Token 1 removed for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,007|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by 1
+2023-06-21 00:49:05,007|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,008|INFO|classes|> Action 49 - Legal Actions: [0, 118]
+2023-06-21 00:49:05,008|INFO|classes|	> Action Chosen: 0
+2023-06-21 00:49:05,008|DEBUG|classes|	Marquise de Cat draws Codebreakers
+2023-06-21 00:49:05,008|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,008|INFO|classes|> Action 50 - Legal Actions: [4395, 4437, 4479, 4521]
+2023-06-21 00:49:05,008|INFO|classes|	> Action Chosen: 4521
+2023-06-21 00:49:05,008|DEBUG|classes|	Tax Collector removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,008|DEBUG|classes|		Card Tax Collector added to decree at Build
+2023-06-21 00:49:05,008|DEBUG|classes|	Tallying required decree...
+2023-06-21 00:49:05,008|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,008|INFO|classes|> Action 51 - Legal Actions: [1879, 1880, 1881, 1882, 1883, 1884, 1885, 1886, 1887, 2079, 2080, 2081, 2082, 2083, 2084, 2085, 2086, 2087, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 3304, 3305, 3306, 3307, 3179, 3180, 3181, 3182, 3204, 3205, 3206, 3207, 3579, 3629]
+2023-06-21 00:49:05,008|INFO|classes|	> Action Chosen: 2080
+2023-06-21 00:49:05,008|DEBUG|classes|	Moving 2 warriors of Eyrie Dynasties from 4 to 8
+2023-06-21 00:49:05,008|DEBUG|classes|		Warriors changed by -2 for Eyrie Dynasties in clearing 4
+2023-06-21 00:49:05,008|DEBUG|classes|		Warriors changed by 2 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:05,008|DEBUG|classes|	Fulfilled Bird Move requirement on Decree
+2023-06-21 00:49:05,010|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,010|INFO|classes|> Action 52 - Legal Actions: [17, 22]
+2023-06-21 00:49:05,010|INFO|classes|	> Action Chosen: 22
+2023-06-21 00:49:05,010|DEBUG|classes|	Fulfilled Bird Battle requirement on Decree
+2023-06-21 00:49:05,010|DEBUG|classes|	--- BATTLE STARTED: Eyrie Dynasties Attacks Marquise de Cat in clearing 9
+2023-06-21 00:49:05,010|DEBUG|classes|Marquise de Cat chose not to ambush
+2023-06-21 00:49:05,010|DEBUG|classes|--- DICE ROLL: [1, 1]
+2023-06-21 00:49:05,010|DEBUG|classes|Eyrie Dynasties is led by the Commander (+1 hit dealt)
+2023-06-21 00:49:05,010|DEBUG|classes|--- Dealing hits to defender...
+2023-06-21 00:49:05,010|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 9
+2023-06-21 00:49:05,010|DEBUG|classes|		Marquise de Cat warrior storage changed by 1
+2023-06-21 00:49:05,010|DEBUG|classes|--- Dealing hits to attacker...
+2023-06-21 00:49:05,010|DEBUG|classes|		Warriors changed by -1 for Eyrie Dynasties in clearing 9
+2023-06-21 00:49:05,010|DEBUG|classes|		Eyrie Dynasties warrior storage changed by 1
+2023-06-21 00:49:05,010|DEBUG|classes|--- BATTLE FINISHED
+2023-06-21 00:49:05,010|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,010|INFO|classes|> Action 53 - Legal Actions: [0, 642, 670]
+2023-06-21 00:49:05,010|INFO|classes|	> Action Chosen: 642
+2023-06-21 00:49:05,010|DEBUG|classes|	Field Hospitals activated...
+2023-06-21 00:49:05,010|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,010|DEBUG|classes|	Armorers removed from hand of Marquise de Cat
+2023-06-21 00:49:05,010|DEBUG|classes|	Armorers added to discard pile
+2023-06-21 00:49:05,011|DEBUG|classes|	Eyrie Dynasties Points changed by -2
+2023-06-21 00:49:05,011|DEBUG|classes|		New Score: [5, 0]
+2023-06-21 00:49:05,011|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,011|INFO|classes|> Action 54 - Legal Actions: [4361]
+2023-06-21 00:49:05,011|INFO|classes|	> Action Chosen: 4361
+2023-06-21 00:49:05,011|DEBUG|classes|	New Leader Chosen: Despot
+2023-06-21 00:49:05,011|DEBUG|classes|		Card Loyal Vizier added to decree at Move
+2023-06-21 00:49:05,011|DEBUG|classes|		Card Loyal Vizier added to decree at Build
+2023-06-21 00:49:05,011|DEBUG|classes|	Eyrie Dynasties Points changed by 1
+2023-06-21 00:49:05,011|DEBUG|classes|		New Score: [5, 1]
+2023-06-21 00:49:05,011|DEBUG|classes|	Eyrie Dynasties draws Ambush! (Bird)
+2023-06-21 00:49:05,011|DEBUG|classes|	Wood can be placed automatically...
+2023-06-21 00:49:05,011|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,011|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,011|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,011|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,011|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,011|INFO|classes|> Action 55 - Legal Actions: [0, 17, 704, 754, 779, 1304, 1305, 1354, 1355, 1454, 1455, 1579, 1580, 1581, 1629, 1630, 1631, 1704, 1705, 1706, 1879, 2829, 2830, 2831, 2832, 3054, 3055, 3056, 3057, 2929, 2930, 2931, 2932, 4229, 4129, 4154, 127, 25, 32, 35, 36, 37, 44, 47, 48, 49, 56, 59, 60, 230, 519, 291]
+2023-06-21 00:49:05,011|INFO|classes|	> Action Chosen: 1304
+2023-06-21 00:49:05,011|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 2 to 1
+2023-06-21 00:49:05,011|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,012|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,012|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,012|INFO|classes|> Action 56 - Legal Actions: [0, 704, 754, 779, 979, 1029, 1304, 1354, 1454, 1579, 1580, 1581, 1629, 1630, 1631, 1704, 1705, 1706, 1879, 2829, 2830, 2831, 2832, 3054, 3055, 3056, 3057, 2929, 2930, 2931, 2932, 4229, 4129, 4154]
+2023-06-21 00:49:05,012|INFO|classes|	> Action Chosen: 754
+2023-06-21 00:49:05,012|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 0 to 3
+2023-06-21 00:49:05,012|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 0
+2023-06-21 00:49:05,012|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,012|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,012|INFO|classes|> Action 57 - Legal Actions: [0, 17, 979, 1029, 1304, 1354, 1454, 1579, 1580, 1581, 1582, 1629, 1630, 1631, 1632, 1704, 1705, 1706, 1707, 2829, 2830, 2831, 2832, 3054, 3055, 3056, 3057, 2929, 2930, 2931, 2932, 4229, 4129, 4154, 127, 32, 35, 36, 44, 47, 48, 56, 59, 60, 230, 519, 291]
+2023-06-21 00:49:05,013|INFO|classes|	> Action Chosen: 4229
+2023-06-21 00:49:05,013|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 11 to 10
+2023-06-21 00:49:05,013|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 11
+2023-06-21 00:49:05,013|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,013|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,013|INFO|classes|> Action 58 - Legal Actions: [0, 979, 1029, 1304, 1354, 1454, 1579, 1580, 1581, 1582, 1629, 1630, 1631, 1632, 1704, 1705, 1706, 1707, 2829, 2830, 2831, 2832, 3054, 3055, 3056, 3057, 2929, 2930, 2931, 2932, 3904, 3954, 3804]
+2023-06-21 00:49:05,013|INFO|classes|	> Action Chosen: 2830
+2023-06-21 00:49:05,013|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 7 to 2
+2023-06-21 00:49:05,013|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 7
+2023-06-21 00:49:05,013|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,013|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,013|INFO|classes|> Action 59 - Legal Actions: [0, 17, 979, 1029, 1304, 1305, 1306, 1354, 1355, 1356, 1454, 1455, 1456, 1579, 1580, 1581, 1582, 1629, 1630, 1631, 1632, 1704, 1705, 1706, 1707, 2829, 2830, 3054, 3055, 2929, 2930, 3904, 3954, 3804, 127, 32, 44, 56, 230, 519, 291]
+2023-06-21 00:49:05,013|INFO|classes|	> Action Chosen: 2830
+2023-06-21 00:49:05,013|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 7 to 2
+2023-06-21 00:49:05,013|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 7
+2023-06-21 00:49:05,013|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,013|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,013|INFO|classes|> Action 60 - Legal Actions: [0, 979, 1029, 1304, 1305, 1306, 1307, 1308, 1354, 1355, 1356, 1357, 1358, 1454, 1455, 1456, 1457, 1458, 1579, 1580, 1581, 1582, 1629, 1630, 1631, 1632, 1704, 1705, 1706, 1707, 3904, 3954, 3804]
+2023-06-21 00:49:05,014|INFO|classes|	> Action Chosen: 1356
+2023-06-21 00:49:05,014|DEBUG|classes|	Moving 3 warriors of Marquise de Cat from 2 to 3
+2023-06-21 00:49:05,014|DEBUG|classes|		Warriors changed by -3 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,014|DEBUG|classes|		Warriors changed by 3 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,014|DEBUG|classes|	Marquise de Cat draws Scouting Party
+2023-06-21 00:49:05,014|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,014|INFO|classes|> Action 61 - Legal Actions: [4362, 4404, 4446, 4488]
+2023-06-21 00:49:05,014|INFO|classes|	> Action Chosen: 4488
+2023-06-21 00:49:05,014|DEBUG|classes|	Ambush! (Bird) removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,014|DEBUG|classes|		Card Ambush! (Bird) added to decree at Build
+2023-06-21 00:49:05,014|DEBUG|classes|	Tallying required decree...
+2023-06-21 00:49:05,014|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,014|INFO|classes|> Action 62 - Legal Actions: [1879, 1880, 1881, 1882, 1883, 1884, 1885, 2079, 2080, 2081, 2082, 2083, 2084, 2085, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 3304, 3305, 3306, 3307, 3308, 3309, 3179, 3180, 3181, 3182, 3183, 3184, 3204, 3205, 3206, 3207, 3208, 3209]
+2023-06-21 00:49:05,014|INFO|classes|	> Action Chosen: 1880
+2023-06-21 00:49:05,014|DEBUG|classes|	Moving 2 warriors of Eyrie Dynasties from 4 to 0
+2023-06-21 00:49:05,014|DEBUG|classes|		Warriors changed by -2 for Eyrie Dynasties in clearing 4
+2023-06-21 00:49:05,014|DEBUG|classes|		Warriors changed by 2 for Eyrie Dynasties in clearing 0
+2023-06-21 00:49:05,014|DEBUG|classes|	Fulfilled Bird Move requirement on Decree
+2023-06-21 00:49:05,014|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,014|INFO|classes|> Action 63 - Legal Actions: [25]
+2023-06-21 00:49:05,014|INFO|classes|	> Action Chosen: 25
+2023-06-21 00:49:05,014|DEBUG|classes|		Building 0 added for Eyrie Dynasties in clearing 0
+2023-06-21 00:49:05,014|DEBUG|classes|		Eyrie Dynasties buildings ID 0 changed by -1
+2023-06-21 00:49:05,014|DEBUG|classes|	Fulfilled Bird Build requirement on Decree
+2023-06-21 00:49:05,016|DEBUG|classes|	Eyrie Dynasties Points changed by -3
+2023-06-21 00:49:05,016|DEBUG|classes|		New Score: [5, 0]
+2023-06-21 00:49:05,016|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,016|INFO|classes|> Action 64 - Legal Actions: [4358, 4359, 4360, 4361]
+2023-06-21 00:49:05,016|INFO|classes|	> Action Chosen: 4359
+2023-06-21 00:49:05,016|DEBUG|classes|	New Leader Chosen: Charismatic
+2023-06-21 00:49:05,016|DEBUG|classes|		Card Loyal Vizier added to decree at Recruit
+2023-06-21 00:49:05,016|DEBUG|classes|		Card Loyal Vizier added to decree at Battle
+2023-06-21 00:49:05,016|DEBUG|classes|	Eyrie Dynasties Points changed by 2
+2023-06-21 00:49:05,016|DEBUG|classes|		New Score: [5, 2]
+2023-06-21 00:49:05,016|DEBUG|classes|	Eyrie Dynasties draws Protection Racket
+2023-06-21 00:49:05,016|DEBUG|classes|	Eyrie Dynasties draws Royal Claim
+2023-06-21 00:49:05,016|DEBUG|classes|	Wood can be placed automatically...
+2023-06-21 00:49:05,016|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,016|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,016|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,016|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,016|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,016|INFO|classes|> Action 65 - Legal Actions: [0, 17, 979, 1029, 1304, 1305, 1354, 1355, 1454, 1455, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1629, 1630, 1631, 1632, 1633, 1634, 1635, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 3904, 3954, 3804, 127, 230, 519, 291, 483]
+2023-06-21 00:49:05,016|INFO|classes|	> Action Chosen: 1585
+2023-06-21 00:49:05,016|DEBUG|classes|	Moving 7 warriors of Marquise de Cat from 3 to 0
+2023-06-21 00:49:05,016|DEBUG|classes|		Warriors changed by -7 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,016|DEBUG|classes|		Warriors changed by 7 for Marquise de Cat in clearing 0
+2023-06-21 00:49:05,017|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,017|INFO|classes|> Action 66 - Legal Actions: [0, 704, 705, 706, 707, 708, 709, 710, 754, 755, 756, 757, 758, 759, 760, 779, 780, 781, 782, 783, 784, 785, 979, 1029, 1304, 1305, 1354, 1355, 1454, 1455, 1879, 3904, 3954, 3804]
+2023-06-21 00:49:05,017|INFO|classes|	> Action Chosen: 0
+2023-06-21 00:49:05,017|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,017|INFO|classes|> Action 67 - Legal Actions: [0, 13, 17, 704, 705, 706, 707, 708, 709, 710, 754, 755, 756, 757, 758, 759, 760, 779, 780, 781, 782, 783, 784, 785, 979, 1029, 1304, 1305, 1354, 1355, 1454, 1455, 1879, 3904, 3954, 3804, 127, 230, 519, 291, 483]
+2023-06-21 00:49:05,017|INFO|classes|	> Action Chosen: 785
+2023-06-21 00:49:05,017|DEBUG|classes|	Moving 7 warriors of Marquise de Cat from 0 to 4
+2023-06-21 00:49:05,017|DEBUG|classes|		Warriors changed by -7 for Marquise de Cat in clearing 0
+2023-06-21 00:49:05,017|DEBUG|classes|		Warriors changed by 7 for Marquise de Cat in clearing 4
+2023-06-21 00:49:05,017|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,017|INFO|classes|> Action 68 - Legal Actions: [0, 979, 1029, 1304, 1305, 1354, 1355, 1454, 1455, 1879, 1880, 1881, 1882, 1883, 1884, 1885, 1886, 2079, 2080, 2081, 2082, 2083, 2084, 2085, 2086, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 3904, 3954, 3804]
+2023-06-21 00:49:05,017|INFO|classes|	> Action Chosen: 2010
+2023-06-21 00:49:05,017|DEBUG|classes|	Moving 7 warriors of Marquise de Cat from 4 to 5
+2023-06-21 00:49:05,017|DEBUG|classes|		Warriors changed by -7 for Marquise de Cat in clearing 4
+2023-06-21 00:49:05,017|DEBUG|classes|		Warriors changed by 7 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,018|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,018|INFO|classes|> Action 69 - Legal Actions: [0, 17, 979, 1029, 1304, 1305, 1354, 1355, 1454, 1455, 2004, 2254, 2255, 2256, 2257, 2258, 2259, 2260, 2279, 2280, 2281, 2282, 2283, 2284, 2285, 2329, 2330, 2331, 2332, 2333, 2334, 2335, 2379, 2380, 2381, 2382, 2383, 2384, 2385, 2429, 2430, 2431, 2432, 2433, 2434, 2435, 3904, 3954, 3804, 127, 30, 35, 42, 47, 54, 59, 230, 519, 291, 483]
+2023-06-21 00:49:05,018|INFO|classes|	> Action Chosen: 2429
+2023-06-21 00:49:05,018|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 5 to 10
+2023-06-21 00:49:05,018|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,018|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,018|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,018|INFO|classes|> Action 70 - Legal Actions: [0, 979, 1029, 1304, 1305, 1354, 1355, 1454, 1455, 2004, 2254, 2255, 2256, 2257, 2258, 2259, 2279, 2280, 2281, 2282, 2283, 2284, 2329, 2330, 2331, 2332, 2333, 2334, 2379, 2380, 2381, 2382, 2383, 2384, 2429, 2430, 2431, 2432, 2433, 2434, 3904, 3905, 3954, 3955, 3804, 3805]
+2023-06-21 00:49:05,018|INFO|classes|	> Action Chosen: 2431
+2023-06-21 00:49:05,018|DEBUG|classes|	Moving 3 warriors of Marquise de Cat from 5 to 10
+2023-06-21 00:49:05,018|DEBUG|classes|		Warriors changed by -3 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,018|DEBUG|classes|		Warriors changed by 3 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,018|DEBUG|classes|	Marquise de Cat draws Better Burrow Bank
+2023-06-21 00:49:05,018|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,018|INFO|classes|> Action 71 - Legal Actions: [645, 646, 650, 666, 669, 670]
+2023-06-21 00:49:05,018|INFO|classes|	> Action Chosen: 670
+2023-06-21 00:49:05,018|DEBUG|classes|	Tax Collector removed from hand of Marquise de Cat
+2023-06-21 00:49:05,018|DEBUG|classes|	Tax Collector added to discard pile
+2023-06-21 00:49:05,019|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,019|INFO|classes|> Action 72 - Legal Actions: [4386, 4428, 4470, 4512, 4399, 4441, 4483, 4525]
+2023-06-21 00:49:05,019|INFO|classes|	> Action Chosen: 4386
+2023-06-21 00:49:05,019|DEBUG|classes|	Protection Racket removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,019|DEBUG|classes|		Card Protection Racket added to decree at Recruit
+2023-06-21 00:49:05,019|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,019|INFO|classes|> Action 73 - Legal Actions: [0, 4399, 4441, 4483, 4525]
+2023-06-21 00:49:05,019|INFO|classes|	> Action Chosen: 4399
+2023-06-21 00:49:05,019|DEBUG|classes|	Royal Claim removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,019|DEBUG|classes|		Card Royal Claim added to decree at Recruit
+2023-06-21 00:49:05,019|DEBUG|classes|	Tallying required decree...
+2023-06-21 00:49:05,019|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,019|INFO|classes|> Action 74 - Legal Actions: [1, 5, 9]
+2023-06-21 00:49:05,019|INFO|classes|	> Action Chosen: 1
+2023-06-21 00:49:05,019|DEBUG|classes|		Eyrie Dynasties warrior storage changed by -2
+2023-06-21 00:49:05,019|DEBUG|classes|		Warriors changed by 2 for Eyrie Dynasties in clearing 0
+2023-06-21 00:49:05,019|DEBUG|classes|	Fulfilled Fox Recruit requirement on Decree
+2023-06-21 00:49:05,019|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,019|INFO|classes|> Action 75 - Legal Actions: [1, 5, 9]
+2023-06-21 00:49:05,020|INFO|classes|	> Action Chosen: 9
+2023-06-21 00:49:05,020|DEBUG|classes|		Eyrie Dynasties warrior storage changed by -2
+2023-06-21 00:49:05,020|DEBUG|classes|		Warriors changed by 2 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:05,020|DEBUG|classes|	Fulfilled Bird Recruit requirement on Decree
+2023-06-21 00:49:05,020|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,020|INFO|classes|> Action 76 - Legal Actions: [1, 5, 9]
+2023-06-21 00:49:05,020|INFO|classes|	> Action Chosen: 1
+2023-06-21 00:49:05,020|DEBUG|classes|		Eyrie Dynasties warrior storage changed by -2
+2023-06-21 00:49:05,020|DEBUG|classes|		Warriors changed by 2 for Eyrie Dynasties in clearing 0
+2023-06-21 00:49:05,020|DEBUG|classes|	Fulfilled Bird Recruit requirement on Decree
+2023-06-21 00:49:05,020|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,020|INFO|classes|> Action 77 - Legal Actions: [17]
+2023-06-21 00:49:05,020|INFO|classes|	> Action Chosen: 17
+2023-06-21 00:49:05,020|DEBUG|classes|	Fulfilled Bird Battle requirement on Decree
+2023-06-21 00:49:05,020|DEBUG|classes|	--- BATTLE STARTED: Eyrie Dynasties Attacks Marquise de Cat in clearing 4
+2023-06-21 00:49:05,020|DEBUG|classes|Marquise de Cat chose not to ambush
+2023-06-21 00:49:05,020|DEBUG|classes|--- DICE ROLL: [1, 1]
+2023-06-21 00:49:05,020|DEBUG|classes|--- Dealing hits to defender...
+2023-06-21 00:49:05,021|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 4
+2023-06-21 00:49:05,021|DEBUG|classes|		Marquise de Cat warrior storage changed by 1
+2023-06-21 00:49:05,021|DEBUG|classes|--- Dealing hits to attacker...
+2023-06-21 00:49:05,021|DEBUG|classes|		Warriors changed by -1 for Eyrie Dynasties in clearing 4
+2023-06-21 00:49:05,021|DEBUG|classes|		Eyrie Dynasties warrior storage changed by 1
+2023-06-21 00:49:05,021|DEBUG|classes|--- BATTLE FINISHED
+2023-06-21 00:49:05,021|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,021|INFO|classes|> Action 78 - Legal Actions: [0, 669, 650, 666]
+2023-06-21 00:49:05,021|INFO|classes|	> Action Chosen: 669
+2023-06-21 00:49:05,021|DEBUG|classes|	Field Hospitals activated...
+2023-06-21 00:49:05,021|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,021|DEBUG|classes|	Sword removed from hand of Marquise de Cat
+2023-06-21 00:49:05,021|DEBUG|classes|	Sword added to discard pile
+2023-06-21 00:49:05,021|DEBUG|classes|	Eyrie Dynasties Points changed by 2
+2023-06-21 00:49:05,021|DEBUG|classes|		New Score: [5, 4]
+2023-06-21 00:49:05,021|DEBUG|classes|	Eyrie Dynasties draws Investments
+2023-06-21 00:49:05,021|DEBUG|classes|	Eyrie Dynasties draws Birdy Bindle
+2023-06-21 00:49:05,021|DEBUG|classes|	Wood can be placed automatically...
+2023-06-21 00:49:05,021|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,021|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,021|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,021|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,021|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,021|INFO|classes|> Action 79 - Legal Actions: [0, 979, 1029, 1304, 1305, 1306, 1354, 1355, 1356, 1454, 1455, 1456, 2254, 2255, 2256, 2279, 2280, 2281, 2329, 2330, 2331, 2379, 2380, 2381, 2429, 2430, 2431, 3904, 3905, 3906, 3907, 3908, 3954, 3955, 3956, 3957, 3958, 3804, 3805, 3806, 3807, 3808, 127, 30, 35, 42, 47, 54, 59, 230, 291, 483, 242]
+2023-06-21 00:49:05,021|INFO|classes|	> Action Chosen: 2430
+2023-06-21 00:49:05,021|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 5 to 10
+2023-06-21 00:49:05,021|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,023|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,023|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,023|INFO|classes|> Action 80 - Legal Actions: [0, 979, 1029, 1304, 1305, 1306, 1354, 1355, 1356, 1454, 1455, 1456, 2254, 2279, 2329, 2379, 2429, 3904, 3905, 3906, 3907, 3908, 3909, 3910, 3954, 3955, 3956, 3957, 3958, 3959, 3960, 3804, 3805, 3806, 3807, 3808, 3809, 3810]
+2023-06-21 00:49:05,023|INFO|classes|	> Action Chosen: 3808
+2023-06-21 00:49:05,023|DEBUG|classes|	Moving 5 warriors of Marquise de Cat from 10 to 5
+2023-06-21 00:49:05,023|DEBUG|classes|		Warriors changed by -5 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,023|DEBUG|classes|		Warriors changed by 5 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,023|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,023|INFO|classes|> Action 81 - Legal Actions: [0, 979, 1029, 1304, 1305, 1306, 1354, 1355, 1356, 1454, 1455, 1456, 2254, 2255, 2256, 2257, 2258, 2259, 2279, 2280, 2281, 2282, 2283, 2284, 2329, 2330, 2331, 2332, 2333, 2334, 2379, 2380, 2381, 2382, 2383, 2384, 2429, 2430, 2431, 2432, 2433, 2434, 3904, 3905, 3954, 3955, 3804, 3805, 127, 30, 35, 42, 47, 54, 59, 230, 291, 483, 242]
+2023-06-21 00:49:05,023|INFO|classes|	> Action Chosen: 2258
+2023-06-21 00:49:05,023|DEBUG|classes|	Moving 5 warriors of Marquise de Cat from 5 to 3
+2023-06-21 00:49:05,024|DEBUG|classes|		Warriors changed by -5 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,024|DEBUG|classes|		Warriors changed by 5 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,024|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,024|INFO|classes|> Action 82 - Legal Actions: [0, 979, 1029, 1304, 1305, 1306, 1354, 1355, 1356, 1454, 1455, 1456, 1579, 1580, 1581, 1582, 1583, 1629, 1630, 1631, 1632, 1633, 1704, 1705, 1706, 1707, 1708, 2254, 2279, 2329, 2379, 2429, 3904, 3905, 3954, 3955, 3804, 3805]
+2023-06-21 00:49:05,024|INFO|classes|	> Action Chosen: 1355
+2023-06-21 00:49:05,024|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 2 to 3
+2023-06-21 00:49:05,024|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,024|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,024|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,024|INFO|classes|> Action 83 - Legal Actions: [0, 979, 1029, 1304, 1354, 1454, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1629, 1630, 1631, 1632, 1633, 1634, 1635, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 2254, 2279, 2329, 2379, 2429, 3904, 3905, 3954, 3955, 3804, 3805, 127, 30, 35, 42, 47, 54, 59, 230, 291, 483, 242]
+2023-06-21 00:49:05,024|INFO|classes|	> Action Chosen: 127
+2023-06-21 00:49:05,024|DEBUG|classes|	Warriors can be recruited automatically...
+2023-06-21 00:49:05,024|DEBUG|classes|		Marquise de Cat warrior storage changed by -1
+2023-06-21 00:49:05,025|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,025|DEBUG|classes|	Marquise de Cat draws Armorers
+2023-06-21 00:49:05,025|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,025|INFO|classes|> Action 84 - Legal Actions: [4384, 4426, 4468, 4510, 4372, 4414, 4456, 4498]
+2023-06-21 00:49:05,025|INFO|classes|	> Action Chosen: 4426
+2023-06-21 00:49:05,025|DEBUG|classes|	Investments removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,025|DEBUG|classes|		Card Investments added to decree at Move
+2023-06-21 00:49:05,025|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,025|INFO|classes|> Action 85 - Legal Actions: [0, 4372, 4414, 4456, 4498]
+2023-06-21 00:49:05,025|INFO|classes|	> Action Chosen: 0
+2023-06-21 00:49:05,025|DEBUG|classes|	Tallying required decree...
+2023-06-21 00:49:05,025|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,025|INFO|classes|> Action 86 - Legal Actions: [1, 5, 9]
+2023-06-21 00:49:05,026|INFO|classes|	> Action Chosen: 1
+2023-06-21 00:49:05,026|DEBUG|classes|		Eyrie Dynasties warrior storage changed by -2
+2023-06-21 00:49:05,026|DEBUG|classes|		Warriors changed by 2 for Eyrie Dynasties in clearing 0
+2023-06-21 00:49:05,026|DEBUG|classes|	Fulfilled Fox Recruit requirement on Decree
+2023-06-21 00:49:05,026|DEBUG|classes|	Eyrie Dynasties Points changed by -3
+2023-06-21 00:49:05,026|DEBUG|classes|		New Score: [5, 1]
+2023-06-21 00:49:05,026|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,026|INFO|classes|> Action 87 - Legal Actions: [4358, 4360, 4361]
+2023-06-21 00:49:05,026|INFO|classes|	> Action Chosen: 4361
+2023-06-21 00:49:05,026|DEBUG|classes|	New Leader Chosen: Despot
+2023-06-21 00:49:05,026|DEBUG|classes|		Card Loyal Vizier added to decree at Move
+2023-06-21 00:49:05,026|DEBUG|classes|		Card Loyal Vizier added to decree at Build
+2023-06-21 00:49:05,026|DEBUG|classes|	Eyrie Dynasties Points changed by 2
+2023-06-21 00:49:05,026|DEBUG|classes|		New Score: [5, 3]
+2023-06-21 00:49:05,026|DEBUG|classes|	Eyrie Dynasties draws Command Warren
+2023-06-21 00:49:05,026|DEBUG|classes|	Eyrie Dynasties draws Mouse-in-a-Sack
+2023-06-21 00:49:05,026|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,026|INFO|classes|> Action 88 - Legal Actions: [2, 3]
+2023-06-21 00:49:05,027|INFO|classes|	> Action Chosen: 2
+2023-06-21 00:49:05,027|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,027|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,027|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,027|INFO|classes|> Action 89 - Legal Actions: [0, 118, 979, 1029, 1304, 1305, 1354, 1355, 1454, 1455, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1629, 1630, 1631, 1632, 1633, 1634, 1635, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 2254, 2279, 2329, 2379, 2429, 3904, 3905, 3954, 3955, 3804, 3805, 127, 30, 35, 42, 47, 54, 59, 230, 291, 483, 242, 194, 195]
+2023-06-21 00:49:05,027|INFO|classes|	> Action Chosen: 979
+2023-06-21 00:49:05,027|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 1 to 0
+2023-06-21 00:49:05,027|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,027|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 0
+2023-06-21 00:49:05,027|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,027|INFO|classes|> Action 90 - Legal Actions: [0, 704, 754, 1304, 1305, 1354, 1355, 1454, 1455, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1629, 1630, 1631, 1632, 1633, 1634, 1635, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 2254, 2279, 2329, 2379, 2429, 3904, 3905, 3954, 3955, 3804, 3805]
+2023-06-21 00:49:05,027|INFO|classes|	> Action Chosen: 1631
+2023-06-21 00:49:05,027|DEBUG|classes|	Moving 3 warriors of Marquise de Cat from 3 to 2
+2023-06-21 00:49:05,028|DEBUG|classes|		Warriors changed by -3 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,028|DEBUG|classes|		Warriors changed by 3 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,028|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,028|INFO|classes|> Action 91 - Legal Actions: [0, 118, 13, 704, 754, 1304, 1305, 1306, 1307, 1308, 1354, 1355, 1356, 1357, 1358, 1454, 1455, 1456, 1457, 1458, 1579, 1580, 1581, 1582, 1629, 1630, 1631, 1632, 1704, 1705, 1706, 1707, 2254, 2279, 2329, 2379, 2429, 3904, 3905, 3954, 3955, 3804, 3805, 127, 30, 35, 42, 47, 54, 59, 230, 291, 483, 242, 194, 195]
+2023-06-21 00:49:05,028|INFO|classes|	> Action Chosen: 1358
+2023-06-21 00:49:05,028|DEBUG|classes|	Moving 5 warriors of Marquise de Cat from 2 to 3
+2023-06-21 00:49:05,028|DEBUG|classes|		Warriors changed by -5 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,028|DEBUG|classes|		Warriors changed by 5 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,028|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,028|INFO|classes|> Action 92 - Legal Actions: [0, 704, 754, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1586, 1587, 1629, 1630, 1631, 1632, 1633, 1634, 1635, 1636, 1637, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 1711, 1712, 2254, 2279, 2329, 2379, 2429, 3904, 3905, 3954, 3955, 3804, 3805]
+2023-06-21 00:49:05,028|INFO|classes|	> Action Chosen: 3804
+2023-06-21 00:49:05,028|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 10 to 5
+2023-06-21 00:49:05,028|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,028|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,028|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,028|INFO|classes|> Action 93 - Legal Actions: [0, 118, 13, 704, 754, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1586, 1587, 1629, 1630, 1631, 1632, 1633, 1634, 1635, 1636, 1637, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 1711, 1712, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 3904, 3954, 3804, 127, 30, 35, 42, 47, 54, 59, 230, 291, 483, 242, 194, 195]
+2023-06-21 00:49:05,028|INFO|classes|	> Action Chosen: 3904
+2023-06-21 00:49:05,028|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 10 to 9
+2023-06-21 00:49:05,028|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,028|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 9
+2023-06-21 00:49:05,028|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,029|INFO|classes|> Action 94 - Legal Actions: [0, 704, 754, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1586, 1587, 1629, 1630, 1631, 1632, 1633, 1634, 1635, 1636, 1637, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 1711, 1712, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 3579, 3629]
+2023-06-21 00:49:05,029|INFO|classes|	> Action Chosen: 1586
+2023-06-21 00:49:05,029|DEBUG|classes|	Moving 8 warriors of Marquise de Cat from 3 to 0
+2023-06-21 00:49:05,029|DEBUG|classes|		Warriors changed by -8 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,029|DEBUG|classes|		Warriors changed by 8 for Marquise de Cat in clearing 0
+2023-06-21 00:49:05,029|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,029|INFO|classes|> Action 95 - Legal Actions: [0, 118]
+2023-06-21 00:49:05,029|INFO|classes|	> Action Chosen: 0
+2023-06-21 00:49:05,029|DEBUG|classes|	Marquise de Cat draws Favor of the Mice
+2023-06-21 00:49:05,029|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,029|INFO|classes|> Action 96 - Legal Actions: [642, 645, 646, 650, 655, 666]
+2023-06-21 00:49:05,029|INFO|classes|	> Action Chosen: 655
+2023-06-21 00:49:05,030|DEBUG|classes|	Favor of the Mice removed from hand of Marquise de Cat
+2023-06-21 00:49:05,030|DEBUG|classes|	Favor of the Mice added to discard pile
+2023-06-21 00:49:05,030|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,030|INFO|classes|> Action 97 - Legal Actions: [4372, 4414, 4456, 4498, 4376, 4418, 4460, 4502, 4385, 4427, 4469, 4511]
+2023-06-21 00:49:05,030|INFO|classes|	> Action Chosen: 4418
+2023-06-21 00:49:05,030|DEBUG|classes|	Command Warren removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,030|DEBUG|classes|		Card Command Warren added to decree at Move
+2023-06-21 00:49:05,030|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,030|INFO|classes|> Action 98 - Legal Actions: [0, 4372, 4414, 4456, 4498, 4385, 4427, 4469, 4511]
+2023-06-21 00:49:05,030|INFO|classes|	> Action Chosen: 4414
+2023-06-21 00:49:05,030|DEBUG|classes|	Birdy Bindle removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,030|DEBUG|classes|		Card Birdy Bindle added to decree at Move
+2023-06-21 00:49:05,030|DEBUG|classes|	Tallying required decree...
+2023-06-21 00:49:05,031|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,031|INFO|classes|> Action 99 - Legal Actions: [704, 705, 706, 707, 708, 709, 710, 711, 754, 755, 756, 757, 758, 759, 760, 761, 779, 780, 781, 782, 783, 784, 785, 786, 1879, 1880, 1881, 1882, 2079, 2080, 2081, 2082, 2004, 2005, 2006, 2007, 3304, 3305, 3306, 3307, 3308, 3309, 3310, 3311, 3179, 3180, 3181, 3182, 3183, 3184, 3185, 3186, 3204, 3205, 3206, 3207, 3208, 3209, 3210, 3211]
+2023-06-21 00:49:05,031|INFO|classes|	> Action Chosen: 786
+2023-06-21 00:49:05,031|DEBUG|classes|	Moving 8 warriors of Eyrie Dynasties from 0 to 4
+2023-06-21 00:49:05,031|DEBUG|classes|		Warriors changed by -8 for Eyrie Dynasties in clearing 0
+2023-06-21 00:49:05,031|DEBUG|classes|		Warriors changed by 8 for Eyrie Dynasties in clearing 4
+2023-06-21 00:49:05,031|DEBUG|classes|	Fulfilled Bird Move requirement on Decree
+2023-06-21 00:49:05,031|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,031|INFO|classes|> Action 100 - Legal Actions: [1879, 1880, 1881, 1882, 1883, 1884, 1885, 1886, 1887, 1888, 1889, 1890, 2079, 2080, 2081, 2082, 2083, 2084, 2085, 2086, 2087, 2088, 2089, 2090, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 3304, 3305, 3306, 3307, 3308, 3309, 3310, 3311, 3179, 3180, 3181, 3182, 3183, 3184, 3185, 3186, 3204, 3205, 3206, 3207, 3208, 3209, 3210, 3211]
+2023-06-21 00:49:05,031|INFO|classes|	> Action Chosen: 1881
+2023-06-21 00:49:05,031|DEBUG|classes|	Moving 3 warriors of Eyrie Dynasties from 4 to 0
+2023-06-21 00:49:05,031|DEBUG|classes|		Warriors changed by -3 for Eyrie Dynasties in clearing 4
+2023-06-21 00:49:05,031|DEBUG|classes|		Warriors changed by 3 for Eyrie Dynasties in clearing 0
+2023-06-21 00:49:05,031|DEBUG|classes|	Fulfilled Bird Move requirement on Decree
+2023-06-21 00:49:05,031|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,032|INFO|classes|> Action 101 - Legal Actions: [3304, 3305, 3306, 3307, 3308, 3309, 3310, 3311, 3179, 3180, 3181, 3182, 3183, 3184, 3185, 3186, 3204, 3205, 3206, 3207, 3208, 3209, 3210, 3211]
+2023-06-21 00:49:05,032|INFO|classes|	> Action Chosen: 3180
+2023-06-21 00:49:05,032|DEBUG|classes|	Moving 2 warriors of Eyrie Dynasties from 8 to 4
+2023-06-21 00:49:05,032|DEBUG|classes|		Warriors changed by -2 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:05,032|DEBUG|classes|		Warriors changed by 2 for Eyrie Dynasties in clearing 4
+2023-06-21 00:49:05,032|DEBUG|classes|	Fulfilled Rabbit Move requirement on Decree
+2023-06-21 00:49:05,032|DEBUG|classes|	Eyrie Dynasties Points changed by -3
+2023-06-21 00:49:05,032|DEBUG|classes|		New Score: [5, 0]
+2023-06-21 00:49:05,032|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,032|INFO|classes|> Action 102 - Legal Actions: [4358, 4360]
+2023-06-21 00:49:05,032|INFO|classes|	> Action Chosen: 4360
+2023-06-21 00:49:05,032|DEBUG|classes|	New Leader Chosen: Commander
+2023-06-21 00:49:05,032|DEBUG|classes|		Card Loyal Vizier added to decree at Move
+2023-06-21 00:49:05,032|DEBUG|classes|		Card Loyal Vizier added to decree at Battle
+2023-06-21 00:49:05,032|DEBUG|classes|	Eyrie Dynasties Points changed by 2
+2023-06-21 00:49:05,032|DEBUG|classes|		New Score: [5, 2]
+2023-06-21 00:49:05,032|DEBUG|classes|	Eyrie Dynasties draws Sappers
+2023-06-21 00:49:05,032|DEBUG|classes|	Eyrie Dynasties draws Ambush! (Mouse)
+2023-06-21 00:49:05,032|DEBUG|classes|	No wood to be placed / No sawmills to generate wood at
+2023-06-21 00:49:05,033|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,033|INFO|classes|> Action 103 - Legal Actions: [0, 118, 13, 704, 705, 706, 707, 708, 709, 710, 711, 712, 754, 755, 756, 757, 758, 759, 760, 761, 762, 779, 780, 781, 782, 783, 784, 785, 786, 787, 1579, 1629, 1704, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 3579, 3629, 127, 30, 34, 35, 42, 46, 47, 54, 58, 59, 230, 291, 483, 242, 194, 195]
+2023-06-21 00:49:05,033|INFO|classes|	> Action Chosen: 757
+2023-06-21 00:49:05,033|DEBUG|classes|	Moving 4 warriors of Marquise de Cat from 0 to 3
+2023-06-21 00:49:05,033|DEBUG|classes|		Warriors changed by -4 for Marquise de Cat in clearing 0
+2023-06-21 00:49:05,033|DEBUG|classes|		Warriors changed by 4 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,033|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,033|INFO|classes|> Action 104 - Legal Actions: [0, 704, 705, 706, 707, 708, 754, 755, 756, 757, 758, 779, 780, 781, 782, 783, 1579, 1580, 1581, 1582, 1583, 1629, 1630, 1631, 1632, 1633, 1704, 1705, 1706, 1707, 1708, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 3579, 3629]
+2023-06-21 00:49:05,033|INFO|classes|	> Action Chosen: 758
+2023-06-21 00:49:05,033|DEBUG|classes|	Moving 5 warriors of Marquise de Cat from 0 to 3
+2023-06-21 00:49:05,033|DEBUG|classes|		Warriors changed by -5 for Marquise de Cat in clearing 0
+2023-06-21 00:49:05,033|DEBUG|classes|		Warriors changed by 5 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,033|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,033|INFO|classes|> Action 105 - Legal Actions: [0, 118, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1586, 1587, 1588, 1629, 1630, 1631, 1632, 1633, 1634, 1635, 1636, 1637, 1638, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 1711, 1712, 1713, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 3579, 3629, 127, 30, 34, 35, 42, 46, 47, 54, 58, 59, 230, 291, 483, 242, 194, 195]
+2023-06-21 00:49:05,034|INFO|classes|	> Action Chosen: 47
+2023-06-21 00:49:05,034|DEBUG|classes|		Marquise de Cat buildings ID 1 changed by -1
+2023-06-21 00:49:05,034|DEBUG|classes|		Building 1 added for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,034|DEBUG|classes|	Marquise de Cat Points changed by 3
+2023-06-21 00:49:05,034|DEBUG|classes|		New Score: [8, 2]
+2023-06-21 00:49:05,034|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,034|INFO|classes|> Action 106 - Legal Actions: [2, 3]
+2023-06-21 00:49:05,034|INFO|classes|	> Action Chosen: 3
+2023-06-21 00:49:05,034|DEBUG|classes|		Token 1 removed for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,034|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by 1
+2023-06-21 00:49:05,034|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,034|INFO|classes|> Action 107 - Legal Actions: [2, 3]
+2023-06-21 00:49:05,034|INFO|classes|	> Action Chosen: 2
+2023-06-21 00:49:05,034|DEBUG|classes|		Token 1 removed for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,034|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by 1
+2023-06-21 00:49:05,035|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,035|INFO|classes|> Action 108 - Legal Actions: [2, 3]
+2023-06-21 00:49:05,035|INFO|classes|	> Action Chosen: 3
+2023-06-21 00:49:05,035|DEBUG|classes|		Token 1 removed for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,035|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by 1
+2023-06-21 00:49:05,035|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,035|INFO|classes|> Action 109 - Legal Actions: [0, 118, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1586, 1587, 1588, 1629, 1630, 1631, 1632, 1633, 1634, 1635, 1636, 1637, 1638, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 1711, 1712, 1713, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 3579, 3629, 127, 30, 34, 42, 46, 54, 58, 230, 291, 483, 242, 194, 195]
+2023-06-21 00:49:05,035|INFO|classes|	> Action Chosen: 2430
+2023-06-21 00:49:05,035|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 5 to 10
+2023-06-21 00:49:05,035|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,035|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,035|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,035|INFO|classes|> Action 110 - Legal Actions: [0, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1586, 1587, 1588, 1629, 1630, 1631, 1632, 1633, 1634, 1635, 1636, 1637, 1638, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 1711, 1712, 1713, 3579, 3629, 3904, 3905, 3954, 3955, 3804, 3805]
+2023-06-21 00:49:05,036|INFO|classes|	> Action Chosen: 1630
+2023-06-21 00:49:05,036|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 3 to 2
+2023-06-21 00:49:05,036|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,036|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,036|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,036|INFO|classes|> Action 111 - Legal Actions: [0, 118]
+2023-06-21 00:49:05,036|INFO|classes|	> Action Chosen: 118
+2023-06-21 00:49:05,036|DEBUG|classes|	Armorers removed from hand of Marquise de Cat
+2023-06-21 00:49:05,036|DEBUG|classes|	Armorers added to discard pile
+2023-06-21 00:49:05,036|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,036|INFO|classes|> Action 112 - Legal Actions: [0, 1304, 1305, 1354, 1355, 1454, 1455, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1586, 1629, 1630, 1631, 1632, 1633, 1634, 1635, 1636, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 1711, 3579, 3629, 3904, 3905, 3954, 3955, 3804, 3805, 127, 230, 291, 483, 242]
+2023-06-21 00:49:05,036|INFO|classes|	> Action Chosen: 1630
+2023-06-21 00:49:05,036|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 3 to 2
+2023-06-21 00:49:05,036|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,036|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,036|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,036|INFO|classes|> Action 113 - Legal Actions: [0, 1304, 1305, 1306, 1307, 1354, 1355, 1356, 1357, 1454, 1455, 1456, 1457, 1579, 1580, 1581, 1582, 1583, 1584, 1629, 1630, 1631, 1632, 1633, 1634, 1704, 1705, 1706, 1707, 1708, 1709, 3579, 3629, 3904, 3905, 3954, 3955, 3804, 3805]
+2023-06-21 00:49:05,037|INFO|classes|	> Action Chosen: 3904
+2023-06-21 00:49:05,037|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 10 to 9
+2023-06-21 00:49:05,037|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,037|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 9
+2023-06-21 00:49:05,037|DEBUG|classes|	Marquise de Cat draws Favor of the Rabbits
+2023-06-21 00:49:05,037|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,037|INFO|classes|> Action 114 - Legal Actions: [4385, 4427, 4469, 4511, 4390, 4432, 4474, 4516, 4365, 4407, 4449, 4491]
+2023-06-21 00:49:05,037|INFO|classes|	> Action Chosen: 4432
+2023-06-21 00:49:05,037|DEBUG|classes|	Sappers removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,037|DEBUG|classes|		Card Sappers added to decree at Move
+2023-06-21 00:49:05,037|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,037|INFO|classes|> Action 115 - Legal Actions: [0, 4385, 4427, 4469, 4511, 4365, 4407, 4449, 4491]
+2023-06-21 00:49:05,037|INFO|classes|	> Action Chosen: 4491
+2023-06-21 00:49:05,037|DEBUG|classes|	Ambush! (Mouse) removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,037|DEBUG|classes|		Card Ambush! (Mouse) added to decree at Build
+2023-06-21 00:49:05,037|DEBUG|classes|	Tallying required decree...
+2023-06-21 00:49:05,038|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,038|INFO|classes|> Action 116 - Legal Actions: [704, 705, 706, 754, 755, 756, 779, 780, 781, 1879, 1880, 1881, 1882, 1883, 1884, 1885, 1886, 1887, 1888, 1889, 2079, 2080, 2081, 2082, 2083, 2084, 2085, 2086, 2087, 2088, 2089, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 3304, 3305, 3306, 3307, 3308, 3309, 3179, 3180, 3181, 3182, 3183, 3184, 3204, 3205, 3206, 3207, 3208, 3209]
+2023-06-21 00:49:05,038|INFO|classes|	> Action Chosen: 2087
+2023-06-21 00:49:05,038|DEBUG|classes|	Moving 9 warriors of Eyrie Dynasties from 4 to 8
+2023-06-21 00:49:05,038|DEBUG|classes|		Warriors changed by -9 for Eyrie Dynasties in clearing 4
+2023-06-21 00:49:05,038|DEBUG|classes|		Warriors changed by 9 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:05,038|DEBUG|classes|	Fulfilled Bird Move requirement on Decree
+2023-06-21 00:49:05,038|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,038|INFO|classes|> Action 117 - Legal Actions: [704, 705, 706, 754, 755, 756, 779, 780, 781, 1879, 1880, 2079, 2080, 2004, 2005, 3304, 3305, 3306, 3307, 3308, 3309, 3310, 3311, 3312, 3313, 3314, 3315, 3316, 3317, 3318, 3179, 3180, 3181, 3182, 3183, 3184, 3185, 3186, 3187, 3188, 3189, 3190, 3191, 3192, 3193, 3204, 3205, 3206, 3207, 3208, 3209, 3210, 3211, 3212, 3213, 3214, 3215, 3216, 3217, 3218]
+2023-06-21 00:49:05,038|INFO|classes|	> Action Chosen: 3208
+2023-06-21 00:49:05,038|DEBUG|classes|	Moving 5 warriors of Eyrie Dynasties from 8 to 5
+2023-06-21 00:49:05,038|DEBUG|classes|		Warriors changed by -5 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:05,038|DEBUG|classes|		Warriors changed by 5 for Eyrie Dynasties in clearing 5
+2023-06-21 00:49:05,038|DEBUG|classes|	Fulfilled Bird Move requirement on Decree
+2023-06-21 00:49:05,038|DEBUG|classes|	Eyrie Dynasties Points changed by -3
+2023-06-21 00:49:05,039|DEBUG|classes|		New Score: [8, 0]
+2023-06-21 00:49:05,039|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,039|INFO|classes|> Action 118 - Legal Actions: [4358]
+2023-06-21 00:49:05,039|INFO|classes|	> Action Chosen: 4358
+2023-06-21 00:49:05,039|DEBUG|classes|	New Leader Chosen: Builder
+2023-06-21 00:49:05,039|DEBUG|classes|		Card Loyal Vizier added to decree at Recruit
+2023-06-21 00:49:05,039|DEBUG|classes|		Card Loyal Vizier added to decree at Move
+2023-06-21 00:49:05,039|DEBUG|classes|	Eyrie Dynasties Points changed by 2
+2023-06-21 00:49:05,039|DEBUG|classes|		New Score: [8, 2]
+2023-06-21 00:49:05,039|DEBUG|classes|	Eyrie Dynasties draws Gently Used Knapsack
+2023-06-21 00:49:05,039|DEBUG|classes|	Eyrie Dynasties draws Better Burrow Bank
+2023-06-21 00:49:05,039|DEBUG|classes|	Wood can be placed automatically...
+2023-06-21 00:49:05,039|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,039|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,039|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,039|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,039|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,039|INFO|classes|> Action 119 - Legal Actions: [0, 1304, 1305, 1306, 1307, 1354, 1355, 1356, 1357, 1454, 1455, 1456, 1457, 1579, 1580, 1581, 1582, 1583, 1584, 1629, 1630, 1631, 1632, 1633, 1634, 1704, 1705, 1706, 1707, 1708, 1709, 3579, 3580, 3629, 3630, 3904, 3954, 3804, 127, 230, 291, 483, 242, 362]
+2023-06-21 00:49:05,040|INFO|classes|	> Action Chosen: 3954
+2023-06-21 00:49:05,040|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 10 to 11
+2023-06-21 00:49:05,040|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,040|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 11
+2023-06-21 00:49:05,040|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,040|INFO|classes|> Action 120 - Legal Actions: [0, 1304, 1305, 1306, 1307, 1354, 1355, 1356, 1357, 1454, 1455, 1456, 1457, 1579, 1580, 1581, 1582, 1583, 1584, 1629, 1630, 1631, 1632, 1633, 1634, 1704, 1705, 1706, 1707, 1708, 1709, 3579, 3580, 3629, 3630, 4229, 4129, 4154]
+2023-06-21 00:49:05,040|INFO|classes|	> Action Chosen: 1355
+2023-06-21 00:49:05,040|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 2 to 3
+2023-06-21 00:49:05,040|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,040|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,040|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,040|INFO|classes|> Action 121 - Legal Actions: [0, 1304, 1305, 1354, 1355, 1454, 1455, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1586, 1629, 1630, 1631, 1632, 1633, 1634, 1635, 1636, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 1711, 3579, 3580, 3629, 3630, 4229, 4129, 4154, 127, 230, 291, 483, 242, 362]
+2023-06-21 00:49:05,041|INFO|classes|	> Action Chosen: 1584
+2023-06-21 00:49:05,041|DEBUG|classes|	Moving 6 warriors of Marquise de Cat from 3 to 0
+2023-06-21 00:49:05,041|DEBUG|classes|		Warriors changed by -6 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,041|DEBUG|classes|		Warriors changed by 6 for Marquise de Cat in clearing 0
+2023-06-21 00:49:05,041|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,041|INFO|classes|> Action 122 - Legal Actions: [0, 704, 705, 706, 707, 708, 709, 754, 755, 756, 757, 758, 759, 779, 780, 781, 782, 783, 784, 1304, 1305, 1354, 1355, 1454, 1455, 1579, 1580, 1629, 1630, 1704, 1705, 3579, 3580, 3629, 3630, 4229, 4129, 4154]
+2023-06-21 00:49:05,041|INFO|classes|	> Action Chosen: 1304
+2023-06-21 00:49:05,041|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 2 to 1
+2023-06-21 00:49:05,041|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,041|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,041|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,041|INFO|classes|> Action 123 - Legal Actions: [0, 13, 704, 705, 706, 707, 708, 709, 754, 755, 756, 757, 758, 759, 779, 780, 781, 782, 783, 784, 979, 1029, 1304, 1354, 1454, 1579, 1580, 1629, 1630, 1704, 1705, 3579, 3580, 3629, 3630, 4229, 4129, 4154, 127, 230, 291, 483, 242, 362]
+2023-06-21 00:49:05,042|INFO|classes|	> Action Chosen: 4229
+2023-06-21 00:49:05,042|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 11 to 10
+2023-06-21 00:49:05,042|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 11
+2023-06-21 00:49:05,042|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,042|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,042|INFO|classes|> Action 124 - Legal Actions: [0, 704, 705, 706, 707, 708, 709, 754, 755, 756, 757, 758, 759, 779, 780, 781, 782, 783, 784, 979, 1029, 1304, 1354, 1454, 1579, 1580, 1629, 1630, 1704, 1705, 3579, 3580, 3629, 3630, 3904, 3954, 3804]
+2023-06-21 00:49:05,043|INFO|classes|	> Action Chosen: 3629
+2023-06-21 00:49:05,043|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 9 to 10
+2023-06-21 00:49:05,043|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 9
+2023-06-21 00:49:05,043|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,043|DEBUG|classes|	Marquise de Cat draws Smuggler's Trail
+2023-06-21 00:49:05,043|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,043|INFO|classes|> Action 125 - Legal Actions: [645, 646, 650, 656, 666, 667]
+2023-06-21 00:49:05,043|INFO|classes|	> Action Chosen: 650
+2023-06-21 00:49:05,043|DEBUG|classes|	Codebreakers removed from hand of Marquise de Cat
+2023-06-21 00:49:05,043|DEBUG|classes|	Codebreakers added to discard pile
+2023-06-21 00:49:05,043|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,043|INFO|classes|> Action 126 - Legal Actions: [4385, 4427, 4469, 4511, 4383, 4425, 4467, 4509, 4371, 4413, 4455, 4497]
+2023-06-21 00:49:05,043|INFO|classes|	> Action Chosen: 4383
+2023-06-21 00:49:05,043|DEBUG|classes|	Gently Used Knapsack removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,043|DEBUG|classes|		Card Gently Used Knapsack added to decree at Recruit
+2023-06-21 00:49:05,043|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,043|INFO|classes|> Action 127 - Legal Actions: [0, 4385, 4427, 4469, 4511, 4371, 4413, 4455, 4497]
+2023-06-21 00:49:05,044|INFO|classes|	> Action Chosen: 4497
+2023-06-21 00:49:05,044|DEBUG|classes|	Better Burrow Bank removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,044|DEBUG|classes|		Card Better Burrow Bank added to decree at Build
+2023-06-21 00:49:05,044|DEBUG|classes|	Tallying required decree...
+2023-06-21 00:49:05,044|DEBUG|classes|	Eyrie Dynasties Points changed by -2
+2023-06-21 00:49:05,044|DEBUG|classes|		New Score: [8, 0]
+2023-06-21 00:49:05,044|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,044|INFO|classes|> Action 128 - Legal Actions: [4358, 4359, 4360, 4361]
+2023-06-21 00:49:05,044|INFO|classes|	> Action Chosen: 4360
+2023-06-21 00:49:05,044|DEBUG|classes|	New Leader Chosen: Commander
+2023-06-21 00:49:05,044|DEBUG|classes|		Card Loyal Vizier added to decree at Move
+2023-06-21 00:49:05,044|DEBUG|classes|		Card Loyal Vizier added to decree at Battle
+2023-06-21 00:49:05,044|DEBUG|classes|	Eyrie Dynasties Points changed by 2
+2023-06-21 00:49:05,044|DEBUG|classes|		New Score: [8, 2]
+2023-06-21 00:49:05,044|DEBUG|classes|	Eyrie Dynasties draws Travel Gear (Mouse)
+2023-06-21 00:49:05,044|DEBUG|classes|	Eyrie Dynasties draws Codebreakers
+2023-06-21 00:49:05,045|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,045|INFO|classes|> Action 129 - Legal Actions: [2, 3]
+2023-06-21 00:49:05,045|INFO|classes|	> Action Chosen: 2
+2023-06-21 00:49:05,045|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,045|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,045|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,045|INFO|classes|> Action 130 - Legal Actions: [0, 13, 704, 705, 706, 707, 708, 709, 754, 755, 756, 757, 758, 759, 779, 780, 781, 782, 783, 784, 979, 1029, 1304, 1354, 1454, 1579, 1580, 1629, 1630, 1704, 1705, 3579, 3629, 3904, 3905, 3954, 3955, 3804, 3805, 127, 230, 483, 242, 362, 494]
+2023-06-21 00:49:05,045|INFO|classes|	> Action Chosen: 1304
+2023-06-21 00:49:05,045|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 2 to 1
+2023-06-21 00:49:05,045|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,045|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,045|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,045|INFO|classes|> Action 131 - Legal Actions: [0, 704, 705, 706, 707, 708, 709, 754, 755, 756, 757, 758, 759, 779, 780, 781, 782, 783, 784, 979, 980, 1029, 1030, 1579, 1580, 1629, 1630, 1704, 1705, 3579, 3629, 3904, 3905, 3954, 3955, 3804, 3805]
+2023-06-21 00:49:05,046|INFO|classes|	> Action Chosen: 755
+2023-06-21 00:49:05,046|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 0 to 3
+2023-06-21 00:49:05,046|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 0
+2023-06-21 00:49:05,046|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,046|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,046|INFO|classes|> Action 132 - Legal Actions: [0, 13, 704, 705, 706, 707, 754, 755, 756, 757, 979, 980, 1029, 1030, 1579, 1580, 1581, 1582, 1629, 1630, 1631, 1632, 1704, 1705, 1706, 1707, 3579, 3629, 3904, 3905, 3954, 3955, 3804, 3805, 127, 230, 483, 242, 362, 494]
+2023-06-21 00:49:05,046|INFO|classes|	> Action Chosen: 1582
+2023-06-21 00:49:05,046|DEBUG|classes|	Moving 4 warriors of Marquise de Cat from 3 to 0
+2023-06-21 00:49:05,046|DEBUG|classes|		Warriors changed by -4 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,046|DEBUG|classes|		Warriors changed by 4 for Marquise de Cat in clearing 0
+2023-06-21 00:49:05,046|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,046|INFO|classes|> Action 133 - Legal Actions: [0, 704, 705, 706, 707, 708, 709, 710, 711, 754, 755, 756, 757, 758, 759, 760, 761, 779, 780, 781, 782, 783, 784, 785, 786, 979, 980, 1029, 1030, 3579, 3629, 3904, 3905, 3954, 3955, 3804, 3805]
+2023-06-21 00:49:05,046|INFO|classes|	> Action Chosen: 786
+2023-06-21 00:49:05,047|DEBUG|classes|	Moving 8 warriors of Marquise de Cat from 0 to 4
+2023-06-21 00:49:05,047|DEBUG|classes|		Warriors changed by -8 for Marquise de Cat in clearing 0
+2023-06-21 00:49:05,047|DEBUG|classes|		Warriors changed by 8 for Marquise de Cat in clearing 4
+2023-06-21 00:49:05,047|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,047|INFO|classes|> Action 134 - Legal Actions: [0, 17, 979, 980, 1029, 1030, 1879, 1880, 1881, 1882, 1883, 1884, 1885, 1886, 2079, 2080, 2081, 2082, 2083, 2084, 2085, 2086, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 3579, 3629, 3904, 3905, 3954, 3955, 3804, 3805, 127, 230, 483, 242, 362, 494]
+2023-06-21 00:49:05,047|INFO|classes|	> Action Chosen: 3904
+2023-06-21 00:49:05,047|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 10 to 9
+2023-06-21 00:49:05,047|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,047|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 9
+2023-06-21 00:49:05,047|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,047|INFO|classes|> Action 135 - Legal Actions: [0, 979, 980, 1029, 1030, 1879, 1880, 1881, 1882, 1883, 1884, 1885, 1886, 2079, 2080, 2081, 2082, 2083, 2084, 2085, 2086, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 3579, 3580, 3629, 3630, 3904, 3954, 3804]
+2023-06-21 00:49:05,047|INFO|classes|	> Action Chosen: 2079
+2023-06-21 00:49:05,048|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 4 to 8
+2023-06-21 00:49:05,048|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 4
+2023-06-21 00:49:05,048|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 8
+2023-06-21 00:49:05,048|DEBUG|classes|	Marquise de Cat draws Foxfolk Steel
+2023-06-21 00:49:05,048|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,048|INFO|classes|> Action 136 - Legal Actions: [645, 646, 656, 657, 666, 667]
+2023-06-21 00:49:05,048|INFO|classes|	> Action Chosen: 667
+2023-06-21 00:49:05,048|DEBUG|classes|	Smuggler's Trail removed from hand of Marquise de Cat
+2023-06-21 00:49:05,048|DEBUG|classes|	Smuggler's Trail added to discard pile
+2023-06-21 00:49:05,048|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,048|INFO|classes|> Action 137 - Legal Actions: [4385, 4427, 4469, 4511, 4397, 4439, 4481, 4523, 4375, 4417, 4459, 4501]
+2023-06-21 00:49:05,048|INFO|classes|	> Action Chosen: 4385
+2023-06-21 00:49:05,048|DEBUG|classes|	Mouse-in-a-Sack removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,048|DEBUG|classes|		Card Mouse-in-a-Sack added to decree at Recruit
+2023-06-21 00:49:05,048|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,048|INFO|classes|> Action 138 - Legal Actions: [0, 4397, 4439, 4481, 4523, 4375, 4417, 4459, 4501]
+2023-06-21 00:49:05,049|INFO|classes|	> Action Chosen: 4523
+2023-06-21 00:49:05,049|DEBUG|classes|	Travel Gear (Mouse) removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,049|DEBUG|classes|		Card Travel Gear (Mouse) added to decree at Build
+2023-06-21 00:49:05,049|DEBUG|classes|	Tallying required decree...
+2023-06-21 00:49:05,049|DEBUG|classes|	Eyrie Dynasties Points changed by -2
+2023-06-21 00:49:05,049|DEBUG|classes|		New Score: [8, 0]
+2023-06-21 00:49:05,049|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,049|INFO|classes|> Action 139 - Legal Actions: [4358, 4359, 4361]
+2023-06-21 00:49:05,049|INFO|classes|	> Action Chosen: 4361
+2023-06-21 00:49:05,049|DEBUG|classes|	New Leader Chosen: Despot
+2023-06-21 00:49:05,049|DEBUG|classes|		Card Loyal Vizier added to decree at Move
+2023-06-21 00:49:05,049|DEBUG|classes|		Card Loyal Vizier added to decree at Build
+2023-06-21 00:49:05,049|DEBUG|classes|	Eyrie Dynasties Points changed by 2
+2023-06-21 00:49:05,049|DEBUG|classes|		New Score: [8, 2]
+2023-06-21 00:49:05,049|DEBUG|classes|	Eyrie Dynasties draws Scouting Party
+2023-06-21 00:49:05,049|DEBUG|classes|	Eyrie Dynasties draws Brutal Tactics
+2023-06-21 00:49:05,049|DEBUG|classes|	No wood to be placed / No sawmills to generate wood at
+2023-06-21 00:49:05,050|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,050|INFO|classes|> Action 140 - Legal Actions: [0, 17, 21, 979, 980, 1029, 1030, 1879, 1880, 1881, 1882, 1883, 1884, 1885, 2079, 2080, 2081, 2082, 2083, 2084, 2085, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 3304, 3179, 3579, 3580, 3629, 3630, 3904, 3954, 3804, 127, 230, 483, 242, 362]
+2023-06-21 00:49:05,050|INFO|classes|	> Action Chosen: 2009
+2023-06-21 00:49:05,050|DEBUG|classes|	Moving 6 warriors of Marquise de Cat from 4 to 5
+2023-06-21 00:49:05,050|DEBUG|classes|		Warriors changed by -6 for Marquise de Cat in clearing 4
+2023-06-21 00:49:05,050|DEBUG|classes|		Warriors changed by 6 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,050|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,050|INFO|classes|> Action 141 - Legal Actions: [0, 979, 980, 1029, 1030, 2004, 2254, 2255, 2256, 2257, 2258, 2259, 2279, 2280, 2281, 2282, 2283, 2284, 2329, 2330, 2331, 2332, 2333, 2334, 2379, 2380, 2381, 2382, 2383, 2384, 2429, 2430, 2431, 2432, 2433, 2434, 3304, 3204, 3579, 3580, 3629, 3630, 3904, 3954, 3804]
+2023-06-21 00:49:05,050|INFO|classes|	> Action Chosen: 2333
+2023-06-21 00:49:05,050|DEBUG|classes|	Moving 5 warriors of Marquise de Cat from 5 to 6
+2023-06-21 00:49:05,050|DEBUG|classes|		Warriors changed by -5 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,050|DEBUG|classes|		Warriors changed by 5 for Marquise de Cat in clearing 6
+2023-06-21 00:49:05,050|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,050|INFO|classes|> Action 142 - Legal Actions: [0, 17, 18, 21, 979, 980, 1029, 1030, 2254, 2329, 2429, 2754, 2755, 2756, 2757, 2758, 2604, 2605, 2606, 2607, 2608, 2654, 2655, 2656, 2657, 2658, 3304, 3579, 3580, 3629, 3630, 3904, 3954, 3804, 127, 230, 483, 242, 362]
+2023-06-21 00:49:05,051|INFO|classes|	> Action Chosen: 2429
+2023-06-21 00:49:05,051|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 5 to 10
+2023-06-21 00:49:05,051|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,051|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,051|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,051|INFO|classes|> Action 143 - Legal Actions: [0, 979, 980, 1029, 1030, 2754, 2755, 2756, 2757, 2758, 2604, 2605, 2606, 2607, 2608, 2654, 2655, 2656, 2657, 2658, 3304, 3579, 3580, 3629, 3630, 3904, 3905, 3954, 3955, 3804, 3805]
+2023-06-21 00:49:05,051|INFO|classes|	> Action Chosen: 3955
+2023-06-21 00:49:05,051|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 10 to 11
+2023-06-21 00:49:05,051|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 10
+2023-06-21 00:49:05,051|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 11
+2023-06-21 00:49:05,051|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,051|INFO|classes|> Action 144 - Legal Actions: [0, 17, 21, 979, 980, 1029, 1030, 2754, 2755, 2756, 2757, 2758, 2604, 2605, 2606, 2607, 2608, 2654, 2655, 2656, 2657, 2658, 3304, 3579, 3580, 3629, 3630, 4229, 4230, 4129, 4130, 4154, 4155, 127, 230, 483, 242, 362]
+2023-06-21 00:49:05,051|INFO|classes|	> Action Chosen: 362
+2023-06-21 00:49:05,052|DEBUG|classes|	Favor of the Rabbits removed from hand of Marquise de Cat
+2023-06-21 00:49:05,052|DEBUG|classes|	Favor of the Rabbits added to discard pile
+2023-06-21 00:49:05,052|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,052|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,052|DEBUG|classes|	Marquise de Cat draws Root Tea (Rabbit)
+2023-06-21 00:49:05,052|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,052|INFO|classes|> Action 145 - Legal Actions: [4375, 4417, 4459, 4501, 4391, 4433, 4475, 4517, 4373, 4415, 4457, 4499]
+2023-06-21 00:49:05,052|INFO|classes|	> Action Chosen: 4475
+2023-06-21 00:49:05,052|DEBUG|classes|	Scouting Party removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,052|DEBUG|classes|		Card Scouting Party added to decree at Battle
+2023-06-21 00:49:05,052|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,052|INFO|classes|> Action 146 - Legal Actions: [0, 4375, 4417, 4459, 4501, 4373, 4415, 4457, 4499]
+2023-06-21 00:49:05,052|INFO|classes|	> Action Chosen: 4459
+2023-06-21 00:49:05,052|DEBUG|classes|	Codebreakers removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,052|DEBUG|classes|		Card Codebreakers added to decree at Battle
+2023-06-21 00:49:05,052|DEBUG|classes|	Tallying required decree...
+2023-06-21 00:49:05,052|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,052|INFO|classes|> Action 147 - Legal Actions: [704, 705, 706, 754, 755, 756, 779, 780, 781, 1879, 1880, 2079, 2080, 2004, 2005, 2254, 2255, 2256, 2257, 2258, 2279, 2280, 2281, 2282, 2283, 2329, 2330, 2331, 2332, 2333, 2379, 2380, 2381, 2382, 2383, 2429, 2430, 2431, 2432, 2433, 3304, 3305, 3306, 3307, 3308, 3309, 3310, 3311, 3312, 3313, 3179, 3180, 3181, 3182, 3183, 3184, 3185, 3186, 3187, 3188, 3204, 3205, 3206, 3207, 3208, 3209, 3210, 3211, 3212, 3213]
+2023-06-21 00:49:05,053|INFO|classes|	> Action Chosen: 2283
+2023-06-21 00:49:05,053|DEBUG|classes|	Moving 5 warriors of Eyrie Dynasties from 5 to 4
+2023-06-21 00:49:05,053|DEBUG|classes|		Warriors changed by -5 for Eyrie Dynasties in clearing 5
+2023-06-21 00:49:05,053|DEBUG|classes|		Warriors changed by 5 for Eyrie Dynasties in clearing 4
+2023-06-21 00:49:05,053|DEBUG|classes|	Fulfilled Bird Move requirement on Decree
+2023-06-21 00:49:05,053|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,053|INFO|classes|> Action 148 - Legal Actions: [17]
+2023-06-21 00:49:05,053|INFO|classes|	> Action Chosen: 17
+2023-06-21 00:49:05,053|DEBUG|classes|	Fulfilled Mouse Battle requirement on Decree
+2023-06-21 00:49:05,053|DEBUG|classes|	--- BATTLE STARTED: Eyrie Dynasties Attacks Marquise de Cat in clearing 4
+2023-06-21 00:49:05,053|DEBUG|classes|Marquise de Cat chose not to ambush
+2023-06-21 00:49:05,053|DEBUG|classes|--- DICE ROLL: [2, 3]
+2023-06-21 00:49:05,053|DEBUG|classes|--- Dealing hits to defender...
+2023-06-21 00:49:05,053|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 4
+2023-06-21 00:49:05,053|DEBUG|classes|		Marquise de Cat warrior storage changed by 1
+2023-06-21 00:49:05,053|DEBUG|classes|--- Dealing hits to attacker...
+2023-06-21 00:49:05,053|DEBUG|classes|		Warriors changed by -1 for Eyrie Dynasties in clearing 4
+2023-06-21 00:49:05,053|DEBUG|classes|		Eyrie Dynasties warrior storage changed by 1
+2023-06-21 00:49:05,053|DEBUG|classes|--- BATTLE FINISHED
+2023-06-21 00:49:05,053|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,054|INFO|classes|> Action 149 - Legal Actions: [0, 666]
+2023-06-21 00:49:05,054|INFO|classes|	> Action Chosen: 666
+2023-06-21 00:49:05,054|DEBUG|classes|	Field Hospitals activated...
+2023-06-21 00:49:05,054|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,054|DEBUG|classes|	Scouting Party removed from hand of Marquise de Cat
+2023-06-21 00:49:05,054|DEBUG|classes|	Scouting Party added to discard pile
+2023-06-21 00:49:05,054|DEBUG|classes|	Eyrie Dynasties Points changed by -2
+2023-06-21 00:49:05,054|DEBUG|classes|		New Score: [8, 0]
+2023-06-21 00:49:05,054|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,054|INFO|classes|> Action 150 - Legal Actions: [4358, 4359]
+2023-06-21 00:49:05,054|INFO|classes|	> Action Chosen: 4359
+2023-06-21 00:49:05,054|DEBUG|classes|	New Leader Chosen: Charismatic
+2023-06-21 00:49:05,054|DEBUG|classes|		Card Loyal Vizier added to decree at Recruit
+2023-06-21 00:49:05,054|DEBUG|classes|		Card Loyal Vizier added to decree at Battle
+2023-06-21 00:49:05,054|DEBUG|classes|	Eyrie Dynasties Points changed by 2
+2023-06-21 00:49:05,054|DEBUG|classes|		New Score: [8, 2]
+2023-06-21 00:49:05,054|DEBUG|classes|	Eyrie Dynasties draws Crossbow (Mouse)
+2023-06-21 00:49:05,054|DEBUG|classes|	Eyrie Dynasties draws Tax Collector
+2023-06-21 00:49:05,055|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,055|INFO|classes|> Action 151 - Legal Actions: [2, 3]
+2023-06-21 00:49:05,055|INFO|classes|	> Action Chosen: 2
+2023-06-21 00:49:05,055|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,055|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,055|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,056|INFO|classes|> Action 152 - Legal Actions: [0, 21, 979, 980, 1029, 1030, 1304, 1354, 1454, 2754, 2755, 2756, 2757, 2758, 2604, 2605, 2606, 2607, 2608, 2654, 2655, 2656, 2657, 2658, 3304, 3579, 3580, 3629, 3630, 4229, 4230, 4129, 4130, 4154, 4155, 127, 230, 242, 434]
+2023-06-21 00:49:05,056|INFO|classes|	> Action Chosen: 4155
+2023-06-21 00:49:05,056|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 11 to 7
+2023-06-21 00:49:05,056|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 11
+2023-06-21 00:49:05,056|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 7
+2023-06-21 00:49:05,056|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,056|INFO|classes|> Action 153 - Legal Actions: [0, 979, 980, 1029, 1030, 1304, 1354, 1454, 2754, 2755, 2756, 2757, 2758, 2604, 2605, 2606, 2607, 2608, 2654, 2655, 2656, 2657, 2658, 2829, 2830, 3054, 3055, 2929, 2930, 3304, 3579, 3580, 3629, 3630]
+2023-06-21 00:49:05,056|INFO|classes|	> Action Chosen: 2656
+2023-06-21 00:49:05,056|DEBUG|classes|	Moving 3 warriors of Marquise de Cat from 6 to 7
+2023-06-21 00:49:05,056|DEBUG|classes|		Warriors changed by -3 for Marquise de Cat in clearing 6
+2023-06-21 00:49:05,056|DEBUG|classes|		Warriors changed by 3 for Marquise de Cat in clearing 7
+2023-06-21 00:49:05,056|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,056|INFO|classes|> Action 154 - Legal Actions: [0, 21, 979, 980, 1029, 1030, 1304, 1354, 1454, 2754, 2755, 2604, 2605, 2654, 2655, 2829, 2830, 2831, 2832, 2833, 3054, 3055, 3056, 3057, 3058, 2929, 2930, 2931, 2932, 2933, 3304, 3579, 3580, 3629, 3630, 127, 31, 32, 43, 44, 55, 56, 230, 242, 434]
+2023-06-21 00:49:05,057|INFO|classes|	> Action Chosen: 2933
+2023-06-21 00:49:05,057|DEBUG|classes|	Moving 5 warriors of Marquise de Cat from 7 to 6
+2023-06-21 00:49:05,057|DEBUG|classes|		Warriors changed by -5 for Marquise de Cat in clearing 7
+2023-06-21 00:49:05,057|DEBUG|classes|		Warriors changed by 5 for Marquise de Cat in clearing 6
+2023-06-21 00:49:05,057|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,057|INFO|classes|> Action 155 - Legal Actions: [0, 979, 980, 1029, 1030, 1304, 1354, 1454, 2754, 2755, 2756, 2757, 2758, 2759, 2760, 2604, 2605, 2606, 2607, 2608, 2609, 2610, 2654, 2655, 2656, 2657, 2658, 2659, 2660, 3304, 3579, 3580, 3629, 3630]
+2023-06-21 00:49:05,057|INFO|classes|	> Action Chosen: 2606
+2023-06-21 00:49:05,057|DEBUG|classes|	Moving 3 warriors of Marquise de Cat from 6 to 5
+2023-06-21 00:49:05,057|DEBUG|classes|		Warriors changed by -3 for Marquise de Cat in clearing 6
+2023-06-21 00:49:05,057|DEBUG|classes|		Warriors changed by 3 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,057|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,057|INFO|classes|> Action 156 - Legal Actions: [0, 21, 979, 980, 1029, 1030, 1304, 1354, 1454, 2254, 2255, 2256, 2279, 2280, 2281, 2329, 2330, 2331, 2379, 2380, 2381, 2429, 2430, 2431, 2754, 2755, 2756, 2757, 2604, 2605, 2606, 2607, 2654, 2655, 2656, 2657, 3304, 3204, 3579, 3580, 3629, 3630, 127, 30, 31, 34, 42, 43, 46, 54, 55, 58, 230, 242, 434]
+2023-06-21 00:49:05,057|INFO|classes|	> Action Chosen: 2381
+2023-06-21 00:49:05,057|DEBUG|classes|	Moving 3 warriors of Marquise de Cat from 5 to 8
+2023-06-21 00:49:05,057|DEBUG|classes|		Warriors changed by -3 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,057|DEBUG|classes|		Warriors changed by 3 for Marquise de Cat in clearing 8
+2023-06-21 00:49:05,057|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,057|INFO|classes|> Action 157 - Legal Actions: [0, 979, 980, 1029, 1030, 1304, 1354, 1454, 2754, 2755, 2756, 2757, 2604, 2605, 2606, 2607, 2654, 2655, 2656, 2657, 3304, 3305, 3306, 3307, 3579, 3580, 3629, 3630]
+2023-06-21 00:49:05,057|INFO|classes|	> Action Chosen: 3304
+2023-06-21 00:49:05,057|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 8 to 9
+2023-06-21 00:49:05,057|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 8
+2023-06-21 00:49:05,058|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 9
+2023-06-21 00:49:05,058|DEBUG|classes|	Marquise de Cat draws Cobbler
+2023-06-21 00:49:05,058|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,058|INFO|classes|> Action 158 - Legal Actions: [4373, 4415, 4457, 4499, 4378, 4420, 4462, 4504, 4395, 4437, 4479, 4521]
+2023-06-21 00:49:05,058|INFO|classes|	> Action Chosen: 4420
+2023-06-21 00:49:05,058|DEBUG|classes|	Crossbow (Mouse) removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,058|DEBUG|classes|		Card Crossbow (Mouse) added to decree at Move
+2023-06-21 00:49:05,058|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,058|INFO|classes|> Action 159 - Legal Actions: [0, 4373, 4415, 4457, 4499, 4395, 4437, 4479, 4521]
+2023-06-21 00:49:05,059|INFO|classes|	> Action Chosen: 4521
+2023-06-21 00:49:05,059|DEBUG|classes|	Tax Collector removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,059|DEBUG|classes|		Card Tax Collector added to decree at Build
+2023-06-21 00:49:05,059|DEBUG|classes|	Tallying required decree...
+2023-06-21 00:49:05,059|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,059|INFO|classes|> Action 160 - Legal Actions: [1, 5, 9]
+2023-06-21 00:49:05,059|INFO|classes|	> Action Chosen: 5
+2023-06-21 00:49:05,059|DEBUG|classes|		Eyrie Dynasties warrior storage changed by -2
+2023-06-21 00:49:05,059|DEBUG|classes|		Warriors changed by 2 for Eyrie Dynasties in clearing 4
+2023-06-21 00:49:05,059|DEBUG|classes|	Fulfilled Bird Recruit requirement on Decree
+2023-06-21 00:49:05,059|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,059|INFO|classes|> Action 161 - Legal Actions: [1879, 1880, 1881, 1882, 1883, 1884, 1885, 1886, 2079, 2080, 2081, 2082, 2083, 2084, 2085, 2086, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011]
+2023-06-21 00:49:05,059|INFO|classes|	> Action Chosen: 2008
+2023-06-21 00:49:05,059|DEBUG|classes|	Moving 5 warriors of Eyrie Dynasties from 4 to 5
+2023-06-21 00:49:05,059|DEBUG|classes|		Warriors changed by -5 for Eyrie Dynasties in clearing 4
+2023-06-21 00:49:05,060|DEBUG|classes|		Warriors changed by 5 for Eyrie Dynasties in clearing 5
+2023-06-21 00:49:05,060|DEBUG|classes|	Fulfilled Mouse Move requirement on Decree
+2023-06-21 00:49:05,060|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,060|INFO|classes|> Action 162 - Legal Actions: [21]
+2023-06-21 00:49:05,060|INFO|classes|	> Action Chosen: 21
+2023-06-21 00:49:05,060|DEBUG|classes|	Fulfilled Bird Battle requirement on Decree
+2023-06-21 00:49:05,060|DEBUG|classes|	--- BATTLE STARTED: Eyrie Dynasties Attacks Marquise de Cat in clearing 8
+2023-06-21 00:49:05,060|DEBUG|classes|Marquise de Cat chose not to ambush
+2023-06-21 00:49:05,060|DEBUG|classes|--- DICE ROLL: [3, 0]
+2023-06-21 00:49:05,060|DEBUG|classes|--- Dealing hits to defender...
+2023-06-21 00:49:05,060|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 8
+2023-06-21 00:49:05,060|DEBUG|classes|		Marquise de Cat warrior storage changed by 1
+2023-06-21 00:49:05,060|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 8
+2023-06-21 00:49:05,060|DEBUG|classes|		Marquise de Cat warrior storage changed by 1
+2023-06-21 00:49:05,060|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 8
+2023-06-21 00:49:05,060|DEBUG|classes|		Marquise de Cat warrior storage changed by 1
+2023-06-21 00:49:05,060|DEBUG|classes|--- Dealing hits to attacker...
+2023-06-21 00:49:05,060|DEBUG|classes|--- BATTLE FINISHED
+2023-06-21 00:49:05,060|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,060|INFO|classes|> Action 163 - Legal Actions: [0, 645, 646, 662, 649]
+2023-06-21 00:49:05,060|INFO|classes|	> Action Chosen: 649
+2023-06-21 00:49:05,060|DEBUG|classes|	Field Hospitals activated...
+2023-06-21 00:49:05,061|DEBUG|classes|		Warriors changed by 3 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,061|DEBUG|classes|	Cobbler removed from hand of Marquise de Cat
+2023-06-21 00:49:05,061|DEBUG|classes|	Cobbler added to discard pile
+2023-06-21 00:49:05,061|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,061|INFO|classes|> Action 164 - Legal Actions: [30]
+2023-06-21 00:49:05,061|INFO|classes|	> Action Chosen: 30
+2023-06-21 00:49:05,061|DEBUG|classes|		Building 0 added for Eyrie Dynasties in clearing 5
+2023-06-21 00:49:05,061|DEBUG|classes|		Eyrie Dynasties buildings ID 0 changed by -1
+2023-06-21 00:49:05,061|DEBUG|classes|	Fulfilled Fox Build requirement on Decree
+2023-06-21 00:49:05,061|DEBUG|classes|	Eyrie Dynasties Points changed by 3
+2023-06-21 00:49:05,061|DEBUG|classes|		New Score: [8, 5]
+2023-06-21 00:49:05,061|DEBUG|classes|	Eyrie Dynasties draws Crossbow (Bird)
+2023-06-21 00:49:05,061|DEBUG|classes|	Eyrie Dynasties draws Travel Gear (Fox)
+2023-06-21 00:49:05,061|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,061|INFO|classes|> Action 165 - Legal Actions: [2, 3]
+2023-06-21 00:49:05,061|INFO|classes|	> Action Chosen: 2
+2023-06-21 00:49:05,061|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,061|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,061|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,062|INFO|classes|> Action 166 - Legal Actions: [0, 979, 980, 1029, 1030, 1304, 1305, 1306, 1307, 1354, 1355, 1356, 1357, 1454, 1455, 1456, 1457, 2754, 2755, 2756, 2757, 2604, 2605, 2606, 2607, 2654, 2655, 2656, 2657, 3579, 3580, 3581, 3629, 3630, 3631, 127, 230, 242, 434]
+2023-06-21 00:49:05,062|INFO|classes|	> Action Chosen: 1029
+2023-06-21 00:49:05,062|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 1 to 2
+2023-06-21 00:49:05,062|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,062|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,062|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,062|INFO|classes|> Action 167 - Legal Actions: [0, 979, 1029, 1304, 1305, 1306, 1307, 1308, 1354, 1355, 1356, 1357, 1358, 1454, 1455, 1456, 1457, 1458, 2754, 2755, 2756, 2757, 2604, 2605, 2606, 2607, 2654, 2655, 2656, 2657, 3579, 3580, 3581, 3629, 3630, 3631]
+2023-06-21 00:49:05,062|INFO|classes|	> Action Chosen: 1304
+2023-06-21 00:49:05,062|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 2 to 1
+2023-06-21 00:49:05,062|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,062|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,062|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,062|INFO|classes|> Action 168 - Legal Actions: [0, 979, 980, 1029, 1030, 1304, 1305, 1306, 1307, 1354, 1355, 1356, 1357, 1454, 1455, 1456, 1457, 2754, 2755, 2756, 2757, 2604, 2605, 2606, 2607, 2654, 2655, 2656, 2657, 3579, 3580, 3581, 3629, 3630, 3631, 127, 230, 242, 434]
+2023-06-21 00:49:05,063|INFO|classes|	> Action Chosen: 2655
+2023-06-21 00:49:05,063|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 6 to 7
+2023-06-21 00:49:05,063|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 6
+2023-06-21 00:49:05,063|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 7
+2023-06-21 00:49:05,063|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,063|INFO|classes|> Action 169 - Legal Actions: [0, 979, 980, 1029, 1030, 1304, 1305, 1306, 1307, 1354, 1355, 1356, 1357, 1454, 1455, 1456, 1457, 2754, 2755, 2604, 2605, 2654, 2655, 2829, 2830, 3054, 3055, 2929, 2930, 3579, 3580, 3581, 3629, 3630, 3631]
+2023-06-21 00:49:05,063|INFO|classes|	> Action Chosen: 3579
+2023-06-21 00:49:05,063|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 9 to 8
+2023-06-21 00:49:05,063|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 9
+2023-06-21 00:49:05,063|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 8
+2023-06-21 00:49:05,063|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,063|INFO|classes|> Action 170 - Legal Actions: [0, 21, 979, 980, 1029, 1030, 1304, 1305, 1306, 1307, 1354, 1355, 1356, 1357, 1454, 1455, 1456, 1457, 2754, 2755, 2604, 2605, 2654, 2655, 2829, 2830, 3054, 3055, 2929, 2930, 3304, 3579, 3580, 3629, 3630, 127, 31, 32, 43, 44, 55, 56, 230, 242, 434]
+2023-06-21 00:49:05,063|INFO|classes|	> Action Chosen: 2605
+2023-06-21 00:49:05,063|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 6 to 5
+2023-06-21 00:49:05,063|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 6
+2023-06-21 00:49:05,063|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 5
+2023-06-21 00:49:05,064|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,064|INFO|classes|> Action 171 - Legal Actions: [0, 979, 980, 1029, 1030, 1304, 1305, 1306, 1307, 1354, 1355, 1356, 1357, 1454, 1455, 1456, 1457, 2254, 2255, 2429, 2430, 2829, 2830, 3054, 3055, 2929, 2930, 3304, 3579, 3580, 3629, 3630]
+2023-06-21 00:49:05,064|INFO|classes|	> Action Chosen: 2929
+2023-06-21 00:49:05,064|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 7 to 6
+2023-06-21 00:49:05,064|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 7
+2023-06-21 00:49:05,064|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 6
+2023-06-21 00:49:05,064|DEBUG|classes|	Marquise de Cat draws Ambush! (Fox)
+2023-06-21 00:49:05,064|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,064|INFO|classes|> Action 172 - Legal Actions: [4373, 4415, 4457, 4499, 4377, 4419, 4461, 4503, 4396, 4438, 4480, 4522]
+2023-06-21 00:49:05,064|INFO|classes|	> Action Chosen: 4419
+2023-06-21 00:49:05,064|DEBUG|classes|	Crossbow (Bird) removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,064|DEBUG|classes|		Card Crossbow (Bird) added to decree at Move
+2023-06-21 00:49:05,065|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,065|INFO|classes|> Action 173 - Legal Actions: [0, 4396, 4438, 4480, 4522]
+2023-06-21 00:49:05,065|INFO|classes|	> Action Chosen: 4396
+2023-06-21 00:49:05,065|DEBUG|classes|	Travel Gear (Fox) removed from hand of Eyrie Dynasties
+2023-06-21 00:49:05,065|DEBUG|classes|		Card Travel Gear (Fox) added to decree at Recruit
+2023-06-21 00:49:05,065|DEBUG|classes|	Tallying required decree...
+2023-06-21 00:49:05,065|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,065|INFO|classes|> Action 174 - Legal Actions: [1, 5, 6, 9]
+2023-06-21 00:49:05,065|INFO|classes|	> Action Chosen: 9
+2023-06-21 00:49:05,065|DEBUG|classes|		Eyrie Dynasties warrior storage changed by -2
+2023-06-21 00:49:05,065|DEBUG|classes|		Warriors changed by 2 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:05,065|DEBUG|classes|	Fulfilled Bird Recruit requirement on Decree
+2023-06-21 00:49:05,065|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,065|INFO|classes|> Action 175 - Legal Actions: [1, 6]
+2023-06-21 00:49:05,065|INFO|classes|	> Action Chosen: 1
+2023-06-21 00:49:05,066|DEBUG|classes|		Eyrie Dynasties warrior storage changed by -2
+2023-06-21 00:49:05,066|DEBUG|classes|		Warriors changed by 2 for Eyrie Dynasties in clearing 0
+2023-06-21 00:49:05,066|DEBUG|classes|	Fulfilled Fox Recruit requirement on Decree
+2023-06-21 00:49:05,066|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,066|INFO|classes|> Action 176 - Legal Actions: [704, 705, 706, 707, 708, 754, 755, 756, 757, 758, 779, 780, 781, 782, 783, 1879, 1880, 1881, 2079, 2080, 2081, 2004, 2005, 2006, 2254, 2255, 2256, 2257, 2258, 2279, 2280, 2281, 2282, 2283, 2329, 2330, 2331, 2332, 2333, 2379, 2380, 2381, 2382, 2383, 2429, 2430, 2431, 2432, 2433, 3304, 3305, 3306, 3307, 3308, 3309, 3310, 3311, 3312, 3313, 3314, 3315, 3179, 3180, 3181, 3182, 3183, 3184, 3185, 3186, 3187, 3188, 3189, 3190, 3204, 3205, 3206, 3207, 3208, 3209, 3210, 3211, 3212, 3213, 3214, 3215]
+2023-06-21 00:49:05,066|INFO|classes|	> Action Chosen: 2381
+2023-06-21 00:49:05,066|DEBUG|classes|	Moving 3 warriors of Eyrie Dynasties from 5 to 8
+2023-06-21 00:49:05,066|DEBUG|classes|		Warriors changed by -3 for Eyrie Dynasties in clearing 5
+2023-06-21 00:49:05,066|DEBUG|classes|		Warriors changed by 3 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:05,066|DEBUG|classes|	Fulfilled Bird Move requirement on Decree
+2023-06-21 00:49:05,066|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,066|INFO|classes|> Action 177 - Legal Actions: [1879, 1880, 1881, 2079, 2080, 2081, 2004, 2005, 2006]
+2023-06-21 00:49:05,066|INFO|classes|	> Action Chosen: 2079
+2023-06-21 00:49:05,066|DEBUG|classes|	Moving 1 warriors of Eyrie Dynasties from 4 to 8
+2023-06-21 00:49:05,066|DEBUG|classes|		Warriors changed by -1 for Eyrie Dynasties in clearing 4
+2023-06-21 00:49:05,066|DEBUG|classes|		Warriors changed by 1 for Eyrie Dynasties in clearing 8
+2023-06-21 00:49:05,066|DEBUG|classes|	Fulfilled Mouse Move requirement on Decree
+2023-06-21 00:49:05,066|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,066|INFO|classes|> Action 178 - Legal Actions: [18, 21]
+2023-06-21 00:49:05,067|INFO|classes|	> Action Chosen: 18
+2023-06-21 00:49:05,067|DEBUG|classes|	Fulfilled Bird Battle requirement on Decree
+2023-06-21 00:49:05,067|DEBUG|classes|	--- BATTLE STARTED: Eyrie Dynasties Attacks Marquise de Cat in clearing 5
+2023-06-21 00:49:05,067|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,067|INFO|classes|> Action 179 - Legal Actions: [4281, 4283]
+2023-06-21 00:49:05,067|INFO|classes|	> Action Chosen: 4281
+2023-06-21 00:49:05,067|DEBUG|classes|Marquise de Cat chooses to AMBUSH!
+2023-06-21 00:49:05,067|DEBUG|classes|	Ambush! (Fox) removed from hand of Marquise de Cat
+2023-06-21 00:49:05,067|DEBUG|classes|	Ambush! (Fox) added to discard pile
+2023-06-21 00:49:05,067|DEBUG|classes|Eyrie Dynasties chose not to counter-ambush
+2023-06-21 00:49:05,067|DEBUG|classes|		Warriors changed by -1 for Eyrie Dynasties in clearing 5
+2023-06-21 00:49:05,067|DEBUG|classes|		Eyrie Dynasties warrior storage changed by 1
+2023-06-21 00:49:05,067|DEBUG|classes|		Warriors changed by -1 for Eyrie Dynasties in clearing 5
+2023-06-21 00:49:05,067|DEBUG|classes|		Eyrie Dynasties warrior storage changed by 1
+2023-06-21 00:49:05,067|DEBUG|classes|Ouch, should have brought more backup...
+2023-06-21 00:49:05,067|DEBUG|classes|--- BATTLE FINISHED
+2023-06-21 00:49:05,067|DEBUG|classes|	Eyrie Dynasties Points changed by -3
+2023-06-21 00:49:05,067|DEBUG|classes|		New Score: [8, 2]
+2023-06-21 00:49:05,067|INFO|classes|Player: Eyrie Dynasties
+2023-06-21 00:49:05,067|INFO|classes|> Action 180 - Legal Actions: [4358]
+2023-06-21 00:49:05,068|INFO|classes|	> Action Chosen: 4358
+2023-06-21 00:49:05,068|DEBUG|classes|	New Leader Chosen: Builder
+2023-06-21 00:49:05,068|DEBUG|classes|		Card Loyal Vizier added to decree at Recruit
+2023-06-21 00:49:05,068|DEBUG|classes|		Card Loyal Vizier added to decree at Move
+2023-06-21 00:49:05,068|DEBUG|classes|	Eyrie Dynasties Points changed by 3
+2023-06-21 00:49:05,068|DEBUG|classes|		New Score: [8, 5]
+2023-06-21 00:49:05,068|DEBUG|classes|	Eyrie Dynasties draws Arms Trader
+2023-06-21 00:49:05,068|DEBUG|classes|	Eyrie Dynasties draws Anvil
+2023-06-21 00:49:05,068|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,068|INFO|classes|> Action 181 - Legal Actions: [2, 3]
+2023-06-21 00:49:05,068|INFO|classes|	> Action Chosen: 3
+2023-06-21 00:49:05,068|DEBUG|classes|		Marquise de Cat tokens ID 1 changed by -1
+2023-06-21 00:49:05,068|DEBUG|classes|		Token 1 added for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,068|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,068|INFO|classes|> Action 182 - Legal Actions: [0, 18, 21, 979, 980, 1029, 1030, 1304, 1305, 1306, 1307, 1354, 1355, 1356, 1357, 1454, 1455, 1456, 1457, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 2754, 2604, 2654, 2829, 3054, 2929, 3304, 3204, 3579, 3580, 3629, 3630, 127, 31, 32, 34, 43, 44, 46, 55, 56, 58, 230, 242, 434]
+2023-06-21 00:49:05,069|INFO|classes|	> Action Chosen: 3054
+2023-06-21 00:49:05,069|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 7 to 11
+2023-06-21 00:49:05,069|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 7
+2023-06-21 00:49:05,069|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 11
+2023-06-21 00:49:05,069|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,069|INFO|classes|> Action 183 - Legal Actions: [0, 979, 980, 1029, 1030, 1304, 1305, 1306, 1307, 1354, 1355, 1356, 1357, 1454, 1455, 1456, 1457, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 2754, 2604, 2654, 3304, 3204, 3579, 3580, 3629, 3630, 4229, 4129, 4154]
+2023-06-21 00:49:05,069|INFO|classes|	> Action Chosen: 1304
+2023-06-21 00:49:05,069|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 2 to 1
+2023-06-21 00:49:05,069|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,069|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 1
+2023-06-21 00:49:05,069|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,069|INFO|classes|> Action 184 - Legal Actions: [0, 18, 21, 979, 980, 981, 1029, 1030, 1031, 1304, 1305, 1306, 1354, 1355, 1356, 1454, 1455, 1456, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 2754, 2604, 2654, 3304, 3204, 3579, 3580, 3629, 3630, 4229, 4129, 4154, 127, 31, 34, 36, 43, 46, 48, 55, 58, 60, 230, 242, 434]
+2023-06-21 00:49:05,069|INFO|classes|	> Action Chosen: 1355
+2023-06-21 00:49:05,069|DEBUG|classes|	Moving 2 warriors of Marquise de Cat from 2 to 3
+2023-06-21 00:49:05,069|DEBUG|classes|		Warriors changed by -2 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,070|DEBUG|classes|		Warriors changed by 2 for Marquise de Cat in clearing 3
+2023-06-21 00:49:05,070|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,070|INFO|classes|> Action 185 - Legal Actions: [0, 979, 980, 981, 1029, 1030, 1031, 1304, 1354, 1454, 1579, 1580, 1629, 1630, 1704, 1705, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 2754, 2604, 2654, 3304, 3204, 3579, 3580, 3629, 3630, 4229, 4129, 4154]
+2023-06-21 00:49:05,070|INFO|classes|	> Action Chosen: 1454
+2023-06-21 00:49:05,070|DEBUG|classes|	Moving 1 warriors of Marquise de Cat from 2 to 7
+2023-06-21 00:49:05,070|DEBUG|classes|		Warriors changed by -1 for Marquise de Cat in clearing 2
+2023-06-21 00:49:05,070|DEBUG|classes|		Warriors changed by 1 for Marquise de Cat in clearing 7
+2023-06-21 00:49:05,070|INFO|classes|Player: Marquise de Cat
+2023-06-21 00:49:05,070|INFO|classes|> Action 186 - Legal Actions: [0, 18, 21, 979, 980, 981, 1029, 1030, 1031, 1579, 1580, 1629, 1630, 1704, 1705, 2254, 2255, 2279, 2280, 2329, 2330, 2379, 2380, 2429, 2430, 2754, 2604, 2654, 2829, 3054, 2929, 3304, 3204, 3579, 3580, 3629, 3630, 4229, 4129, 4154, 127, 31, 32, 34, 36, 43, 44, 46, 48, 55, 56, 58, 60, 230, 242, 434]
+2023-06-21 00:49:05,070|INFO|classes|	> Action Chosen: 34
+2023-06-21 00:49:05,070|DEBUG|classes|		Marquise de Cat buildings ID 0 changed by -1
+2023-06-21 00:49:05,071|DEBUG|classes|		Building 0 added for Marquise de Cat in clearing 9
+2023-06-21 00:49:05,071|DEBUG|classes|	Marquise de Cat Points changed by 2
+2023-06-21 00:49:05,071|DEBUG|classes|		New Score: [10, 5]

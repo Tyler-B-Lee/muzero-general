@@ -3,7 +3,6 @@ import random
 import numpy as np
 from classes import *
 
-
 class root2pCatsVsEyrie:
     PHASE_SETUP_MARQUISE = 0
     PHASE_SETUP_EYRIE = 1
@@ -26,21 +25,28 @@ class root2pCatsVsEyrie:
     def to_play(self):
         return 0 if self.current_player == 1 else 1
     
+    def index_to_id(self,x):
+        "Converts 0 to 1, 1 to -1"
+        return 1 if (x == 0) else -1
+    
     def reset_general_items(self):
         self.saved_actions = None
+        self.saved_battle_actions = None
+        self.saved_battle_player = None
         self.points_scored_this_turn = 0
         self.current_player = 1
         self.players = [Marquise(0), Eyrie(1)]
         self.victory_points = [0,0]
         self.phase = self.PHASE_SETUP_MARQUISE
         self.phase_steps = 0
-        self.num_field_hospitals = 0
+        self.field_hospitals = []
         self.persistent_used_this_turn = set()
         # self.available_dominances = set()
         self.remaining_craft_power = [0]
         self.board.reset()
         self.deck.reset()
         self.battle = Battle(-1,-1,-1)
+        self.battle.stage = Battle.STAGE_DONE
         self.discard_pile = []
         self.available_items = {
             ITEM_COINS: 2,
@@ -51,6 +57,7 @@ class root2pCatsVsEyrie:
             ITEM_CROSSBOW: 1,
             ITEM_HAMMER: 1
         }
+        self.first_player = random.choice([-1,1])
         self.draw_cards(PIND_MARQUISE,3)
         self.draw_cards(PIND_EYRIE,3)
     def reset_for_marquise(self):
@@ -58,7 +65,7 @@ class root2pCatsVsEyrie:
         self.starting_build_spots = [0]
         self.available_wood_spots = [0]
         self.available_recruiters = [0]
-        self.marquise_actions = 0
+        self.marquise_actions = 3
         self.marquise_moves = 2
         self.recruited_this_turn = 0
         self.remaining_wood_cost = 0
@@ -79,14 +86,74 @@ class root2pCatsVsEyrie:
         return self.get_observation()
 
     def step(self, action):
-        self.resolve_action(action)
-        self.saved_actions = self.advance_game()
+        ans = []
+        # check if we are resolving field hospitals
+        if len(self.field_hospitals) > 0:
+            # the action is say if the marquise are discarding a card or not
+            foo = self.field_hospitals.pop()
+            if action == AID_GENERIC_SKIP:
+                logger.debug(f"The Marquise do not use Field Hospitals on the {foo[0]} warriors in the {ID_TO_SUIT[foo[1]]} Clearing")
+            else:
+                # they are using Field Hospitals
+                self.activate_field_hospitals(foo[0],action - AID_DISCARD_CARD)
+            while len(self.field_hospitals) > 0:
+                suit = self.field_hospitals[-1][1]
+                if self.players[PIND_MARQUISE].has_suit_in_hand(suit):
+                    self.saved_actions = [AID_GENERIC_SKIP] + [c.id+AID_DISCARD_CARD for c in self.players[PIND_MARQUISE].hand if (c.suit in {suit,SUIT_BIRD})]
+                    return
+                else:
+                    self.field_hospitals.pop()
+            if self.battle.stage != Battle.STAGE_DONE:
+                self.saved_actions = self.saved_battle_actions
+                self.current_player = self.saved_battle_player
+                return
+            if self.phase in {self.PHASE_BIRDSONG_EYRIE,self.PHASE_DAYLIGHT_EYRIE,self.PHASE_EVENING_EYRIE}:
+                self.current_player = -1
+            else:
+                self.current_player = 1
+            self.saved_actions = self.advance_game()
+            return
 
-        done = self.is_finished()
+        if self.battle.stage == Battle.STAGE_DONE:
+            self.resolve_action(action)
+            # battle could have been started
+            if self.battle.stage is None:
+                self.saved_battle_actions = self.resolve_battle_action(action)
+                self.saved_battle_player = self.current_player
+                # check for field hospitals
+                while len(self.field_hospitals) > 0:
+                    suit = self.field_hospitals[-1][1]
+                    if self.players[PIND_MARQUISE].has_suit_in_hand(suit):
+                        self.saved_actions = [AID_GENERIC_SKIP] + [c.id+AID_DISCARD_CARD for c in self.players[PIND_MARQUISE].hand if (c.suit in {suit,SUIT_BIRD})]
+                        self.current_player = 1
+                        return
+                    else:
+                        self.field_hospitals.pop()
+                ans = self.saved_battle_actions
+        else:
+            self.saved_battle_actions = self.resolve_battle_action(action)
+            self.saved_battle_player = self.current_player
+            # check for field hospitals
+            while len(self.field_hospitals) > 0:
+                suit = self.field_hospitals[-1][1]
+                if self.players[PIND_MARQUISE].has_suit_in_hand(suit):
+                    self.saved_actions = [AID_GENERIC_SKIP] + [c.id+AID_DISCARD_CARD for c in self.players[PIND_MARQUISE].hand if (c.suit in {suit,SUIT_BIRD})]
+                    self.current_player = 1
+                    return
+                else:
+                    self.field_hospitals.pop()
+            ans = self.saved_battle_actions
+
+        if bool(ans):
+            self.saved_actions = ans
+        else:
+            self.saved_actions = self.advance_game()
+
+        done = False
 
         reward = 1 if done else 0
 
-        return self.get_observation(), reward, done
+        # return self.get_observation(), reward, done
 
     def get_observation(self):
         board_player1 = np.where(self.board == 1, 1.0, 0.0)
@@ -174,10 +241,25 @@ class root2pCatsVsEyrie:
         elif card_id in CID_FAVORS:
             # a favor card has been activated
             logger.debug(f"\t{ID_TO_PLAYER[player_index]} crafts {card_to_craft.name}")
-            points_scored,total_marqwars = self.board.resolve_favor(player_index,CLEARING_SUITS[card_to_craft.suit])
+            points_scored,fh_list = self.board.resolve_favor(player_index,CLEARING_SUITS[card_to_craft.suit])
+            # clear out each clearing
+            for cid in CLEARING_SUITS[card_to_craft.suit]:
+                clearing = self.board.clearings[cid]
+                for faction_i in {j for j in range(N_PLAYERS) if j != player_index}:
+                    player = self.players[faction_i]
+                    foo = clearing.get_num_warriors(faction_i)
+                    clearing.change_num_warriors(faction_i,-foo)
+                    player.change_num_warriors(foo)
+                    while len(clearing.buildings[faction_i]) > 0:
+                        foo = clearing.buildings[faction_i].pop()
+                        player.change_num_buildings(foo,1)
+                    while len(clearing.tokens[faction_i]) > 0:
+                        foo = clearing.tokens[faction_i].pop()
+                        player.change_num_tokens(foo,1)
+
             self.change_score(player_index,points_scored)
-            if total_marqwars:
-                self.num_field_hospitals = total_marqwars
+            if bool(fh_list):
+                self.field_hospitals += sorted(fh_list)
             self.discard_from_hand(player_index, card_id)
         for i in range(3):
             self.remaining_craft_power[i] -= card_to_craft.crafting_recipe[i]
@@ -198,13 +280,17 @@ class root2pCatsVsEyrie:
             self.remaining_craft_power[i] -= recipe_used[i]
 
     # BATTLE FUNCTIONS
+    def keep_is_up(self):
+        "Returns True only if the Marquise's Keep token is still on the map."
+        mplayer = self.players[PIND_MARQUISE]
+        return self.board.clearings[mplayer.keep_clearing_id].get_num_tokens(PIND_MARQUISE,TIND_KEEP) > 0
+
     def activate_field_hospitals(self,amount:int,payment_card_id:int):
         "Places 'amount' of warriors at the Marquise's Keep and discards the given card from their hand."
         logger.debug("\tField Hospitals activated...")
         keep_clearing = self.players[PIND_MARQUISE].keep_clearing_id
         self.board.place_warriors(PIND_MARQUISE,amount,keep_clearing)
         self.discard_from_hand(PIND_MARQUISE,payment_card_id)
-        self.num_field_hospitals = 0
 
     def score_battle_points(self,faction_index:int,is_attacker:bool,cardboard_removed:int):
         """
@@ -224,6 +310,65 @@ class root2pCatsVsEyrie:
                 self.battle.def_cardboard_removed = True
         self.change_score(faction_index,points)
 
+    def deal_hits(self,faction_index:int,amount:int,clearing_index:int):
+        """
+        Make the given faction take a certain number of hits in the given clearing.
+        Removes warriors first, then buildings/tokens if necessary.
+
+        Returns a 3-tuple:
+        - 1. The number of hits left to deal. A positive amount means a choice must be made.
+        - 2. The number of warriors killed.
+        - 3. The number of pieces of cardboard removed (buildings + tokens)
+        """
+        target_clearing = self.board.clearings[clearing_index]
+        target_faction = self.players[faction_index]
+        warriors_removed = cardboard_removed = 0
+        while amount > 0:
+            # first take out warriors
+            if target_clearing.get_num_warriors(faction_index) > 0:
+                target_clearing.change_num_warriors(faction_index,-1)
+                target_faction.change_num_warriors(1)
+                warriors_removed += 1
+                amount -= 1
+            # then check if there is a choice of building / token
+            elif faction_index == PIND_MARQUISE:
+                # find how many choices the Marquise have of removing tokens/buildings
+                building_choices = sum((target_clearing.get_num_buildings(faction_index,bid) > 0) for bid in range(3))
+                token_choices = sum((target_clearing.get_num_tokens(faction_index,tid) > 0) for tid in range(2))
+                # if they have a choice at all, then leave with 'amount' > 0 to indicate this
+                if (building_choices + token_choices) > 1:
+                    break
+                # otherwise, there is no choice in what to remove
+                # if it is a building, remove one of them
+                elif building_choices == 1:
+                    for bid in range(3):
+                        if target_clearing.get_num_buildings(faction_index,bid) > 0:
+                            target_clearing.remove_building(faction_index,bid)
+                            target_faction.change_num_buildings(bid,1)
+                            cardboard_removed += 1
+                            amount -= 1
+                # if it is a token, remove one of them
+                elif token_choices == 1:
+                    for tid in range(2):
+                        if target_clearing.get_num_tokens(faction_index,tid) > 0:
+                            target_clearing.remove_token(faction_index,tid)
+                            target_faction.change_num_tokens(tid,1)
+                            cardboard_removed += 1
+                            amount -= 1
+                # if no other item is present, the remaining hits are lost
+                else:
+                    amount = 0
+            elif faction_index == PIND_EYRIE:
+                # the Eyrie can only have roosts, and have no tokens
+                if target_clearing.get_num_buildings(faction_index,BIND_ROOST) > 0:
+                    target_clearing.remove_building(faction_index,BIND_ROOST)
+                    target_faction.change_num_buildings(BIND_ROOST,1)
+                    cardboard_removed += 1
+                    amount -= 1
+                else:
+                    amount = 0
+        return amount, warriors_removed, cardboard_removed
+
     def resolve_battle_action(self,action):
         """
         Given an action number, performs the given action given the
@@ -232,66 +377,88 @@ class root2pCatsVsEyrie:
         Assumes that self.battle points to an existing Battle object.
         """
         defender = self.players[self.battle.defender_id]
+        clearing = self.board.clearings[self.battle.clearing_id]
         if self.battle.stage is None:
             # the battle just started, assume a brand new Battle object was just created
-            if defender.has_ambush_in_hand():
+            logger.debug(f"\t--- BATTLE STARTED: {ID_TO_PLAYER[self.battle.attacker_id]} Attacks {ID_TO_PLAYER[self.battle.defender_id]} in clearing {self.battle.clearing_id}")
+            ans = defender.get_ambush_actions(clearing.suit)
+            if bool(ans):
                 # the defender chooses to ambush or not
                 self.battle.stage = Battle.STAGE_DEF_AMBUSH
-                return self.battle.defender_id
+                self.current_player = self.index_to_id(self.battle.defender_id)
+                return ans
             # no ambush is possible, so we move straight to the dice roll
+            logger.debug(f"{ID_TO_PLAYER[self.battle.defender_id]} chose not to ambush")
             self.battle.stage = Battle.STAGE_DICE_ROLL
 
         attacker = self.players[self.battle.attacker_id]
-        clearing = self.board.clearings[self.battle.clearing_id]
         if self.battle.stage == Battle.STAGE_DEF_ORDER:
+            logger.debug(f"{ID_TO_PLAYER[self.battle.defender_id]} chose what piece to remove")
             # action is what defender building/token to hit with the next hit
-            if action in {1,2,2,5,5,31,3}:
-                clearing.remove_token(self.battle.defender_id,action - 235235)
+            if action in {AID_ORDER_KEEP,AID_ORDER_WOOD}:
+                clearing.remove_token(self.battle.defender_id,action - AID_ORDER_KEEP)
+                defender.change_num_tokens(action - AID_ORDER_KEEP,1)
             else:
-                clearing.remove_building(self.battle.defender_id,action - 23452)
+                clearing.remove_building(self.battle.defender_id,action - AID_ORDER_SAWMILL)
+                defender.change_num_buildings(action - AID_ORDER_SAWMILL,1)
             # see if there is a choice anymore
-            self.battle.att_hits_to_deal,warriors_killed,cardboard_removed = self.board.deal_hits(self.battle.defender_id, self.battle.att_hits_to_deal - 1, self.battle.clearing_id)
+            self.battle.att_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.defender_id, self.battle.att_hits_to_deal - 1, self.battle.clearing_id)
             if cardboard_removed:
                 self.score_battle_points(self.battle.attacker_id,True,cardboard_removed)
             if warriors_killed and self.battle.defender_id == PIND_MARQUISE and defender.has_suit_in_hand(clearing.suit):
-                self.num_field_hospitals = warriors_killed
+                self.field_hospitals.append((warriors_killed,clearing.suit))
 
             if self.battle.att_hits_to_deal > 0:
                 # defender still has a choice of what to remove
-                return self.battle.defender_id
+                self.current_player = self.index_to_id(self.battle.defender_id)
+                building_choices = [bid+AID_ORDER_SAWMILL for bid in range(3) if (clearing.get_num_buildings(self.battle.defender_id,bid) > 0)]
+                token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.defender_id,tid) > 0)]
+                return building_choices + token_choices
             
             # all hits needed have been dealt to defender
             # it is now the attacker's turn to take hits
-            self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.board.deal_hits(self.battle.attacker_id, self.battle.def_hits_to_deal, self.battle.clearing_id)
+            self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id, self.battle.def_hits_to_deal, self.battle.clearing_id)
             if cardboard_removed:
                 self.score_battle_points(self.battle.defender_id,False,cardboard_removed)
             if warriors_killed and self.battle.attacker_id == PIND_MARQUISE and attacker.has_suit_in_hand(clearing.suit):
-                self.num_field_hospitals = warriors_killed
+                self.field_hospitals.append((warriors_killed,clearing.suit))
             
+            self.current_player = self.index_to_id(self.battle.attacker_id)
             if self.battle.def_hits_to_deal > 0:
                 # attacker has a choice on what to remove
                 self.battle.stage = Battle.STAGE_ATT_ORDER
+                building_choices = [bid+AID_ORDER_SAWMILL for bid in range(3) if (clearing.get_num_buildings(self.battle.attacker_id,bid) > 0)]
+                token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.attacker_id,tid) > 0)]
+                return building_choices + token_choices
             else:
                 # the battle is over
+                logger.debug(f"--- BATTLE FINISHED")
                 self.battle.stage = Battle.STAGE_DONE
-            return self.battle.attacker_id
+                return []
             
         if self.battle.stage == Battle.STAGE_ATT_ORDER:
+            logger.debug(f"{ID_TO_PLAYER[self.battle.attacker_id]} chose what piece to remove")
             # action is what attacker building/token to hit with the next hit
-            if action in {1,2,2,5,5,31,3}:
-                clearing.remove_token(self.battle.attacker_id,action - 235235)
+            if action in {AID_ORDER_KEEP,AID_ORDER_WOOD}:
+                clearing.remove_token(self.battle.attacker_id,action - AID_ORDER_KEEP)
+                attacker.change_num_tokens(action - AID_ORDER_KEEP,1)
             else:
-                clearing.remove_building(self.battle.attacker_id,action - 23452)
+                clearing.remove_building(self.battle.attacker_id,action - AID_ORDER_SAWMILL)
+                attacker.change_num_buildings(action - AID_ORDER_SAWMILL,1)
             # see if there is a choice anymore
-            self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.board.deal_hits(self.battle.attacker_id, self.battle.def_hits_to_deal - 1, self.battle.clearing_id)
+            self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id, self.battle.def_hits_to_deal - 1, self.battle.clearing_id)
             if cardboard_removed:
                 self.score_battle_points(self.battle.defender_id,False,cardboard_removed)
             if warriors_killed and self.battle.attacker_id == PIND_MARQUISE and attacker.has_suit_in_hand(clearing.suit):
-                self.num_field_hospitals = warriors_killed
+                self.field_hospitals.append((warriors_killed,clearing.suit))
             
+            self.current_player = self.index_to_id(self.battle.attacker_id)
             if self.battle.def_hits_to_deal > 0:
                 # attacker still has a choice of what to remove
-                return self.battle.attacker_id
+                self.battle.stage = Battle.STAGE_ATT_ORDER
+                building_choices = [bid+AID_ORDER_SAWMILL for bid in range(3) if (clearing.get_num_buildings(self.battle.attacker_id,bid) > 0)]
+                token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.attacker_id,tid) > 0)]
+                return building_choices + token_choices
             
             # All hits have been dealt, so we are in one of two possible situations:
             # 1. The dice have not been rolled. If the -attacker- is choosing buildings to destroy,
@@ -299,16 +466,19 @@ class root2pCatsVsEyrie:
             #    choose one of their buildings to remove. They have no warriors and the battle is over.
             # 2. The dice have been rolled and extra effects have been chosen. However, the attacker is
             #    last to pick which things get hit in what order, so the battle must be over.
+            logger.debug(f"--- BATTLE FINISHED")
             self.battle.stage = Battle.STAGE_DONE
-            return self.battle.attacker_id
+            return []
         
         if self.battle.stage == Battle.STAGE_DEF_AMBUSH:
             # action is the defender's choice to ambush or not
             if action == AID_AMBUSH_NONE:
+                logger.debug(f"{ID_TO_PLAYER[self.battle.defender_id]} chose not to ambush")
                 # we immediately go to the dice roll
                 self.battle.stage = Battle.STAGE_DICE_ROLL
             else:
                 # save which ambush card is played
+                logger.debug(f"{ID_TO_PLAYER[self.battle.defender_id]} chooses to AMBUSH!")
                 if action == AID_AMBUSH_BIRD:
                     self.battle.def_ambush_id = CID_AMBUSH_BIRD
                 elif action == AID_AMBUSH_MOUSE:
@@ -322,54 +492,74 @@ class root2pCatsVsEyrie:
 
                 # check if the attacker has Scouting Party (nullifies ambush cards used up)
                 if any((c.id == CID_SCOUTING_PARTY) for c in attacker.hand):
+                    logger.debug("The ambush is thwarted by a Scouting Party!")
                     self.battle.stage = Battle.STAGE_DICE_ROLL
                 # otherwise, see if attacker can choose to counter ambush
-                elif attacker.has_ambush_in_hand():
+                ans = attacker.get_ambush_actions(clearing.suit)
+                if bool(ans):
                     self.battle.stage = Battle.STAGE_ATT_AMBUSH
-                    return self.battle.attacker_id
+                    self.current_player = self.index_to_id(self.battle.attacker_id)
+                    return ans
                 # otherwise, the ambush triggers and 2 hits are dealt
-                self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.board.deal_hits(self.battle.attacker_id, 2, self.battle.clearing_id)
+                logger.debug(f"{ID_TO_PLAYER[self.battle.attacker_id]} chose not to counter-ambush")
+                self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id, 2, self.battle.clearing_id)
                 if cardboard_removed:
                     self.score_battle_points(self.battle.defender_id,False,cardboard_removed)
                 if warriors_killed and self.battle.attacker_id == PIND_MARQUISE and attacker.has_suit_in_hand(clearing.suit):
-                    self.num_field_hospitals = warriors_killed
+                    self.field_hospitals.append((warriors_killed,clearing.suit))
 
                 # check if a choice must be made from hits
                 if self.battle.def_hits_to_deal > 0:
+                    self.current_player = self.index_to_id(self.battle.attacker_id)
                     self.battle.stage = Battle.STAGE_ATT_ORDER
-                    return self.battle.attacker_id
+                    building_choices = [bid+AID_ORDER_SAWMILL for bid in range(3) if (clearing.get_num_buildings(self.battle.attacker_id,bid) > 0)]
+                    token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.attacker_id,tid) > 0)]
+                    return building_choices + token_choices
                 # if the hits are all dealt, we check if a battle can still occur
                 elif clearing.get_num_warriors(self.battle.attacker_id) > 0:
+                    logger.debug("Continuing to the dice roll...")
                     self.battle.stage = Battle.STAGE_DICE_ROLL
                 # otherwise, the ambush wiped out all attackers
                 else:
+                    logger.debug("Ouch, should have brought more backup...")
+                    logger.debug(f"--- BATTLE FINISHED")
                     self.battle.stage = Battle.STAGE_DONE
-                    return self.battle.attacker_id
+                    self.current_player = self.index_to_id(self.battle.attacker_id)
+                    return []
 
         if self.battle.stage == Battle.STAGE_ATT_AMBUSH:
             # action is the attacker's choice to counter ambush or not
             if action == AID_AMBUSH_NONE:
+                logger.debug(f"{ID_TO_PLAYER[self.battle.attacker_id]} chose not to counter-ambush")
                 # the ambush triggers and 2 hits are dealt
                 # deal_hits returns the number of remaining hits there are; if >0, it means a choice is possible for the one getting hit
-                self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.board.deal_hits(self.battle.attacker_id, 2, self.battle.clearing_id)
+                self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id, 2, self.battle.clearing_id)
                 if cardboard_removed:
                     self.score_battle_points(self.battle.defender_id,False,cardboard_removed)
                 if warriors_killed and self.battle.attacker_id == PIND_MARQUISE and attacker.has_suit_in_hand(clearing.suit):
-                    self.num_field_hospitals = warriors_killed
+                    self.field_hospitals.append((warriors_killed,clearing.suit))
 
                 # check if a choice must be made from hits
                 if self.battle.def_hits_to_deal > 0:
+                    self.current_player = self.index_to_id(self.battle.attacker_id)
                     self.battle.stage = Battle.STAGE_ATT_ORDER
-                    return self.battle.attacker_id
+                    building_choices = [bid+AID_ORDER_SAWMILL for bid in range(3) if (clearing.get_num_buildings(self.battle.attacker_id,bid) > 0)]
+                    token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.attacker_id,tid) > 0)]
+                    return building_choices + token_choices
                 # if the hits are all dealt, we check if a battle can still occur
                 elif clearing.get_num_warriors(self.battle.attacker_id) > 0:
+                    logger.debug("Continuing to the dice roll...")
                     self.battle.stage = Battle.STAGE_DICE_ROLL
                 # otherwise, the ambush wiped out all attackers
                 else:
+                    logger.debug("Ouch, should have brought more backup...")
+                    logger.debug(f"--- BATTLE FINISHED")
                     self.battle.stage = Battle.STAGE_DONE
-                    return self.battle.attacker_id
+                    self.current_player = self.index_to_id(self.battle.attacker_id)
+                    return []
             else:
                 # save which ambush card is played
+                logger.debug(f"{ID_TO_PLAYER[self.battle.attacker_id]} chooses to COUNTER-AMBUSH!")
                 if action == AID_AMBUSH_BIRD:
                     self.battle.att_ambush_id = CID_AMBUSH_BIRD
                 elif action == AID_AMBUSH_MOUSE:
@@ -381,135 +571,179 @@ class root2pCatsVsEyrie:
                 # make the attacker discard this card
                 self.discard_from_hand(self.battle.attacker_id,self.battle.att_ambush_id)
                 # we immediately go to the dice roll, since the defender's ambush is cancelled
+                logger.debug("Continuing to the dice roll...")
                 self.battle.stage = Battle.STAGE_DICE_ROLL
 
         if self.battle.stage == Battle.STAGE_DICE_ROLL:
             # the dice must be rolled before continuing
             roll = [random.randint(0,3) for i in range(2)]
+            logger.debug(f"--- DICE ROLL: {roll}")
             self.battle.att_rolled_hits = min(clearing.get_num_warriors(self.battle.attacker_id), max(roll))
             self.battle.def_rolled_hits = min(clearing.get_num_warriors(self.battle.defender_id), min(roll))
             # defenseless
             if clearing.get_num_warriors(self.battle.defender_id) == 0:
+                logger.debug(f"{ID_TO_PLAYER[self.battle.defender_id]} is defenseless (+1 hit taken)")
                 self.battle.att_extra_hits += 1
             # Eyrie Commander Leader
             if (self.battle.attacker_id == PIND_EYRIE) and (attacker.chosen_leader_index == LEADER_COMMANDER):
+                logger.debug(f"{ID_TO_PLAYER[self.battle.attacker_id]} is led by the Commander (+1 hit dealt)")
                 self.battle.att_extra_hits += 1
 
             # check if the attacker can choose extra effects
-            if any((c.id in {CID_ARMORERS,CID_BRUTAL_TACTICS}) for c in attacker.persistent_cards):
+            ans = attacker.get_attacker_card_actions()
+            if bool(ans):
+                self.current_player = self.index_to_id(self.battle.attacker_id)
                 self.battle.stage = Battle.STAGE_ATT_EFFECTS
-                return self.battle.attacker_id
+                return ans
             # check if the defender can choose extra effects
-            if any((c.id in {CID_ARMORERS,CID_SAPPERS}) for c in defender.persistent_cards):
+            ans = defender.get_defender_card_actions()
+            if bool(ans):
+                self.current_player = self.index_to_id(self.battle.defender_id)
                 self.battle.stage = Battle.STAGE_DEF_EFFECTS
-                return self.battle.defender_id
+                return ans
             
             # no extra effects can be chosen, so deal the hits next
             # next, the defender takes hits first
+            logger.debug("--- Dealing hits to defender...")
             self.battle.def_hits_to_deal = self.battle.def_rolled_hits
-            self.battle.att_hits_to_deal,warriors_killed,cardboard_removed = self.board.deal_hits(self.battle.defender_id,self.battle.att_extra_hits+self.battle.att_rolled_hits,self.battle.clearing_id)
+            self.battle.att_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.defender_id,self.battle.att_extra_hits+self.battle.att_rolled_hits,self.battle.clearing_id)
             if cardboard_removed:
                 self.score_battle_points(self.battle.attacker_id,True,cardboard_removed)
             if warriors_killed and self.battle.defender_id == PIND_MARQUISE and defender.has_suit_in_hand(clearing.suit):
-                self.num_field_hospitals = warriors_killed
+                self.field_hospitals.append((warriors_killed,clearing.suit))
 
             if self.battle.att_hits_to_deal > 0:
                 # defender has a choice of what to remove
+                self.current_player = self.index_to_id(self.battle.defender_id)
                 self.battle.stage = Battle.STAGE_DEF_ORDER
-                return self.battle.defender_id
+                building_choices = [bid+AID_ORDER_SAWMILL for bid in range(3) if (clearing.get_num_buildings(self.battle.defender_id,bid) > 0)]
+                token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.defender_id,tid) > 0)]
+                return building_choices + token_choices
             # lastly, attacker takes hits
-            self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.board.deal_hits(self.battle.attacker_id,self.battle.def_hits_to_deal,self.battle.clearing_id)
+            logger.debug("--- Dealing hits to attacker...")
+            self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id,self.battle.def_hits_to_deal,self.battle.clearing_id)
             if cardboard_removed:
                 self.score_battle_points(self.battle.defender_id,False,cardboard_removed)
             if warriors_killed and self.battle.attacker_id == PIND_MARQUISE and attacker.has_suit_in_hand(clearing.suit):
-                self.num_field_hospitals = warriors_killed
+                self.field_hospitals.append((warriors_killed,clearing.suit))
 
             if self.battle.def_hits_to_deal > 0:
                 # attacker has a choice of what to remove
+                self.current_player = self.index_to_id(self.battle.attacker_id)
                 self.battle.stage = Battle.STAGE_ATT_ORDER
-                return self.battle.attacker_id
+                building_choices = [bid+AID_ORDER_SAWMILL for bid in range(3) if (clearing.get_num_buildings(self.battle.attacker_id,bid) > 0)]
+                token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.attacker_id,tid) > 0)]
+                return building_choices + token_choices
             # battle is over
+            logger.debug(f"--- BATTLE FINISHED")
             self.battle.stage = Battle.STAGE_DONE
-            return self.battle.attacker_id
+            self.current_player = self.index_to_id(self.battle.attacker_id)
+            return []
         
         if self.battle.stage == Battle.STAGE_ATT_EFFECTS:
             # the attacker has chosen what extra effects to use
             if action in {AID_EFFECTS_ARMORERS,AID_EFFECTS_ARM_BT}:
                 # Armorers is used up
+                logger.debug(f"{ID_TO_PLAYER[self.battle.attacker_id]} activates Armorers (ignores rolled hits)")
                 self.battle.def_rolled_hits = 0
                 self.discard_from_persistent(self.battle.attacker_id,CID_ARMORERS)
             if action in {AID_EFFECTS_BRUTTACT,AID_EFFECTS_ARM_BT}:
                 # brutal tactics is used
+                logger.debug(f"{ID_TO_PLAYER[self.battle.attacker_id]} activates Brutal Tactics (+1 hit dealt)")
                 self.battle.att_extra_hits += 1
                 self.change_score(self.battle.defender_id,1)
             # check if the defender can choose extra effects
-            if any((c.id in {CID_ARMORERS,CID_SAPPERS}) for c in defender.persistent_cards):
+            ans = defender.get_defender_card_actions()
+            if bool(ans):
+                self.current_player = self.index_to_id(self.battle.defender_id)
                 self.battle.stage = Battle.STAGE_DEF_EFFECTS
-                return self.battle.defender_id
+                return ans
             
             # next, the defender takes hits first
+            logger.debug("--- Dealing hits to defender...")
             self.battle.def_hits_to_deal = self.battle.def_rolled_hits
-            self.battle.att_hits_to_deal,warriors_killed,cardboard_removed = self.board.deal_hits(self.battle.defender_id,self.battle.att_extra_hits+self.battle.att_rolled_hits,self.battle.clearing_id)
+            self.battle.att_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.defender_id,self.battle.att_extra_hits+self.battle.att_rolled_hits,self.battle.clearing_id)
             if cardboard_removed:
                 self.score_battle_points(self.battle.attacker_id,True,cardboard_removed)
             if warriors_killed and self.battle.defender_id == PIND_MARQUISE and defender.has_suit_in_hand(clearing.suit):
-                self.num_field_hospitals = warriors_killed
+                self.field_hospitals.append((warriors_killed,clearing.suit))
 
             if self.battle.att_hits_to_deal > 0:
                 # defender has a choice of what to remove
+                self.current_player = self.index_to_id(self.battle.defender_id)
                 self.battle.stage = Battle.STAGE_DEF_ORDER
-                return self.battle.defender_id
+                building_choices = [bid+AID_ORDER_SAWMILL for bid in range(3) if (clearing.get_num_buildings(self.battle.defender_id,bid) > 0)]
+                token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.defender_id,tid) > 0)]
+                return building_choices + token_choices
             # lastly, attacker takes hits
-            self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.board.deal_hits(self.battle.attacker_id,self.battle.def_hits_to_deal,self.battle.clearing_id)
+            logger.debug("--- Dealing hits to attacker...")
+            self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id,self.battle.def_hits_to_deal,self.battle.clearing_id)
             if cardboard_removed:
                 self.score_battle_points(self.battle.defender_id,False,cardboard_removed)
             if warriors_killed and self.battle.attacker_id == PIND_MARQUISE and attacker.has_suit_in_hand(clearing.suit):
-                self.num_field_hospitals = warriors_killed
+                self.field_hospitals.append((warriors_killed,clearing.suit))
 
             if self.battle.def_hits_to_deal > 0:
                 # attacker has a choice of what to remove
+                self.current_player = self.index_to_id(self.battle.attacker_id)
                 self.battle.stage = Battle.STAGE_ATT_ORDER
-                return self.battle.attacker_id
+                building_choices = [bid+AID_ORDER_SAWMILL for bid in range(3) if (clearing.get_num_buildings(self.battle.attacker_id,bid) > 0)]
+                token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.attacker_id,tid) > 0)]
+                return building_choices + token_choices
             # battle is over
+            logger.debug(f"--- BATTLE FINISHED")
             self.battle.stage = Battle.STAGE_DONE
-            return self.battle.attacker_id
+            self.current_player = self.index_to_id(self.battle.attacker_id)
+            return []
         
         if self.battle.stage == Battle.STAGE_DEF_EFFECTS:
             # the defender has chosen what extra effects to use
             if action in {AID_EFFECTS_ARMORERS,AID_EFFECTS_ARMSAP}:
                 # Armorers is used up
+                logger.debug(f"{ID_TO_PLAYER[self.battle.defender_id]} activates Armorers (ignores rolled hits)")
                 self.battle.att_rolled_hits = 0
                 self.discard_from_persistent(self.battle.defender_id,CID_ARMORERS)
             if action in {AID_EFFECTS_SAPPERS,AID_EFFECTS_ARMSAP}:
                 # sappers is used
+                logger.debug(f"{ID_TO_PLAYER[self.battle.defender_id]} activates Sappers (+1 hit dealt)")
                 self.battle.def_extra_hits += 1
                 self.discard_from_persistent(self.battle.defender_id,CID_SAPPERS)
             # next, the defender takes hits first
+            logger.debug("--- Dealing hits to defender...")
             self.battle.def_hits_to_deal = self.battle.def_rolled_hits + self.battle.def_extra_hits
-            self.battle.att_hits_to_deal,warriors_killed,cardboard_removed = self.board.deal_hits(self.battle.defender_id,self.battle.att_extra_hits+self.battle.att_rolled_hits,self.battle.clearing_id)
+            self.battle.att_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.defender_id,self.battle.att_extra_hits+self.battle.att_rolled_hits,self.battle.clearing_id)
             if cardboard_removed:
                 self.score_battle_points(self.battle.attacker_id,True,cardboard_removed)
             if warriors_killed and self.battle.defender_id == PIND_MARQUISE and defender.has_suit_in_hand(clearing.suit):
-                self.num_field_hospitals = warriors_killed
+                self.field_hospitals.append((warriors_killed,clearing.suit))
 
             if self.battle.att_hits_to_deal > 0:
                 # defender has a choice of what to remove
+                self.current_player = self.index_to_id(self.battle.defender_id)
                 self.battle.stage = Battle.STAGE_DEF_ORDER
-                return self.battle.defender_id
+                building_choices = [bid+AID_ORDER_SAWMILL for bid in range(3) if (clearing.get_num_buildings(self.battle.defender_id,bid) > 0)]
+                token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.defender_id,tid) > 0)]
+                return building_choices + token_choices
             # lastly, attacker takes hits
-            self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.board.deal_hits(self.battle.attacker_id,self.battle.def_hits_to_deal,self.battle.clearing_id)
+            logger.debug("--- Dealing hits to attacker...")
+            self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id,self.battle.def_hits_to_deal,self.battle.clearing_id)
             if cardboard_removed:
                 self.score_battle_points(self.battle.defender_id,False,cardboard_removed)
             if warriors_killed and self.battle.attacker_id == PIND_MARQUISE and attacker.has_suit_in_hand(clearing.suit):
-                self.num_field_hospitals = warriors_killed
+                self.field_hospitals.append((warriors_killed,clearing.suit))
 
             if self.battle.def_hits_to_deal > 0:
                 # attacker has a choice of what to remove
+                self.current_player = self.index_to_id(self.battle.attacker_id)
                 self.battle.stage = Battle.STAGE_ATT_ORDER
-                return self.battle.attacker_id
+                building_choices = [bid+AID_ORDER_SAWMILL for bid in range(3) if (clearing.get_num_buildings(self.battle.attacker_id,bid) > 0)]
+                token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.attacker_id,tid) > 0)]
+                return building_choices + token_choices
             # battle is over
+            logger.debug(f"--- BATTLE FINISHED")
             self.battle.stage = Battle.STAGE_DONE
-            return self.battle.attacker_id
+            self.current_player = self.index_to_id(self.battle.attacker_id)
+            return []
 
 
     # Activating Card Effects
@@ -536,7 +770,7 @@ class root2pCatsVsEyrie:
         logger.debug(f"\t{ID_TO_PLAYER[player_index]} activates Tax Collector...")
         self.board.place_warriors(player_index,-1,clearing_index)
         self.draw_cards(player_index,1)
-        self.num_field_hospitals = 1
+        self.field_hospitals.append((1,self.board.clearings[clearing_index].suit))
 
     def activate_better_burrow(self,player_index:int,target_index:int):
         "At start of Birdsong, you and another player draw a card."
@@ -667,6 +901,7 @@ class root2pCatsVsEyrie:
             for i,amount in enumerate(usable_wood):
                 while amount > 0:
                     self.board.clearings[i].remove_token(PIND_MARQUISE,TIND_WOOD)
+                    amount -= 1
             mplayer.change_num_tokens(TIND_WOOD,wood_cost)
             return True
         # wood is in more than 1 clearing and we have too much, so
@@ -682,12 +917,13 @@ class root2pCatsVsEyrie:
         """
         ans = []
         usable_wood_per_clearing = self.board.get_wood_available()
-        ids = [(BIND_SAWMILL,AID_BUILD1),(BIND_RECRUITER,AID_BUILD2),(BIND_WORKSHOP,AID_BUILD3)]
+        empty_slots = self.board.get_empty_building_slot_counts()
+        ids = [(BIND_SAWMILL,AID_BUILD1),(BIND_WORKSHOP,AID_BUILD2),(BIND_RECRUITER,AID_BUILD3)]
         for bid,aid in ids:
             n_left_to_build = mplayer.get_num_buildings_on_track(bid)
             if n_left_to_build > 0:
                 building_cost = mplayer.building_costs[6 - n_left_to_build]
-                ans += [aid+i for i,amount in enumerate(usable_wood_per_clearing) if (amount >= building_cost)]
+                ans += [aid+i for i,amount in enumerate(usable_wood_per_clearing) if (amount >= building_cost and empty_slots[i] > 0)]
         return ans
     
     def get_marquise_overwork_actions(self,mplayer:Marquise):
@@ -801,6 +1037,7 @@ class root2pCatsVsEyrie:
         """
         if self.phase == self.PHASE_SETUP_MARQUISE:
             if self.phase_steps == 0:
+                logger.debug(f"\t\t--- GAME START ---\nStart Player: {ID_TO_PLAYER[0 if (self.first_player == 1) else 1]}")
                 return [i+AID_CHOOSE_CLEARING for i,x in enumerate(self.board.clearings) if (x.opposite_corner_id >= 0)]
             if self.phase_steps == 1:
                 i = self.players[PIND_MARQUISE].keep_clearing_id
@@ -808,9 +1045,9 @@ class root2pCatsVsEyrie:
                 self.starting_build_spots = list(starting_clearing.adjacent_clearing_ids) + [i]
                 return [x + AID_BUILD1 for x in self.starting_build_spots]
             if self.phase_steps == 2:
-                return [x + AID_BUILD3 for x in self.starting_build_spots if (self.board.clearings[x].get_num_empty_slots() > 0)]
-            if self.phase_steps == 3:
                 return [x + AID_BUILD2 for x in self.starting_build_spots if (self.board.clearings[x].get_num_empty_slots() > 0)]
+            if self.phase_steps == 3:
+                return [x + AID_BUILD3 for x in self.starting_build_spots if (self.board.clearings[x].get_num_empty_slots() > 0)]
             if self.phase_steps == 4:
                 self.phase = self.PHASE_SETUP_EYRIE
                 self.phase_steps = 0
@@ -819,7 +1056,7 @@ class root2pCatsVsEyrie:
         if self.phase == self.PHASE_SETUP_EYRIE and self.phase_steps == 1:
             # START GAME - Random Starting Player?
             self.phase_steps = 0
-            if (random.randint(0,1)):# Marquise start
+            if self.first_player == 1: # Marquise start
                 self.phase = self.PHASE_BIRDSONG_MARQUISE
                 self.current_player = 1
             else: # Eyrie start
@@ -836,6 +1073,7 @@ class root2pCatsVsEyrie:
         "Advances the game assuming we are in the middle of the Marquise's turn."
         if self.phase == self.PHASE_BIRDSONG_MARQUISE:
             if self.phase_steps == 0: # Start of Birdsong
+                self.reset_for_marquise()
                 # can they use BBB?
                 if CID_BBB in {c.id for c in current_player.persistent_cards}:
                     return [AID_GENERIC_SKIP,AID_CARD_BBB]
@@ -947,10 +1185,9 @@ class root2pCatsVsEyrie:
                 unused_pers = {c.id for c in current_player.persistent_cards} - self.persistent_used_this_turn
                 if CID_COBBLER in unused_pers:
                     ans = self.board.get_legal_move_actions(PIND_MARQUISE,{0,1,2})
-                    if not bool(ans):
-                        self.phase_steps = 1
-                    else:
+                    if bool(ans):
                         return [AID_GENERIC_SKIP] + ans
+                self.phase_steps = 1
             # Evening Phase
             if self.phase_steps == 1:
                 self.draw_cards(PIND_MARQUISE,current_player.get_num_cards_to_draw())
@@ -968,6 +1205,7 @@ class root2pCatsVsEyrie:
         "Advances the game assuming we are in the middle of the Eyrie's turn."
         if self.phase == self.PHASE_BIRDSONG_EYRIE:
             if self.phase_steps == 0: # Start of Birdsong
+                self.reset_for_eyrie()
                 # can they use BBB?
                 if CID_BBB in {c.id for c in current_player.persistent_cards}:
                     return [AID_GENERIC_SKIP,AID_CARD_BBB]
@@ -1087,10 +1325,9 @@ class root2pCatsVsEyrie:
                 unused_pers = {c.id for c in current_player.persistent_cards} - self.persistent_used_this_turn
                 if CID_COBBLER in unused_pers:
                     ans = self.board.get_legal_move_actions(PIND_EYRIE,{0,1,2})
-                    if not bool(ans):
-                        self.phase_steps = 1
-                    else:
+                    if bool(ans):
                         return [AID_GENERIC_SKIP] + ans
+                self.phase_steps = 1
             # Evening Phase
             if self.phase_steps == 1:
                 self.change_score(PIND_EYRIE,current_player.get_points_to_score())
@@ -1157,11 +1394,11 @@ class root2pCatsVsEyrie:
             current_player.update_from_building_placed(BIND_SAWMILL)
             self.board.place_building(PIND_MARQUISE,BIND_SAWMILL,chosen_clearing)
         elif s == 2: # choosing where to place a workshop
-            chosen_clearing = action - AID_BUILD3
+            chosen_clearing = action - AID_BUILD2
             current_player.update_from_building_placed(BIND_WORKSHOP)
             self.board.place_building(PIND_MARQUISE,BIND_WORKSHOP,chosen_clearing)
         elif s == 3: # choosing where to place a recruiter
-            chosen_clearing = action - AID_BUILD2
+            chosen_clearing = action - AID_BUILD3
             current_player.update_from_building_placed(BIND_RECRUITER)
             self.board.place_building(PIND_MARQUISE,BIND_RECRUITER,chosen_clearing)
         self.phase_steps += 1
@@ -1182,7 +1419,7 @@ class root2pCatsVsEyrie:
                 i = can_place_wood.index(True)
                 foo = self.available_wood_spots[i]
                 amount_to_place = min(foo, current_player.get_num_tokens_in_store(TIND_WOOD))
-                while amount_to_place:
+                while amount_to_place > 0:
                     current_player.change_num_tokens(TIND_WOOD,-1)
                     self.board.place_token(PIND_MARQUISE,TIND_WOOD,i)
                     amount_to_place -= 1
@@ -1246,14 +1483,14 @@ class root2pCatsVsEyrie:
             if not wood_spent:
                 self.phase_steps = 5
         elif action >= AID_BUILD2 and action <= AID_BUILD2 + 11:
-            # building a Recruiter
-            wood_spent = self.place_marquise_building(current_player, BIND_RECRUITER, action - AID_BUILD2)
+            # building a Workshop
+            wood_spent = self.place_marquise_building(current_player, BIND_WORKSHOP, action - AID_BUILD2)
             self.marquise_actions -= 1
             if not wood_spent:
                 self.phase_steps = 5
         elif action >= AID_BUILD3 and action <= AID_BUILD3 + 11:
-            # building a Workshop
-            wood_spent = self.place_marquise_building(current_player, BIND_WORKSHOP, action - AID_BUILD3)
+            # building a Recruiter
+            wood_spent = self.place_marquise_building(current_player, BIND_RECRUITER, action - AID_BUILD3)
             self.marquise_actions -= 1
             if not wood_spent:
                 self.phase_steps = 5
@@ -1436,6 +1673,7 @@ class root2pCatsVsEyrie:
         elif action >= AID_BUILD1 and action <= AID_BUILD1 + 11:
             # building a Roost
             self.board.place_building(PIND_EYRIE,BIND_ROOST,action - AID_BUILD1)
+            current_player.place_roost()
             self.reduce_decree_count(DECREE_BUILD, self.board.clearings[action - AID_BUILD1].suit)
         elif self.phase_steps == 3:
             # we are turmoiling and choosing a new leader
@@ -1484,3 +1722,23 @@ class root2pCatsVsEyrie:
                 elif ch == -1:
                     print("O", end=" ")
             print()
+
+if __name__ == "__main__":
+    env = root2pCatsVsEyrie(MAP_AUTUMN,STANDARD_DECK_COMP)
+    action_count = 0
+    # while action_count < 50:
+    while max(env.victory_points) < 10:
+        legal_actions = env.legal_actions()
+        logger.info(f"Player: {ID_TO_PLAYER[env.to_play()]}")
+        logger.info(f"> Action {action_count} - Legal Actions: {legal_actions}")
+        print(f"Player: {ID_TO_PLAYER[env.to_play()]}")
+        print("Legal Actions:",legal_actions)
+
+        # action = -1
+        # while action not in legal_actions:
+        #     action = int(input("Choose a valid action: "))
+        action = random.choice(legal_actions)
+        print(f"\tAction Chosen: {action}")
+        logger.info(f"\t> Action Chosen: {action}")
+        env.step(action)
+        action_count += 1
