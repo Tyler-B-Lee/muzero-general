@@ -30,10 +30,12 @@ class root2pCatsVsEyrie:
         return 1 if (x == 0) else -1
     
     def reset_general_items(self):
+        self.acting_player = 0
+        self.outside_turn_this_action = 0
         self.saved_actions = None
         self.saved_battle_actions = None
         self.saved_battle_player = None
-        self.points_scored_this_turn = 0
+        self.points_scored_this_action = 0
         self.current_player = 1
         self.players = [Marquise(0), Eyrie(1)]
         self.victory_points = [0,0]
@@ -60,7 +62,9 @@ class root2pCatsVsEyrie:
         self.first_player = random.choice([-1,1])
         self.draw_cards(PIND_MARQUISE,3)
         self.draw_cards(PIND_EYRIE,3)
+
     def reset_for_marquise(self):
+        # print(self.board)
         self.wood_placement_started = False
         self.starting_build_spots = [0]
         self.available_wood_spots = [0]
@@ -69,7 +73,11 @@ class root2pCatsVsEyrie:
         self.marquise_moves = 2
         self.recruited_this_turn = 0
         self.remaining_wood_cost = 0
+
+        self.persistent_used_this_turn = set()
+        self.remaining_craft_power = [0]
     def reset_for_eyrie(self):
+        # print(self.board)
         self.eyrie_cards_added = 0
         self.eyrie_bird_added = 0
         self.remaining_decree = {
@@ -78,6 +86,8 @@ class root2pCatsVsEyrie:
             DECREE_BATTLE: [0,0,0,0],
             DECREE_BUILD: [0,0,0,0]
         }
+        self.persistent_used_this_turn = set()
+        self.remaining_craft_power = [0]
 
     def reset(self):
         self.reset_general_items()
@@ -87,6 +97,9 @@ class root2pCatsVsEyrie:
 
     def step(self, action):
         ans = []
+        self.points_scored_this_action = 0
+        self.acting_player = self.to_play()
+        self.outside_turn_this_action = PIND_EYRIE if self.phase in {self.PHASE_BIRDSONG_EYRIE,self.PHASE_DAYLIGHT_EYRIE,self.PHASE_EVENING_EYRIE} else PIND_MARQUISE
         # check if we are resolving field hospitals
         if len(self.field_hospitals) > 0:
             # the action is say if the marquise are discarding a card or not
@@ -100,37 +113,40 @@ class root2pCatsVsEyrie:
                 suit = self.field_hospitals[-1][1]
                 if self.players[PIND_MARQUISE].has_suit_in_hand(suit):
                     self.saved_actions = [AID_GENERIC_SKIP] + [c.id+AID_DISCARD_CARD for c in self.players[PIND_MARQUISE].hand if (c.suit in {suit,SUIT_BIRD})]
-                    return
+                    return self.points_scored_this_action,False
                 else:
                     self.field_hospitals.pop()
             if self.battle.stage != Battle.STAGE_DONE:
                 self.saved_actions = self.saved_battle_actions
                 self.current_player = self.saved_battle_player
-                return
+                return self.points_scored_this_action,False
             if self.phase in {self.PHASE_BIRDSONG_EYRIE,self.PHASE_DAYLIGHT_EYRIE,self.PHASE_EVENING_EYRIE}:
                 self.current_player = -1
             else:
                 self.current_player = 1
             self.saved_actions = self.advance_game()
-            return
+            return self.points_scored_this_action,False
 
         if self.battle.stage == Battle.STAGE_DONE:
             self.resolve_action(action)
+            battle = False
             # battle could have been started
             if self.battle.stage is None:
                 self.saved_battle_actions = self.resolve_battle_action(action)
                 self.saved_battle_player = self.current_player
-                # check for field hospitals
-                while len(self.field_hospitals) > 0:
-                    suit = self.field_hospitals[-1][1]
-                    if self.players[PIND_MARQUISE].has_suit_in_hand(suit):
-                        self.saved_actions = [AID_GENERIC_SKIP] + [c.id+AID_DISCARD_CARD for c in self.players[PIND_MARQUISE].hand if (c.suit in {suit,SUIT_BIRD})]
-                        self.current_player = 1
-                        return
-                    else:
-                        self.field_hospitals.pop()
+                battle = True
+            # check for field hospitals
+            while len(self.field_hospitals) > 0:
+                suit = self.field_hospitals[-1][1]
+                if self.players[PIND_MARQUISE].has_suit_in_hand(suit):
+                    self.saved_actions = [AID_GENERIC_SKIP] + [c.id+AID_DISCARD_CARD for c in self.players[PIND_MARQUISE].hand if (c.suit in {suit,SUIT_BIRD})]
+                    self.current_player = 1
+                    return self.points_scored_this_action,False
+                else:
+                    self.field_hospitals.pop()
+            if battle:
                 ans = self.saved_battle_actions
-        else:
+        else: # we are in a battle
             self.saved_battle_actions = self.resolve_battle_action(action)
             self.saved_battle_player = self.current_player
             # check for field hospitals
@@ -139,7 +155,7 @@ class root2pCatsVsEyrie:
                 if self.players[PIND_MARQUISE].has_suit_in_hand(suit):
                     self.saved_actions = [AID_GENERIC_SKIP] + [c.id+AID_DISCARD_CARD for c in self.players[PIND_MARQUISE].hand if (c.suit in {suit,SUIT_BIRD})]
                     self.current_player = 1
-                    return
+                    return self.points_scored_this_action,False
                 else:
                     self.field_hospitals.pop()
             ans = self.saved_battle_actions
@@ -149,10 +165,11 @@ class root2pCatsVsEyrie:
         else:
             self.saved_actions = self.advance_game()
 
-        done = False
+        done = (max(self.victory_points) >= 30) and (self.battle.stage == Battle.STAGE_DONE)
 
-        reward = 1 if done else 0
+        reward = self.get_winner_points() if done else self.points_scored_this_action
 
+        return reward,done
         # return self.get_observation(), reward, done
 
     def get_observation(self):
@@ -166,6 +183,20 @@ class root2pCatsVsEyrie:
             self.saved_actions = self.advance_game()
         return self.saved_actions
     
+    def get_winner_points(self):
+        """
+        Returns a large reward if the player who ended the game with their
+        last action is the winner, else returns a large negative reward.
+        """
+        mpoints = self.victory_points[PIND_MARQUISE]
+        epoints = self.victory_points[PIND_EYRIE]
+        if mpoints == epoints:
+            return 30 if (self.acting_player == self.outside_turn_this_action) else -30
+        elif mpoints < epoints:
+            return 30 if (self.acting_player == PIND_EYRIE) else -30
+        else:
+            return 30 if (self.acting_player == PIND_MARQUISE) else -30
+        
     def draw_cards(self,player_index:int,amount:int):
         """
         Draws a number of cards from the top of the deck and then
@@ -210,7 +241,7 @@ class root2pCatsVsEyrie:
         self.victory_points[player_index] = max(0, p + amount)
         logger.debug(f"\t{ID_TO_PLAYER[player_index]} Points changed by {amount}")
         logger.debug(f"\t\tNew Score: {self.victory_points}")
-        self.points_scored_this_turn += amount
+        self.points_scored_this_action += amount if (player_index == self.acting_player) else -amount
 
     def craft_card(self,player_index:int,card_id:int):
         "Makes the player craft the given card, assuming the action is legal."
@@ -289,6 +320,7 @@ class root2pCatsVsEyrie:
         "Places 'amount' of warriors at the Marquise's Keep and discards the given card from their hand."
         logger.debug("\tField Hospitals activated...")
         keep_clearing = self.players[PIND_MARQUISE].keep_clearing_id
+        self.players[PIND_MARQUISE].change_num_warriors(-amount)
         self.board.place_warriors(PIND_MARQUISE,amount,keep_clearing)
         self.discard_from_hand(PIND_MARQUISE,payment_card_id)
 
@@ -401,6 +433,7 @@ class root2pCatsVsEyrie:
             else:
                 clearing.remove_building(self.battle.defender_id,action - AID_ORDER_SAWMILL)
                 defender.change_num_buildings(action - AID_ORDER_SAWMILL,1)
+            self.score_battle_points(self.battle.attacker_id,True,1)
             # see if there is a choice anymore
             self.battle.att_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.defender_id, self.battle.att_hits_to_deal - 1, self.battle.clearing_id)
             if cardboard_removed:
@@ -445,6 +478,7 @@ class root2pCatsVsEyrie:
             else:
                 clearing.remove_building(self.battle.attacker_id,action - AID_ORDER_SAWMILL)
                 attacker.change_num_buildings(action - AID_ORDER_SAWMILL,1)
+            self.score_battle_points(self.battle.defender_id,False,1)
             # see if there is a choice anymore
             self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id, self.battle.def_hits_to_deal - 1, self.battle.clearing_id)
             if cardboard_removed:
@@ -913,7 +947,7 @@ class root2pCatsVsEyrie:
     def get_marquise_building_actions(self,mplayer:Marquise):
         """
         Finds all of the AID's for building each building for the Marquise.
-        Returns a list of integers. 
+        Returns a list of integers.
         """
         ans = []
         usable_wood_per_clearing = self.board.get_wood_available()
@@ -1024,7 +1058,7 @@ class root2pCatsVsEyrie:
                         valid_suits.add(i)
             for i in range(12):
                 c = self.board.clearings[i]
-                if (c.suit in valid_suits) and (c.is_ruler(PIND_EYRIE)) and (c.get_num_buildings(PIND_EYRIE,BIND_ROOST) == 0):
+                if (c.suit in valid_suits) and (c.is_ruler(PIND_EYRIE)) and (c.get_num_buildings(PIND_EYRIE,BIND_ROOST) == 0) and (c.get_num_empty_slots() > 0) and (c.get_num_tokens(PIND_MARQUISE,TIND_KEEP) == 0):
                     ans.append(i + AID_BUILD1)
         return ans
 
@@ -1116,7 +1150,7 @@ class root2pCatsVsEyrie:
             if self.phase_steps == 1:
                 if len(self.remaining_craft_power) == 1:
                     self.remaining_craft_power = self.board.get_crafting_power(PIND_MARQUISE)
-                ans = [i+AID_CRAFT_CARD for i in self.get_craftable_ids(current_player)]
+                ans = list({i+AID_CRAFT_CARD for i in self.get_craftable_ids(current_player)})
                 if (CID_ROYAL_CLAIM+AID_CRAFT_CARD) in ans:
                     # find all ways to craft royal claim
                     ans.remove(CID_ROYAL_CLAIM+AID_CRAFT_CARD)
@@ -1161,7 +1195,8 @@ class root2pCatsVsEyrie:
                         # building
                         ans += self.get_marquise_building_actions(current_player)
                         # overworking
-                        ans += self.get_marquise_overwork_actions(current_player)
+                        if current_player.get_num_tokens_in_store(TIND_WOOD) > 0:
+                            ans += self.get_marquise_overwork_actions(current_player)
                     if bool(ans):
                         return [AID_GENERIC_SKIP] + ans
                     # if we get here, then we are done with the daylight phase
@@ -1270,7 +1305,7 @@ class root2pCatsVsEyrie:
             if self.phase_steps == 1:
                 if len(self.remaining_craft_power) == 1:
                     self.remaining_craft_power = self.board.get_crafting_power(PIND_EYRIE)
-                ans = [i+AID_CRAFT_CARD for i in self.get_craftable_ids(current_player)]
+                ans = list({i+AID_CRAFT_CARD for i in self.get_craftable_ids(current_player)})
                 if (CID_ROYAL_CLAIM+AID_CRAFT_CARD) in ans:
                     # find all ways to craft royal claim
                     ans.remove(CID_ROYAL_CLAIM+AID_CRAFT_CARD)
@@ -1502,9 +1537,11 @@ class root2pCatsVsEyrie:
             self.board.place_token(PIND_MARQUISE,TIND_WOOD,clearing_id)
         elif self.phase_steps == 5:
             # we are choosing where to take wood from
+            logger.debug(f"\tChose wood from clearing {action - AID_CHOOSE_CLEARING}")
             self.board.clearings[action - AID_CHOOSE_CLEARING].remove_token(PIND_MARQUISE,TIND_WOOD)
             current_player.change_num_tokens(TIND_WOOD,1)
             self.remaining_wood_cost -= 1
+            logger.debug(f"\t\tRemaining wood cost: {self.remaining_wood_cost}")
             self.available_wood_spots[action - AID_CHOOSE_CLEARING] -= 1
             can_spend = [(x > 0) for x in self.available_wood_spots]
             if self.remaining_wood_cost == 0:
@@ -1513,6 +1550,7 @@ class root2pCatsVsEyrie:
             elif sum(can_spend) == 1:
                 # we can only take wood from this one spot
                 i = can_spend.index(True)
+                logger.debug(f"\tWe can take the rest from clearing {i}")
                 amount_to_take = self.available_wood_spots[i]
                 while amount_to_take:
                     current_player.change_num_tokens(TIND_WOOD,1)
@@ -1667,9 +1705,18 @@ class root2pCatsVsEyrie:
         elif action >= AID_CHOOSE_CLEARING and action <= AID_CHOOSE_CLEARING + 11:
             # choosing where to recruit (assuming we have the warriors to place ALL (even charismatic))
             amount = 2 if (current_player.chosen_leader_index == LEADER_CHARISMATIC) else 1
+            if amount > current_player.warrior_storage:
+                # trying to recruit with charismatic, but only 1 warrior in store
+                logger.info("\tCannot recruit 2 with Charismatic, so Eyrie will turmoil!")
+                amount = 1
+                turmoil = True
+            else:
+                turmoil = False
             current_player.change_num_warriors(-amount)
             self.board.place_warriors(PIND_EYRIE,amount,action - AID_CHOOSE_CLEARING)
             self.reduce_decree_count(DECREE_RECRUIT, self.board.clearings[action - AID_CHOOSE_CLEARING].suit)
+            if turmoil:
+                self.phase_steps = 3
         elif action >= AID_BUILD1 and action <= AID_BUILD1 + 11:
             # building a Roost
             self.board.place_building(PIND_EYRIE,BIND_ROOST,action - AID_BUILD1)
@@ -1707,32 +1754,27 @@ class root2pCatsVsEyrie:
             self.discard_from_hand(PIND_EYRIE, action - AID_DISCARD_CARD)
 
     def render(self):
-        marker = "  "
-        for i in range(self.board_size):
-            marker = marker + self.board_markers[i] + " "
-        print(marker)
-        for row in range(self.board_size):
-            print(chr(ord("A") + row), end=" ")
-            for col in range(self.board_size):
-                ch = self.board[row][col]
-                if ch == 0:
-                    print(".", end=" ")
-                elif ch == 1:
-                    print("X", end=" ")
-                elif ch == -1:
-                    print("O", end=" ")
-            print()
+        if len(self.field_hospitals) > 0:
+            print(" -- Resolving Field Hospitals --")
+        if self.battle.stage != Battle.STAGE_DONE:
+            print(self.board.clearings[self.battle.clearing_id])
+            print(self.battle)
+        else:
+            print(self.players[self.to_play()])
+            print(self.deck)
 
 if __name__ == "__main__":
     env = root2pCatsVsEyrie(MAP_AUTUMN,STANDARD_DECK_COMP)
     action_count = 0
+    done = False
     # while action_count < 50:
-    while max(env.victory_points) < 10:
+    # while max(env.victory_points) < 8:
+    while not done:
         legal_actions = env.legal_actions()
         logger.info(f"Player: {ID_TO_PLAYER[env.to_play()]}")
         logger.info(f"> Action {action_count} - Legal Actions: {legal_actions}")
         print(f"Player: {ID_TO_PLAYER[env.to_play()]}")
-        print("Legal Actions:",legal_actions)
+        print(f"> Action {action_count} - Legal Actions: {legal_actions}")
 
         # action = -1
         # while action not in legal_actions:
@@ -1740,5 +1782,8 @@ if __name__ == "__main__":
         action = random.choice(legal_actions)
         print(f"\tAction Chosen: {action}")
         logger.info(f"\t> Action Chosen: {action}")
-        env.step(action)
+        reward,done = env.step(action)
+        print(f"-> Earned {reward} points from this action")
+        if done:
+            env.render()
         action_count += 1

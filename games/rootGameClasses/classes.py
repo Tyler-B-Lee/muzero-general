@@ -55,6 +55,15 @@ BIND_WORKSHOP = 1
 BIND_RECRUITER = 2
 TIND_KEEP = 0
 TIND_WOOD = 1
+ID_TO_MBUILD = {
+    BIND_SAWMILL: "Sawmill",
+    BIND_WORKSHOP: "Workshop",
+    BIND_RECRUITER: "Recruiter"
+}
+ID_TO_MTOKEN = {
+    TIND_KEEP: "THE KEEP",
+    TIND_WOOD: "Wood"
+}
 
 AID_SPEND_BIRD = 117
 AID_ORDER_KEEP = 128
@@ -157,11 +166,26 @@ class Clearing:
         self.adjacent_clearing_ids = adj_clearing_ids
     
     def __str__(self) -> str:
-        return f"""Clearing {self.id} ({ID_TO_SUIT[self.suit]}) - Ruler: {ID_TO_PLAYER[self.get_ruler()]}
-    Warriors:  {[(ID_TO_PLAYER[i],amount) for i,amount in self.warriors.items()]}
-    Tokens:    {[(ID_TO_PLAYER[i],amount) for i,amount in self.tokens.items()]}
-    Buildings: {[(ID_TO_PLAYER[i],amount) for i,amount in self.buildings.items()]}\n"""
+        ret = f"Clearing {self.id} ({ID_TO_SUIT[self.suit]}) - Ruler: {ID_TO_PLAYER[self.get_ruler()]}"
+        ret += f"\n{self.warriors[PIND_MARQUISE]} Marquise Warriors"
+        ret += f"\n{self.warriors[PIND_EYRIE]} Eyrie Warriors"
+        ret += f"\nAdjacent Clearings: {[self.adjacent_clearing_ids]}"
+        ret += f"\n{self.get_num_empty_slots()} Empty Building Spots"
 
+        foo = []
+        for bid in self.buildings[PIND_MARQUISE]:
+            foo.append(ID_TO_MBUILD[bid])
+        if len(self.buildings[PIND_EYRIE]) > 0:
+            foo.append("Roost")
+        if len(foo) > 0:
+            ret += "\nBuildings: " + " ".join(foo)
+        foo = []
+        for tid in self.tokens[PIND_MARQUISE]:
+            foo.append(ID_TO_MTOKEN[tid])
+        if len(foo) > 0:
+            ret += "\nTokens: " + " ".join(foo)
+        return ret + "\n"
+    
     def get_num_empty_slots(self) -> int:
         "Returns the number of empty slots available to build in for the clearing."
         return self.num_building_slots - sum(len(x) for x in self.buildings.values())
@@ -296,7 +320,7 @@ class Board:
     def __str__(self) -> str:
         s = "Current Board:\n"
         for c in self.clearings:
-            s += str(c)
+            s += str(c) + "\n"
         return s
 
     def reset(self):
@@ -849,7 +873,11 @@ class Battle:
         self.def_ambush_id = None
         self.att_cardboard_removed = False
         self.def_cardboard_removed = False
-
+    
+    def __str__(self) -> str:
+        ret = f"--- BATTLE: {ID_TO_PLAYER[self.attacker_id]} attacking {ID_TO_PLAYER[self.defender_id]} in Clearing {self.clearing_id} ---\n"
+        ret += f"Roll: {(self.att_rolled_hits,self.def_rolled_hits)}"
+        return ret
 
 # (Card info, Amount in deck)
 # Recipe amounts are (Mouse, Bunny, Fox, Wild)
