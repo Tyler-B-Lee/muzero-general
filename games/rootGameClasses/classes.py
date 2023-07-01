@@ -5,9 +5,9 @@ import logging
 
 Recipe = Tuple[int,int,int,int]
 
-logging.basicConfig(filename='file.log',format="%(asctime)s|%(levelname)s|%(name)s|%(message)s")
+logging.basicConfig(filename='file.log',format="%(asctime)s|%(levelname)s|%(name)s|%(message)s",filemode='w')
 logger = logging.getLogger("classes")
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.WARNING)
 
 ### Named Constants
 SUIT_MOUSE = 0
@@ -427,7 +427,7 @@ class Board:
         Subtracts warriors of a faction from one clearing, and adds them to another.
         Performs no other checks / assumes the move will be legal.
         """
-        logger.debug(f"\tMoving {amount} warriors of {ID_TO_PLAYER[faction_index]} from {start_index} to {end_index}")
+        logger.warning(f"\t\tMoving {amount} warriors of {ID_TO_PLAYER[faction_index]} from {start_index} to {end_index}")
         start_c,end_c = self.clearings[start_index],self.clearings[end_index]
         
         start_c.change_num_warriors(faction_index,-amount)
@@ -435,14 +435,21 @@ class Board:
 
     def place_warriors(self,faction_index:int,amount:int,clearing_index:int):
         "Adds the given number of warriors of the faction to the clearing, assuming it is legal to do so."
+        logger.warning(f"\t\tPlacing {amount} {ID_TO_PLAYER[faction_index]} warriors in clearing {clearing_index}")
         self.clearings[clearing_index].change_num_warriors(faction_index,amount)
     
     def place_building(self,faction_index:int,building_index:int,clearing_index:int):
         "Adds one of the given building type to the given clearing, assuming it's legal to do so."
+        if faction_index == PIND_MARQUISE:
+            build = ID_TO_MBUILD[building_index]
+        else:
+            build = "Roost"
+        logger.warning(f"\t\t{build} placed in clearing {clearing_index}")
         self.clearings[clearing_index].place_building(faction_index,building_index)
 
     def place_token(self,faction_index:int,token_index:int,clearing_index:int):
         "Adds one of the given building type to the given clearing, assuming it's legal to do so."
+        logger.warning(f"\t\t{ID_TO_MTOKEN[token_index]} token placed in clearing {clearing_index}")
         self.clearings[clearing_index].place_token(faction_index,token_index)
     
     def resolve_favor(self,safe_faction_index:int,clearing_indexes:list[int]):
@@ -777,7 +784,7 @@ class Eyrie(Player):
     
     def add_to_decree(self,card_to_add:Card,decree_index:int):
         "Adds the given card object to the decree."
-        logger.debug(f"\t\tCard {card_to_add.name} added to decree at {ID_TO_DECREE[decree_index]}")
+        logger.warning(f"\t\tCard {card_to_add.name} added to decree at {ID_TO_DECREE[decree_index]}")
         self.decree[decree_index].append(card_to_add)
     
     def choose_new_leader(self, leader_index:int) -> None:
@@ -786,7 +793,7 @@ class Eyrie(Player):
         Loyal Vizier Cards are in the factions list of viziers, and will attempt to
         place them in the corresponding Decree columns for the given leader.
         """
-        logger.debug(f"\tNew Leader Chosen: {ID_TO_LEADER[leader_index]}")
+        logger.warning(f"\tNew Leader Chosen: {ID_TO_LEADER[leader_index]}")
         self.chosen_leader_index = leader_index
         self.available_leaders.remove(leader_index)
 

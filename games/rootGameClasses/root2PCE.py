@@ -96,7 +96,7 @@ class root2pCatsVsEyrie:
         return self.get_observation()
 
     def step(self, action):
-        ans = []
+        actions_to_return = []
         self.points_scored_this_action = 0
         self.acting_player = self.to_play()
         self.outside_turn_this_action = PIND_EYRIE if self.phase in {self.PHASE_BIRDSONG_EYRIE,self.PHASE_DAYLIGHT_EYRIE,self.PHASE_EVENING_EYRIE} else PIND_MARQUISE
@@ -105,29 +105,29 @@ class root2pCatsVsEyrie:
             # the action is say if the marquise are discarding a card or not
             foo = self.field_hospitals.pop()
             if action == AID_GENERIC_SKIP:
-                logger.debug(f"The Marquise do not use Field Hospitals on the {foo[0]} warriors in the {ID_TO_SUIT[foo[1]]} Clearing")
+                logger.warning(f"The Marquise do not use Field Hospitals on the {foo[0]} warriors in the {ID_TO_SUIT[foo[1]]} Clearing")
             else:
                 # they are using Field Hospitals
                 self.activate_field_hospitals(foo[0],action - AID_DISCARD_CARD)
             while len(self.field_hospitals) > 0:
                 suit = self.field_hospitals[-1][1]
                 if self.players[PIND_MARQUISE].has_suit_in_hand(suit):
-                    self.saved_actions = [AID_GENERIC_SKIP] + [c.id+AID_DISCARD_CARD for c in self.players[PIND_MARQUISE].hand if (c.suit in {suit,SUIT_BIRD})]
-                    return self.points_scored_this_action,False
+                    actions_to_return = [AID_GENERIC_SKIP] + [c.id+AID_DISCARD_CARD for c in self.players[PIND_MARQUISE].hand if (c.suit in {suit,SUIT_BIRD})]
+                    break
                 else:
                     self.field_hospitals.pop()
-            if self.battle.stage != Battle.STAGE_DONE:
-                self.saved_actions = self.saved_battle_actions
-                self.current_player = self.saved_battle_player
-                return self.points_scored_this_action,False
-            if self.phase in {self.PHASE_BIRDSONG_EYRIE,self.PHASE_DAYLIGHT_EYRIE,self.PHASE_EVENING_EYRIE}:
-                self.current_player = -1
-            else:
-                self.current_player = 1
-            self.saved_actions = self.advance_game()
-            return self.points_scored_this_action,False
+            if not bool(actions_to_return): # no more field hospitals
+                if self.battle.stage != Battle.STAGE_DONE:
+                    actions_to_return = self.saved_battle_actions
+                    self.current_player = self.saved_battle_player
+                else:
+                    if self.phase in {self.PHASE_BIRDSONG_EYRIE,self.PHASE_DAYLIGHT_EYRIE,self.PHASE_EVENING_EYRIE}:
+                        self.current_player = -1
+                    else:
+                        self.current_player = 1
+                    actions_to_return = self.advance_game()
 
-        if self.battle.stage == Battle.STAGE_DONE:
+        elif self.battle.stage == Battle.STAGE_DONE:
             self.resolve_action(action)
             battle = False
             # battle could have been started
@@ -139,13 +139,13 @@ class root2pCatsVsEyrie:
             while len(self.field_hospitals) > 0:
                 suit = self.field_hospitals[-1][1]
                 if self.players[PIND_MARQUISE].has_suit_in_hand(suit):
-                    self.saved_actions = [AID_GENERIC_SKIP] + [c.id+AID_DISCARD_CARD for c in self.players[PIND_MARQUISE].hand if (c.suit in {suit,SUIT_BIRD})]
+                    actions_to_return = [AID_GENERIC_SKIP] + [c.id+AID_DISCARD_CARD for c in self.players[PIND_MARQUISE].hand if (c.suit in {suit,SUIT_BIRD})]
                     self.current_player = 1
-                    return self.points_scored_this_action,False
+                    break
                 else:
                     self.field_hospitals.pop()
-            if battle:
-                ans = self.saved_battle_actions
+            if battle and not bool(actions_to_return):
+                actions_to_return = self.saved_battle_actions
         else: # we are in a battle
             self.saved_battle_actions = self.resolve_battle_action(action)
             self.saved_battle_player = self.current_player
@@ -153,15 +153,16 @@ class root2pCatsVsEyrie:
             while len(self.field_hospitals) > 0:
                 suit = self.field_hospitals[-1][1]
                 if self.players[PIND_MARQUISE].has_suit_in_hand(suit):
-                    self.saved_actions = [AID_GENERIC_SKIP] + [c.id+AID_DISCARD_CARD for c in self.players[PIND_MARQUISE].hand if (c.suit in {suit,SUIT_BIRD})]
+                    actions_to_return = [AID_GENERIC_SKIP] + [c.id+AID_DISCARD_CARD for c in self.players[PIND_MARQUISE].hand if (c.suit in {suit,SUIT_BIRD})]
                     self.current_player = 1
-                    return self.points_scored_this_action,False
+                    break
                 else:
                     self.field_hospitals.pop()
-            ans = self.saved_battle_actions
+            if not bool(actions_to_return):
+                actions_to_return = self.saved_battle_actions
 
-        if bool(ans):
-            self.saved_actions = ans
+        if bool(actions_to_return):
+            self.saved_actions = actions_to_return
         else:
             self.saved_actions = self.advance_game()
 
@@ -208,7 +209,7 @@ class root2pCatsVsEyrie:
         p = self.players[player_index]
         while amount:
             c_drawn = self.deck.draw(1)[0]
-            logger.debug(f"\t{ID_TO_PLAYER[player_index]} draws {c_drawn.name}")
+            logger.warning(f"\t{ID_TO_PLAYER[player_index]} draws: {c_drawn.name}")
             p.hand.append(c_drawn)
             if self.deck.size() == 0:
                 self.deck.add(self.discard_pile) # includes shuffling
@@ -226,21 +227,21 @@ class root2pCatsVsEyrie:
     def discard_from_hand(self,player_index:int,card_id:int):
         "Makes a player discard a card of the matching id from their hand, assuming they have it."
         c_to_discard = self.get_card(player_index,card_id,"hand")
-        logger.debug(f"\t{c_to_discard.name} added to discard pile")
+        logger.warning(f"\t{c_to_discard.name} added to discard pile")
         self.discard_pile.append(c_to_discard)
     
     def discard_from_persistent(self,player_index:int,card_id:int):
         "Makes a player discard a card of the matching id from their persistent cards, assuming they have it."
         c_to_discard = self.get_card(player_index,card_id,"persistent")
-        logger.debug(f"\t{c_to_discard.name} added to discard pile")
+        logger.warning(f"\t{c_to_discard.name} added to discard pile")
         self.discard_pile.append(c_to_discard)
 
     def change_score(self,player_index:int,amount:int):
         "Makes a player score some amount of points. Use a negative amount to lose points."
         p = self.victory_points[player_index]
         self.victory_points[player_index] = max(0, p + amount)
-        logger.debug(f"\t{ID_TO_PLAYER[player_index]} Points changed by {amount}")
-        logger.debug(f"\t\tNew Score: {self.victory_points}")
+        logger.warning(f"\t{ID_TO_PLAYER[player_index]} Points changed by {amount}")
+        logger.warning(f"\t\tNew Score: {self.victory_points}")
         self.points_scored_this_action += amount if (player_index == self.acting_player) else -amount
 
     def craft_card(self,player_index:int,card_id:int):
@@ -255,7 +256,7 @@ class root2pCatsVsEyrie:
         item_id = card_to_craft.crafting_item
         if item_id != ITEM_NONE:
             # we are crafting an item
-            logger.debug(f"\t{ID_TO_PLAYER[player_index]} crafts {ID_TO_ITEM[item_id]}")
+            logger.warning(f"\t{ID_TO_PLAYER[player_index]} crafts: {ID_TO_ITEM[item_id]}")
             self.available_items[item_id] -= 1
             p.crafted_items[item_id] += 1
             
@@ -266,12 +267,12 @@ class root2pCatsVsEyrie:
             self.discard_from_hand(player_index,card_id)
         elif card_to_craft.is_persistent:
             # we are crafting a persistent card
-            logger.debug(f"\t{ID_TO_PLAYER[player_index]} crafts {card_to_craft.name}")
+            logger.warning(f"\t{ID_TO_PLAYER[player_index]} crafts: {card_to_craft.name}")
             p.persistent_cards.append(card_to_craft)
             p.hand.pop(hand_i)
         elif card_id in CID_FAVORS:
             # a favor card has been activated
-            logger.debug(f"\t{ID_TO_PLAYER[player_index]} crafts {card_to_craft.name}")
+            logger.warning(f"\t{ID_TO_PLAYER[player_index]} crafts: {card_to_craft.name}")
             points_scored,fh_list = self.board.resolve_favor(player_index,CLEARING_SUITS[card_to_craft.suit])
             # clear out each clearing
             for cid in CLEARING_SUITS[card_to_craft.suit]:
@@ -306,7 +307,7 @@ class root2pCatsVsEyrie:
         p.persistent_cards.append(card_to_craft)
         p.hand.pop(hand_i)
         recipe_used = AID_CRAFT_RC_MAPPING[action]
-        logger.debug(f"\t{ID_TO_PLAYER[player_index]} crafts {card_to_craft.name} with recipe {recipe_used}")
+        logger.warning(f"\t{ID_TO_PLAYER[player_index]} crafts: {card_to_craft.name} with recipe {recipe_used} (Mouse,Rabbit,Fox)")
         for i in range(3):
             self.remaining_craft_power[i] -= recipe_used[i]
 
@@ -318,7 +319,7 @@ class root2pCatsVsEyrie:
 
     def activate_field_hospitals(self,amount:int,payment_card_id:int):
         "Places 'amount' of warriors at the Marquise's Keep and discards the given card from their hand."
-        logger.debug("\tField Hospitals activated...")
+        logger.warning(f"\tField Hospitals activated, Marquise recovered {amount} warrior(s)")
         keep_clearing = self.players[PIND_MARQUISE].keep_clearing_id
         self.players[PIND_MARQUISE].change_num_warriors(-amount)
         self.board.place_warriors(PIND_MARQUISE,amount,keep_clearing)
@@ -358,6 +359,7 @@ class root2pCatsVsEyrie:
         while amount > 0:
             # first take out warriors
             if target_clearing.get_num_warriors(faction_index) > 0:
+                logger.warning(f"- Removed 1 {ID_TO_PLAYER[faction_index]} warrior from clearing {clearing_index}")
                 target_clearing.change_num_warriors(faction_index,-1)
                 target_faction.change_num_warriors(1)
                 warriors_removed += 1
@@ -375,6 +377,7 @@ class root2pCatsVsEyrie:
                 elif building_choices == 1:
                     for bid in range(3):
                         if target_clearing.get_num_buildings(faction_index,bid) > 0:
+                            logger.warning(f"-- {ID_TO_MBUILD[bid]} destroyed in clearing {clearing_index}")
                             target_clearing.remove_building(faction_index,bid)
                             target_faction.change_num_buildings(bid,1)
                             cardboard_removed += 1
@@ -383,6 +386,7 @@ class root2pCatsVsEyrie:
                 elif token_choices == 1:
                     for tid in range(2):
                         if target_clearing.get_num_tokens(faction_index,tid) > 0:
+                            logger.warning(f"-- {ID_TO_MTOKEN[tid]} destroyed in clearing {clearing_index}")
                             target_clearing.remove_token(faction_index,tid)
                             target_faction.change_num_tokens(tid,1)
                             cardboard_removed += 1
@@ -393,6 +397,7 @@ class root2pCatsVsEyrie:
             elif faction_index == PIND_EYRIE:
                 # the Eyrie can only have roosts, and have no tokens
                 if target_clearing.get_num_buildings(faction_index,BIND_ROOST) > 0:
+                    logger.warning(f"-- Roost destroyed in clearing {clearing_index}")
                     target_clearing.remove_building(faction_index,BIND_ROOST)
                     target_faction.change_num_buildings(BIND_ROOST,1)
                     cardboard_removed += 1
@@ -412,7 +417,7 @@ class root2pCatsVsEyrie:
         clearing = self.board.clearings[self.battle.clearing_id]
         if self.battle.stage is None:
             # the battle just started, assume a brand new Battle object was just created
-            logger.debug(f"\t--- BATTLE STARTED: {ID_TO_PLAYER[self.battle.attacker_id]} Attacks {ID_TO_PLAYER[self.battle.defender_id]} in clearing {self.battle.clearing_id}")
+            logger.warning(f"\t--- BATTLE STARTED: {ID_TO_PLAYER[self.battle.attacker_id]} Attacks {ID_TO_PLAYER[self.battle.defender_id]} in clearing {self.battle.clearing_id}")
             ans = defender.get_ambush_actions(clearing.suit)
             if bool(ans):
                 # the defender chooses to ambush or not
@@ -420,12 +425,12 @@ class root2pCatsVsEyrie:
                 self.current_player = self.index_to_id(self.battle.defender_id)
                 return ans
             # no ambush is possible, so we move straight to the dice roll
-            logger.debug(f"{ID_TO_PLAYER[self.battle.defender_id]} chose not to ambush")
+            logger.warning(f"{ID_TO_PLAYER[self.battle.defender_id]} chose not to ambush")
             self.battle.stage = Battle.STAGE_DICE_ROLL
 
         attacker = self.players[self.battle.attacker_id]
         if self.battle.stage == Battle.STAGE_DEF_ORDER:
-            logger.debug(f"{ID_TO_PLAYER[self.battle.defender_id]} chose what piece to remove")
+            logger.warning(f"{ID_TO_PLAYER[self.battle.defender_id]} chose what piece to remove")
             # action is what defender building/token to hit with the next hit
             if action in {AID_ORDER_KEEP,AID_ORDER_WOOD}:
                 clearing.remove_token(self.battle.defender_id,action - AID_ORDER_KEEP)
@@ -465,12 +470,12 @@ class root2pCatsVsEyrie:
                 return building_choices + token_choices
             else:
                 # the battle is over
-                logger.debug(f"--- BATTLE FINISHED")
+                logger.warning(f"--- BATTLE FINISHED")
                 self.battle.stage = Battle.STAGE_DONE
                 return []
             
         if self.battle.stage == Battle.STAGE_ATT_ORDER:
-            logger.debug(f"{ID_TO_PLAYER[self.battle.attacker_id]} chose what piece to remove")
+            logger.warning(f"{ID_TO_PLAYER[self.battle.attacker_id]} chose what piece to remove")
             # action is what attacker building/token to hit with the next hit
             if action in {AID_ORDER_KEEP,AID_ORDER_WOOD}:
                 clearing.remove_token(self.battle.attacker_id,action - AID_ORDER_KEEP)
@@ -500,19 +505,19 @@ class root2pCatsVsEyrie:
             #    choose one of their buildings to remove. They have no warriors and the battle is over.
             # 2. The dice have been rolled and extra effects have been chosen. However, the attacker is
             #    last to pick which things get hit in what order, so the battle must be over.
-            logger.debug(f"--- BATTLE FINISHED")
+            logger.warning(f"--- BATTLE FINISHED")
             self.battle.stage = Battle.STAGE_DONE
             return []
         
         if self.battle.stage == Battle.STAGE_DEF_AMBUSH:
             # action is the defender's choice to ambush or not
             if action == AID_AMBUSH_NONE:
-                logger.debug(f"{ID_TO_PLAYER[self.battle.defender_id]} chose not to ambush")
+                logger.warning(f"{ID_TO_PLAYER[self.battle.defender_id]} chose not to ambush")
                 # we immediately go to the dice roll
                 self.battle.stage = Battle.STAGE_DICE_ROLL
             else:
                 # save which ambush card is played
-                logger.debug(f"{ID_TO_PLAYER[self.battle.defender_id]} chooses to AMBUSH!")
+                logger.warning(f"{ID_TO_PLAYER[self.battle.defender_id]} chooses to AMBUSH!")
                 if action == AID_AMBUSH_BIRD:
                     self.battle.def_ambush_id = CID_AMBUSH_BIRD
                 elif action == AID_AMBUSH_MOUSE:
@@ -525,46 +530,47 @@ class root2pCatsVsEyrie:
                 self.discard_from_hand(self.battle.defender_id,self.battle.def_ambush_id)
 
                 # check if the attacker has Scouting Party (nullifies ambush cards used up)
-                if any((c.id == CID_SCOUTING_PARTY) for c in attacker.hand):
-                    logger.debug("The ambush is thwarted by a Scouting Party!")
+                if any((c.id == CID_SCOUTING_PARTY) for c in attacker.persistent_cards):
+                    logger.warning("The ambush is thwarted by a Scouting Party!")
                     self.battle.stage = Battle.STAGE_DICE_ROLL
                 # otherwise, see if attacker can choose to counter ambush
-                ans = attacker.get_ambush_actions(clearing.suit)
-                if bool(ans):
-                    self.battle.stage = Battle.STAGE_ATT_AMBUSH
-                    self.current_player = self.index_to_id(self.battle.attacker_id)
-                    return ans
-                # otherwise, the ambush triggers and 2 hits are dealt
-                logger.debug(f"{ID_TO_PLAYER[self.battle.attacker_id]} chose not to counter-ambush")
-                self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id, 2, self.battle.clearing_id)
-                if cardboard_removed:
-                    self.score_battle_points(self.battle.defender_id,False,cardboard_removed)
-                if warriors_killed and self.battle.attacker_id == PIND_MARQUISE and attacker.has_suit_in_hand(clearing.suit):
-                    self.field_hospitals.append((warriors_killed,clearing.suit))
-
-                # check if a choice must be made from hits
-                if self.battle.def_hits_to_deal > 0:
-                    self.current_player = self.index_to_id(self.battle.attacker_id)
-                    self.battle.stage = Battle.STAGE_ATT_ORDER
-                    building_choices = [bid+AID_ORDER_SAWMILL for bid in range(3) if (clearing.get_num_buildings(self.battle.attacker_id,bid) > 0)]
-                    token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.attacker_id,tid) > 0)]
-                    return building_choices + token_choices
-                # if the hits are all dealt, we check if a battle can still occur
-                elif clearing.get_num_warriors(self.battle.attacker_id) > 0:
-                    logger.debug("Continuing to the dice roll...")
-                    self.battle.stage = Battle.STAGE_DICE_ROLL
-                # otherwise, the ambush wiped out all attackers
                 else:
-                    logger.debug("Ouch, should have brought more backup...")
-                    logger.debug(f"--- BATTLE FINISHED")
-                    self.battle.stage = Battle.STAGE_DONE
-                    self.current_player = self.index_to_id(self.battle.attacker_id)
-                    return []
+                    ans = attacker.get_ambush_actions(clearing.suit)
+                    if bool(ans):
+                        self.battle.stage = Battle.STAGE_ATT_AMBUSH
+                        self.current_player = self.index_to_id(self.battle.attacker_id)
+                        return ans
+                    # otherwise, the ambush triggers and 2 hits are dealt
+                    logger.warning(f"{ID_TO_PLAYER[self.battle.attacker_id]} chose not to counter-ambush")
+                    self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id, 2, self.battle.clearing_id)
+                    if cardboard_removed:
+                        self.score_battle_points(self.battle.defender_id,False,cardboard_removed)
+                    if warriors_killed and self.battle.attacker_id == PIND_MARQUISE and attacker.has_suit_in_hand(clearing.suit):
+                        self.field_hospitals.append((warriors_killed,clearing.suit))
+
+                    # check if a choice must be made from hits
+                    if self.battle.def_hits_to_deal > 0:
+                        self.current_player = self.index_to_id(self.battle.attacker_id)
+                        self.battle.stage = Battle.STAGE_ATT_ORDER
+                        building_choices = [bid+AID_ORDER_SAWMILL for bid in range(3) if (clearing.get_num_buildings(self.battle.attacker_id,bid) > 0)]
+                        token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.attacker_id,tid) > 0)]
+                        return building_choices + token_choices
+                    # if the hits are all dealt, we check if a battle can still occur
+                    elif clearing.get_num_warriors(self.battle.attacker_id) > 0:
+                        logger.warning("Continuing to the dice roll...")
+                        self.battle.stage = Battle.STAGE_DICE_ROLL
+                    # otherwise, the ambush wiped out all attackers
+                    else:
+                        logger.warning("Ouch, should have brought more backup...")
+                        logger.warning(f"--- BATTLE FINISHED")
+                        self.battle.stage = Battle.STAGE_DONE
+                        self.current_player = self.index_to_id(self.battle.attacker_id)
+                        return []
 
         if self.battle.stage == Battle.STAGE_ATT_AMBUSH:
             # action is the attacker's choice to counter ambush or not
             if action == AID_AMBUSH_NONE:
-                logger.debug(f"{ID_TO_PLAYER[self.battle.attacker_id]} chose not to counter-ambush")
+                logger.warning(f"{ID_TO_PLAYER[self.battle.attacker_id]} chose not to counter-ambush")
                 # the ambush triggers and 2 hits are dealt
                 # deal_hits returns the number of remaining hits there are; if >0, it means a choice is possible for the one getting hit
                 self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id, 2, self.battle.clearing_id)
@@ -582,18 +588,18 @@ class root2pCatsVsEyrie:
                     return building_choices + token_choices
                 # if the hits are all dealt, we check if a battle can still occur
                 elif clearing.get_num_warriors(self.battle.attacker_id) > 0:
-                    logger.debug("Continuing to the dice roll...")
+                    logger.warning("Continuing to the dice roll...")
                     self.battle.stage = Battle.STAGE_DICE_ROLL
                 # otherwise, the ambush wiped out all attackers
                 else:
-                    logger.debug("Ouch, should have brought more backup...")
-                    logger.debug(f"--- BATTLE FINISHED")
+                    logger.warning("Ouch, should have brought more backup...")
+                    logger.warning(f"--- BATTLE FINISHED")
                     self.battle.stage = Battle.STAGE_DONE
                     self.current_player = self.index_to_id(self.battle.attacker_id)
                     return []
             else:
                 # save which ambush card is played
-                logger.debug(f"{ID_TO_PLAYER[self.battle.attacker_id]} chooses to COUNTER-AMBUSH!")
+                logger.warning(f"{ID_TO_PLAYER[self.battle.attacker_id]} chooses to COUNTER-AMBUSH!")
                 if action == AID_AMBUSH_BIRD:
                     self.battle.att_ambush_id = CID_AMBUSH_BIRD
                 elif action == AID_AMBUSH_MOUSE:
@@ -605,22 +611,22 @@ class root2pCatsVsEyrie:
                 # make the attacker discard this card
                 self.discard_from_hand(self.battle.attacker_id,self.battle.att_ambush_id)
                 # we immediately go to the dice roll, since the defender's ambush is cancelled
-                logger.debug("Continuing to the dice roll...")
+                logger.warning("Continuing to the dice roll...")
                 self.battle.stage = Battle.STAGE_DICE_ROLL
 
         if self.battle.stage == Battle.STAGE_DICE_ROLL:
             # the dice must be rolled before continuing
             roll = [random.randint(0,3) for i in range(2)]
-            logger.debug(f"--- DICE ROLL: {roll}")
+            logger.warning(f"--- DICE ROLL: {roll}")
             self.battle.att_rolled_hits = min(clearing.get_num_warriors(self.battle.attacker_id), max(roll))
             self.battle.def_rolled_hits = min(clearing.get_num_warriors(self.battle.defender_id), min(roll))
             # defenseless
             if clearing.get_num_warriors(self.battle.defender_id) == 0:
-                logger.debug(f"{ID_TO_PLAYER[self.battle.defender_id]} is defenseless (+1 hit taken)")
+                logger.warning(f"{ID_TO_PLAYER[self.battle.defender_id]} is defenseless (+1 hit taken)")
                 self.battle.att_extra_hits += 1
             # Eyrie Commander Leader
             if (self.battle.attacker_id == PIND_EYRIE) and (attacker.chosen_leader_index == LEADER_COMMANDER):
-                logger.debug(f"{ID_TO_PLAYER[self.battle.attacker_id]} is led by the Commander (+1 hit dealt)")
+                logger.warning(f"{ID_TO_PLAYER[self.battle.attacker_id]} is led by the Commander (+1 hit dealt)")
                 self.battle.att_extra_hits += 1
 
             # check if the attacker can choose extra effects
@@ -638,7 +644,7 @@ class root2pCatsVsEyrie:
             
             # no extra effects can be chosen, so deal the hits next
             # next, the defender takes hits first
-            logger.debug("--- Dealing hits to defender...")
+            logger.warning("--- Dealing hits to defender...")
             self.battle.def_hits_to_deal = self.battle.def_rolled_hits
             self.battle.att_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.defender_id,self.battle.att_extra_hits+self.battle.att_rolled_hits,self.battle.clearing_id)
             if cardboard_removed:
@@ -654,7 +660,7 @@ class root2pCatsVsEyrie:
                 token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.defender_id,tid) > 0)]
                 return building_choices + token_choices
             # lastly, attacker takes hits
-            logger.debug("--- Dealing hits to attacker...")
+            logger.warning("--- Dealing hits to attacker...")
             self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id,self.battle.def_hits_to_deal,self.battle.clearing_id)
             if cardboard_removed:
                 self.score_battle_points(self.battle.defender_id,False,cardboard_removed)
@@ -669,7 +675,7 @@ class root2pCatsVsEyrie:
                 token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.attacker_id,tid) > 0)]
                 return building_choices + token_choices
             # battle is over
-            logger.debug(f"--- BATTLE FINISHED")
+            logger.warning(f"--- BATTLE FINISHED")
             self.battle.stage = Battle.STAGE_DONE
             self.current_player = self.index_to_id(self.battle.attacker_id)
             return []
@@ -678,12 +684,12 @@ class root2pCatsVsEyrie:
             # the attacker has chosen what extra effects to use
             if action in {AID_EFFECTS_ARMORERS,AID_EFFECTS_ARM_BT}:
                 # Armorers is used up
-                logger.debug(f"{ID_TO_PLAYER[self.battle.attacker_id]} activates Armorers (ignores rolled hits)")
+                logger.warning(f"{ID_TO_PLAYER[self.battle.attacker_id]} activates Armorers (ignores rolled hits)")
                 self.battle.def_rolled_hits = 0
                 self.discard_from_persistent(self.battle.attacker_id,CID_ARMORERS)
             if action in {AID_EFFECTS_BRUTTACT,AID_EFFECTS_ARM_BT}:
                 # brutal tactics is used
-                logger.debug(f"{ID_TO_PLAYER[self.battle.attacker_id]} activates Brutal Tactics (+1 hit dealt)")
+                logger.warning(f"{ID_TO_PLAYER[self.battle.attacker_id]} activates Brutal Tactics (+1 hit dealt)")
                 self.battle.att_extra_hits += 1
                 self.change_score(self.battle.defender_id,1)
             # check if the defender can choose extra effects
@@ -694,7 +700,7 @@ class root2pCatsVsEyrie:
                 return ans
             
             # next, the defender takes hits first
-            logger.debug("--- Dealing hits to defender...")
+            logger.warning("--- Dealing hits to defender...")
             self.battle.def_hits_to_deal = self.battle.def_rolled_hits
             self.battle.att_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.defender_id,self.battle.att_extra_hits+self.battle.att_rolled_hits,self.battle.clearing_id)
             if cardboard_removed:
@@ -710,7 +716,7 @@ class root2pCatsVsEyrie:
                 token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.defender_id,tid) > 0)]
                 return building_choices + token_choices
             # lastly, attacker takes hits
-            logger.debug("--- Dealing hits to attacker...")
+            logger.warning("--- Dealing hits to attacker...")
             self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id,self.battle.def_hits_to_deal,self.battle.clearing_id)
             if cardboard_removed:
                 self.score_battle_points(self.battle.defender_id,False,cardboard_removed)
@@ -725,7 +731,7 @@ class root2pCatsVsEyrie:
                 token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.attacker_id,tid) > 0)]
                 return building_choices + token_choices
             # battle is over
-            logger.debug(f"--- BATTLE FINISHED")
+            logger.warning(f"--- BATTLE FINISHED")
             self.battle.stage = Battle.STAGE_DONE
             self.current_player = self.index_to_id(self.battle.attacker_id)
             return []
@@ -734,16 +740,16 @@ class root2pCatsVsEyrie:
             # the defender has chosen what extra effects to use
             if action in {AID_EFFECTS_ARMORERS,AID_EFFECTS_ARMSAP}:
                 # Armorers is used up
-                logger.debug(f"{ID_TO_PLAYER[self.battle.defender_id]} activates Armorers (ignores rolled hits)")
+                logger.warning(f"{ID_TO_PLAYER[self.battle.defender_id]} activates Armorers (ignores rolled hits)")
                 self.battle.att_rolled_hits = 0
                 self.discard_from_persistent(self.battle.defender_id,CID_ARMORERS)
             if action in {AID_EFFECTS_SAPPERS,AID_EFFECTS_ARMSAP}:
                 # sappers is used
-                logger.debug(f"{ID_TO_PLAYER[self.battle.defender_id]} activates Sappers (+1 hit dealt)")
+                logger.warning(f"{ID_TO_PLAYER[self.battle.defender_id]} activates Sappers (+1 hit dealt)")
                 self.battle.def_extra_hits += 1
                 self.discard_from_persistent(self.battle.defender_id,CID_SAPPERS)
             # next, the defender takes hits first
-            logger.debug("--- Dealing hits to defender...")
+            logger.warning("--- Dealing hits to defender...")
             self.battle.def_hits_to_deal = self.battle.def_rolled_hits + self.battle.def_extra_hits
             self.battle.att_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.defender_id,self.battle.att_extra_hits+self.battle.att_rolled_hits,self.battle.clearing_id)
             if cardboard_removed:
@@ -759,7 +765,7 @@ class root2pCatsVsEyrie:
                 token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.defender_id,tid) > 0)]
                 return building_choices + token_choices
             # lastly, attacker takes hits
-            logger.debug("--- Dealing hits to attacker...")
+            logger.warning("--- Dealing hits to attacker...")
             self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id,self.battle.def_hits_to_deal,self.battle.clearing_id)
             if cardboard_removed:
                 self.score_battle_points(self.battle.defender_id,False,cardboard_removed)
@@ -774,7 +780,7 @@ class root2pCatsVsEyrie:
                 token_choices = [tid+AID_ORDER_KEEP for tid in range(2) if (clearing.get_num_tokens(self.battle.attacker_id,tid) > 0)]
                 return building_choices + token_choices
             # battle is over
-            logger.debug(f"--- BATTLE FINISHED")
+            logger.warning(f"--- BATTLE FINISHED")
             self.battle.stage = Battle.STAGE_DONE
             self.current_player = self.index_to_id(self.battle.attacker_id)
             return []
@@ -783,38 +789,39 @@ class root2pCatsVsEyrie:
     # Activating Card Effects
     def activate_royal_claim(self,player_index:int):
         "In Birdsong, may discard this to score one point per clearing you rule."
-        logger.debug(f"\t{ID_TO_PLAYER[player_index]} activates Royal Claim...")
+        logger.warning(f"\t{ID_TO_PLAYER[player_index]} activates Royal Claim...")
         points = sum((i == player_index) for i in self.board.get_rulers())
         self.change_score(player_index,points)
         self.discard_from_persistent(player_index, CID_ROYAL_CLAIM)
     
     def activate_stand_and_deliver(self,player_index:int,target_index:int):
         "In Birdsong, may take a random card from another player. That player scores one point."
-        logger.debug(f"\t{ID_TO_PLAYER[player_index]} activates Stand and Deliver on {ID_TO_PLAYER[target_index]}...")
+        logger.warning(f"\t{ID_TO_PLAYER[player_index]} activates Stand and Deliver on {ID_TO_PLAYER[target_index]}...")
         target_p_hand = self.players[target_index].hand
         chosen_i = random.randint(0,len(target_p_hand) - 1)
         chosen_card = target_p_hand.pop(chosen_i)
-        logger.debug(f"\t\tCard Taken: {chosen_card.name}")
+        logger.warning(f"\t\tCard Taken: {chosen_card.name}")
 
         self.players[player_index].hand.append(chosen_card)
         self.change_score(target_index,1)
 
     def activate_tax_collector(self,player_index:int,clearing_index:int):
         "Once in Daylight, may remove one of your warriors from the map to draw a card."
-        logger.debug(f"\t{ID_TO_PLAYER[player_index]} activates Tax Collector...")
+        logger.warning(f"\t{ID_TO_PLAYER[player_index]} activates Tax Collector...")
         self.board.place_warriors(player_index,-1,clearing_index)
         self.draw_cards(player_index,1)
-        self.field_hospitals.append((1,self.board.clearings[clearing_index].suit))
+        if player_index == PIND_MARQUISE:
+            self.field_hospitals.append((1,self.board.clearings[clearing_index].suit))
 
     def activate_better_burrow(self,player_index:int,target_index:int):
         "At start of Birdsong, you and another player draw a card."
-        logger.debug(f"\t{ID_TO_PLAYER[player_index]} activates Better Burrow Bank...")
+        logger.warning(f"\t{ID_TO_PLAYER[player_index]} activates Better Burrow Bank...")
         self.draw_cards(player_index,1)
         self.draw_cards(target_index,1)
     
     def activate_codebreakers(self,player_index:int,target_index:int):
         "TODO: Implement"
-        logger.debug(f"\t{ID_TO_PLAYER[player_index]} activates Codebreakers...")
+        logger.warning(f"\t{ID_TO_PLAYER[player_index]} activates Codebreakers...")
         
 
     def can_craft(self,card:Card,player:Player):
@@ -860,14 +867,15 @@ class root2pCatsVsEyrie:
         sawmill_counts = self.board.get_total_building_counts(PIND_MARQUISE,BIND_SAWMILL)
         wood_in_store = mplayer.get_num_tokens_in_store(TIND_WOOD)
         if wood_in_store == 0 or sum(sawmill_counts) == 0:
-            logger.debug("\tNo wood to be placed / No sawmills to generate wood at")
+            logger.warning("\tNo wood to be placed / No sawmills to generate wood at")
             return True
         # there is at least 1 wood and at least 1 sawmill to place at
         if sum(sawmill_counts) > wood_in_store:
+            logger.warning("\tWood cannot be placed automatically...")
             self.available_wood_spots = sawmill_counts
             return False
         # place a wood token for each sawmill at each clearing with a sawmill
-        logger.debug("\tWood can be placed automatically...")
+        logger.warning(f"\t{sum(sawmill_counts)} Wood can be placed automatically...")
         clearings_with_sawmill_ids = {i for i,n in enumerate(sawmill_counts) if n > 0}
         for i in clearings_with_sawmill_ids:
             n_sawmills = sawmill_counts[i]
@@ -885,10 +893,11 @@ class root2pCatsVsEyrie:
         """
         recruiter_counts = self.board.get_total_building_counts(PIND_MARQUISE,BIND_RECRUITER)
         if sum(recruiter_counts) > mplayer.warrior_storage:
+            logger.warning("\tWarriors cannot be recruited automatically...")
             self.available_recruiters = recruiter_counts
             return False
         # place a warrior for each recruiter at each clearing with a recruiter
-        logger.debug("\tWarriors can be recruited automatically...")
+        logger.warning("\tWarriors can be recruited automatically...")
         clearings_with_recruiter_ids = {i for i,n in enumerate(recruiter_counts) if n > 0}
         for i in clearings_with_recruiter_ids:
             n_recruiters = recruiter_counts[i]
@@ -909,9 +918,13 @@ class root2pCatsVsEyrie:
         """
         # place the building
         wood_cost,points_scored = mplayer.update_from_building_placed(building_index)
+        logger.warning(f"Building a {ID_TO_MBUILD[building_index]} in clearing {clearing_index}")
+        logger.warning(f"\tWood Cost: {wood_cost}")
         self.board.place_building(PIND_MARQUISE,building_index,clearing_index)
         self.change_score(PIND_MARQUISE,points_scored)
-
+        if wood_cost == 0:
+            return True
+        
         usable_wood = self.board.get_wood_to_build_in(clearing_index)
         one_clearing_id = -1
         total_usable = 0
@@ -924,14 +937,14 @@ class root2pCatsVsEyrie:
                     one_clearing_id = None
         # if there is only one clearing with wood, just take the cost from that clearing
         if one_clearing_id is not None:
-            logger.debug(f"\tRemoving wood cost solely from clearing {one_clearing_id}...")
+            logger.warning(f"\tRemoving {wood_cost} wood solely from clearing {one_clearing_id}...")
             for i in range(wood_cost):
                 self.board.clearings[one_clearing_id].remove_token(PIND_MARQUISE,TIND_WOOD)
             mplayer.change_num_tokens(TIND_WOOD,wood_cost)
             return True
         # if we have exactly enough wood to pay, then use up all of the usable wood
         if total_usable == wood_cost:
-            logger.debug(f"\tRemoving all usable wood to pay...")
+            logger.warning(f"\tRemoving all usable wood to pay...")
             for i,amount in enumerate(usable_wood):
                 while amount > 0:
                     self.board.clearings[i].remove_token(PIND_MARQUISE,TIND_WOOD)
@@ -982,10 +995,10 @@ class root2pCatsVsEyrie:
         Prioritizes the exact suit before counting an action as a bird action.
         """
         if self.remaining_decree[decree_index][suit] > 0:
-            logger.debug(f"\tFulfilled {ID_TO_SUIT[suit]} {ID_TO_DECREE[decree_index]} requirement on Decree")
+            logger.warning(f"\tFulfilled {ID_TO_SUIT[suit]} {ID_TO_DECREE[decree_index]} requirement on Decree")
             self.remaining_decree[decree_index][suit] -= 1
         else:
-            logger.debug(f"\tFulfilled Bird {ID_TO_DECREE[decree_index]} requirement on Decree")
+            logger.warning(f"\tFulfilled Bird {ID_TO_DECREE[decree_index]} requirement on Decree")
             self.remaining_decree[decree_index][SUIT_BIRD] -= 1
     
     def setup_decree_counter(self,eplayer:Eyrie):
@@ -1071,7 +1084,7 @@ class root2pCatsVsEyrie:
         """
         if self.phase == self.PHASE_SETUP_MARQUISE:
             if self.phase_steps == 0:
-                logger.debug(f"\t\t--- GAME START ---\nStart Player: {ID_TO_PLAYER[0 if (self.first_player == 1) else 1]}")
+                logger.warning(f"\t\t--- GAME START ---\nStart Player: {ID_TO_PLAYER[0 if (self.first_player == 1) else 1]}")
                 return [i+AID_CHOOSE_CLEARING for i,x in enumerate(self.board.clearings) if (x.opposite_corner_id >= 0)]
             if self.phase_steps == 1:
                 i = self.players[PIND_MARQUISE].keep_clearing_id
@@ -1089,6 +1102,7 @@ class root2pCatsVsEyrie:
                 return [x for x in range(AID_CHOOSE_LEADER,AID_CHOOSE_LEADER + 4)]
         if self.phase == self.PHASE_SETUP_EYRIE and self.phase_steps == 1:
             # START GAME - Random Starting Player?
+            logger.warning(f"--- STARTING GAME ---")
             self.phase_steps = 0
             if self.first_player == 1: # Marquise start
                 self.phase = self.PHASE_BIRDSONG_MARQUISE
@@ -1107,18 +1121,23 @@ class root2pCatsVsEyrie:
         "Advances the game assuming we are in the middle of the Marquise's turn."
         if self.phase == self.PHASE_BIRDSONG_MARQUISE:
             if self.phase_steps == 0: # Start of Birdsong
+                logger.warning(f"\tResetting for Marquise's Turn...")
                 self.reset_for_marquise()
                 # can they use BBB?
                 if CID_BBB in {c.id for c in current_player.persistent_cards}:
+                    logger.warning("Checking for use of BBB...")
                     return [AID_GENERIC_SKIP,AID_CARD_BBB]
                 self.phase_steps = 1
             if self.phase_steps == 1:
                 if not self.wood_placement_started:
                     self.wood_placement_started = True
+                    logger.warning(f"\tProducing wood at sawmills...")
                     wood_placement_done = self.place_marquise_wood(current_player)
                     if not wood_placement_done:
+                        logger.warning(f"> Choice exists in placing wood")
                         return [i+AID_CHOOSE_CLEARING for i,count in enumerate(self.available_wood_spots) if (count > 0)]
                     # we are finished placing wood
+                    logger.warning(f"Finished placing wood.")
                     self.phase_steps = 2
                 else:
                     # we are not finished placing wood
@@ -1133,9 +1152,11 @@ class root2pCatsVsEyrie:
                 if CID_ROYAL_CLAIM in unused_pers:
                     ans.append(AID_CARD_ROYAL_CLAIM)
                 if bool(ans):
+                    logger.warning(f"Checking for use of Birdsong Cards...")
                     return [AID_GENERIC_SKIP] + ans
                 self.phase_steps = 3
             if self.phase_steps == 3:
+                logger.warning(f"--- Moving on to Daylight ---")
                 self.phase_steps = 0
                 self.phase = self.PHASE_DAYLIGHT_MARQUISE
                 
@@ -1145,6 +1166,7 @@ class root2pCatsVsEyrie:
                 if CID_COMMAND_WARREN in {c.id for c in current_player.persistent_cards}:
                     foo = self.board.get_possible_battles(PIND_MARQUISE,PIND_EYRIE)
                     if bool(foo):
+                        logger.warning(f"Checking for use of Command Warren...")
                         return [AID_GENERIC_SKIP] + [i+AID_CARD_COMMAND_WARREN for i,x in enumerate(foo) if x]
                 self.phase_steps = 1
             if self.phase_steps == 1:
@@ -1162,9 +1184,11 @@ class root2pCatsVsEyrie:
                     if CID_TAX_COLLECTOR in unused_pers:
                         foo = self.board.get_num_warriors(PIND_MARQUISE)
                         ans += [i+AID_CARD_TAX_COLLECTOR for i,amount in enumerate(foo) if (amount > 0)]
+                    logger.warning(f"Checking for Crafting / use of Birdsong Cards...")
                     return [AID_GENERIC_SKIP] + ans
                 else:
                     # no crafting possible, so move onto the main phase
+                    logger.warning(f"> Moving onto step 2 of Daylight...")
                     self.phase_steps = 2
             while self.phase_steps < 6:
                 if self.phase_steps == 2:
@@ -1198,8 +1222,10 @@ class root2pCatsVsEyrie:
                         if current_player.get_num_tokens_in_store(TIND_WOOD) > 0:
                             ans += self.get_marquise_overwork_actions(current_player)
                     if bool(ans):
+                        logger.warning(f"Checking for next Daylight Step 2 action ({self.marquise_actions} actions left)...")
                         return [AID_GENERIC_SKIP] + ans
                     # if we get here, then we are done with the daylight phase
+                    logger.warning("\tEnd of Daylight phase (no more actions)")
                     self.phase_steps = 6
                 if self.phase_steps == 3: # we are mid-march
                     ans = self.board.get_legal_move_actions(PIND_MARQUISE,{0,1,2})
@@ -1207,12 +1233,16 @@ class root2pCatsVsEyrie:
                         self.marquise_moves = 2
                         self.phase_steps = 2
                     else:
+                        logger.warning("Finding 2nd move of march...")
                         return [AID_GENERIC_SKIP] + ans
                 if self.phase_steps == 4: # choosing where to recruit
+                    logger.warning(f"Choosing where to recruit...")
                     return [i+AID_CHOOSE_CLEARING for i,count in enumerate(self.available_recruiters) if (count > 0)]
                 if self.phase_steps == 5:
+                    logger.warning(f"Choosing where to take wood from...")
                     return [i+AID_CHOOSE_CLEARING for i,count in enumerate(self.available_wood_spots) if (count > 0)]
             if self.phase_steps == 6:
+                logger.warning("--- Moving on to Evening ---")
                 self.phase_steps = 0
                 self.phase = self.PHASE_EVENING_MARQUISE
         if self.phase == self.PHASE_EVENING_MARQUISE:
@@ -1221,6 +1251,7 @@ class root2pCatsVsEyrie:
                 if CID_COBBLER in unused_pers:
                     ans = self.board.get_legal_move_actions(PIND_MARQUISE,{0,1,2})
                     if bool(ans):
+                        logger.warning("Checking for use of Cobbler...")
                         return [AID_GENERIC_SKIP] + ans
                 self.phase_steps = 1
             # Evening Phase
@@ -1229,24 +1260,29 @@ class root2pCatsVsEyrie:
                 self.phase_steps = 2
             if self.phase_steps == 2 and len(current_player.hand) > 5:
                 ans = {c.id+AID_DISCARD_CARD for c in current_player.hand}
+                logger.warning("Marquise must discard from hand...")
                 return list(ans)
             # turn done!
             self.phase_steps = 0
             self.phase = self.PHASE_BIRDSONG_EYRIE
             self.current_player = -1
+            logger.warning("--- End of Marquise Turn ---\n")
             return self.advance_eyrie(self.players[PIND_EYRIE])
     
     def advance_eyrie(self,current_player:Eyrie):
         "Advances the game assuming we are in the middle of the Eyrie's turn."
         if self.phase == self.PHASE_BIRDSONG_EYRIE:
             if self.phase_steps == 0: # Start of Birdsong
+                logger.warning(f"\tResetting for Eyrie's Turn...")
                 self.reset_for_eyrie()
                 # can they use BBB?
                 if CID_BBB in {c.id for c in current_player.persistent_cards}:
+                    logger.warning("Checking for use of BBB...")
                     return [AID_GENERIC_SKIP,AID_CARD_BBB]
                 self.phase_steps = 1
             if self.phase_steps == 1: # drawing emergency card
                 if len(current_player.hand) == 0:
+                    logger.warning("\tDrawing Emergency Card")
                     self.draw_cards(PIND_EYRIE,1)
                 self.phase_steps = 2
             if self.phase_steps == 2: # adding to decree
@@ -1258,16 +1294,20 @@ class root2pCatsVsEyrie:
                     ans.append(AID_CARD_ROYAL_CLAIM)
                 ans += self.get_eyrie_decree_add_actions(current_player)
                 if not bool(ans):
+                    logger.warning("\tCannot add more to decree")
                     self.phase_steps = 3
                 elif self.eyrie_cards_added > 0:
+                    logger.warning("Choosing whether to add 2nd card to decree...")
                     return [AID_GENERIC_SKIP] + ans
                 else:
+                    logger.warning("Choosing what to add to decree...")
                     return ans
             if self.phase_steps == 3:
                 # setup decree to complete
                 self.setup_decree_counter(current_player)
                 # a new roost (no roosts on map)
                 if current_player.get_num_buildings_on_track(BIND_ROOST) == 7:
+                    logger.warning("Activating 'A New Roost'...")
                     total_warriors = [self.board.get_num_warriors(PIND_MARQUISE)[i] + self.board.get_num_warriors(PIND_EYRIE)[i] for i in range(12)]
                     ans = [i+AID_BUILD1 for i,count in enumerate(total_warriors) if (count == min(total_warriors))]
                     if len(ans) == 1:
@@ -1278,6 +1318,7 @@ class root2pCatsVsEyrie:
                         self.board.place_warriors(PIND_EYRIE, n_warriors, ans[0] - AID_BUILD1)
                         current_player.change_num_warriors(-n_warriors)
                     else:
+                        logger.warning("Choosing where to add new roost...")
                         return ans
                 self.phase_steps = 4
             if self.phase_steps == 4:
@@ -1289,9 +1330,11 @@ class root2pCatsVsEyrie:
                 if CID_ROYAL_CLAIM in unused_pers:
                     ans.append(AID_CARD_ROYAL_CLAIM)
                 if bool(ans):
+                    logger.warning(f"Checking for use of Birdsong Cards...")
                     return [AID_GENERIC_SKIP] + ans
                 self.phase_steps = 5
             if self.phase_steps == 5:
+                logger.warning(f"--- Moving on to Daylight ---")
                 self.phase_steps = 0
                 self.phase = self.PHASE_DAYLIGHT_EYRIE
         if self.phase == self.PHASE_DAYLIGHT_EYRIE:
@@ -1300,6 +1343,7 @@ class root2pCatsVsEyrie:
                 if CID_COMMAND_WARREN in {c.id for c in current_player.persistent_cards}:
                     foo = self.board.get_possible_battles(PIND_EYRIE,PIND_MARQUISE)
                     if bool(foo):
+                        logger.warning(f"Checking for use of Command Warren...")
                         return [AID_GENERIC_SKIP] + [i+AID_CARD_COMMAND_WARREN for i,x in enumerate(foo) if x]
                 self.phase_steps = 1
             if self.phase_steps == 1:
@@ -1317,9 +1361,11 @@ class root2pCatsVsEyrie:
                     if CID_TAX_COLLECTOR in unused_pers:
                         foo = self.board.get_num_warriors(PIND_EYRIE)
                         ans += [i+AID_CARD_TAX_COLLECTOR for i,amount in enumerate(foo) if (amount > 0)]
+                    logger.warning(f"Checking for Crafting / use of Birdsong Cards...")
                     return [AID_GENERIC_SKIP] + ans
                 else:
                     # no crafting possible, so move onto resolving the decree
+                    logger.warning(f"> Moving onto step 2 of Daylight...")
                     self.phase_steps = 2
             if self.phase_steps == 2:
                 # RESOLVING THE DECREE
@@ -1336,23 +1382,30 @@ class root2pCatsVsEyrie:
                     # some of decree still remains to resolve
                     decree_actions = self.get_decree_resolving_actions(current_player)
                     if bool(decree_actions): # there is an action to take for the decree
+                        logger.warning(f"Choosing decree-resolving action...")
                         return ans + decree_actions
                     # otherwise, we will turmoil
                     if bool(ans): # give them one last chance to use cards
+                        logger.warning("\tTurmoiling, but given last chance to use cards...")
                         return [AID_GENERIC_SKIP] + ans
                     # if no persistent to use, turmoil now
+                    logger.warning(">> TURMOILING")
                     self.phase_steps = 3
                 else:
                     # decree is done
                     if bool(ans):
+                        logger.warning(f">>> DECREE COMPLETED, but given last chance to use cards...")
                         return [AID_GENERIC_SKIP] + ans
+                    logger.warning(">>> DECREE COMPLETED")
                     self.phase_steps = 4
             if self.phase_steps == 3: # we are turmoiling
                 to_discard,pts = current_player.turmoil_helper()
                 self.change_score(PIND_EYRIE,-pts)
                 self.discard_pile += to_discard
+                logger.warning("Choosing new leader after turmoil...")
                 return [i+AID_CHOOSE_LEADER for i in current_player.available_leaders]
             if self.phase_steps == 4: # End of daylight
+                logger.warning("--- Moving on to Evening ---")
                 self.phase_steps = 0
                 self.phase = self.PHASE_EVENING_EYRIE
         if self.phase == self.PHASE_EVENING_EYRIE:
@@ -1361,6 +1414,7 @@ class root2pCatsVsEyrie:
                 if CID_COBBLER in unused_pers:
                     ans = self.board.get_legal_move_actions(PIND_EYRIE,{0,1,2})
                     if bool(ans):
+                        logger.warning("Checking for use of Cobbler...")
                         return [AID_GENERIC_SKIP] + ans
                 self.phase_steps = 1
             # Evening Phase
@@ -1370,11 +1424,13 @@ class root2pCatsVsEyrie:
                 self.phase_steps = 2
             if self.phase_steps == 2 and len(current_player.hand) > 5:
                 ans = {c.id+AID_DISCARD_CARD for c in current_player.hand}
+                logger.warning("Eyrie must discard from hand...")
                 return list(ans)
             # turn done!
             self.phase_steps = 0
             self.phase = self.PHASE_BIRDSONG_MARQUISE
             self.current_player = 1
+            logger.warning("--- End of Eyrie Turn ---\n")
             return self.advance_marquise(self.players[PIND_MARQUISE])
 
     # ACTION RESOLUTION
@@ -1415,6 +1471,7 @@ class root2pCatsVsEyrie:
         s = self.phase_steps
         if s == 0: # choosing where to put the Keep
             chosen_clearing = action - AID_CHOOSE_CLEARING
+            logger.warning(f"Keep placed in clearing {chosen_clearing}")
             current_player.keep_clearing_id = chosen_clearing
             current_player.change_num_tokens(TIND_KEEP,-1)
             self.board.place_token(PIND_MARQUISE,TIND_KEEP,chosen_clearing)
@@ -1424,6 +1481,7 @@ class root2pCatsVsEyrie:
                 if i != skip:
                     self.board.place_warriors(PIND_MARQUISE,1,i)
             current_player.change_num_warriors(-11)
+            logger.warning(f"1 Marquise warrior placed in each clearing except {skip}")
         elif s == 1: # choosing where to place a sawmill
             chosen_clearing = action - AID_BUILD1
             current_player.update_from_building_placed(BIND_SAWMILL)
@@ -1441,6 +1499,7 @@ class root2pCatsVsEyrie:
     def marquise_birdsong(self,action:int,current_player:Marquise):
         "Performs the action during the Marquise's birdsong / changes the turn stage."
         if action >= AID_CHOOSE_CLEARING and action <= AID_CHOOSE_CLEARING + 11: # choose where to place wood
+            logger.warning(f"\tChose to place wood in clearing {action - AID_CHOOSE_CLEARING}")
             self.available_wood_spots[action - AID_CHOOSE_CLEARING] -= 1
             current_player.change_num_tokens(TIND_WOOD,-1)
             self.board.place_token(PIND_MARQUISE,TIND_WOOD,action - AID_CHOOSE_CLEARING)
@@ -1451,6 +1510,7 @@ class root2pCatsVsEyrie:
                 self.phase_steps = 2
             elif sum(can_place_wood) == 1:
                 # there is no choice left of where to place
+                logger.warning(f"\tRemaining wood can be placed automatically:")
                 i = can_place_wood.index(True)
                 foo = self.available_wood_spots[i]
                 amount_to_place = min(foo, current_player.get_num_tokens_in_store(TIND_WOOD))
@@ -1467,6 +1527,7 @@ class root2pCatsVsEyrie:
             self.persistent_used_this_turn.add(CID_BBB)
             self.phase_steps = 1
         elif action == AID_GENERIC_SKIP:
+            logger.warning("- Chose to Skip")
             self.phase_steps = 3
         elif action == AID_CARD_STAND_DELIVER:
             self.activate_stand_and_deliver(PIND_MARQUISE,PIND_EYRIE)
@@ -1481,14 +1542,18 @@ class root2pCatsVsEyrie:
             self.craft_card(PIND_MARQUISE,action - AID_CRAFT_CARD)
         elif action == AID_GENERIC_SKIP:
             if self.phase_steps in {0,1}: # skipping using CWARREN / crafting / using cards 
+                logger.warning("- Chose to Skip")
                 self.phase_steps += 1
             elif self.phase_steps == 2:
+                logger.warning("- Forfeiting remaining daylight actions...")
                 self.phase_steps = 6
             elif self.phase_steps == 3: # we forfeit second move of a march
+                logger.warning("- Forfeiting second march move...")
                 self.phase_steps = 2
                 self.marquise_moves = 2
 
         elif action >= AID_SPEND_BIRD and action <= AID_SPEND_BIRD + 9:
+            logger.warning("Spending a bird card to gain an action:")
             self.discard_from_hand(PIND_MARQUISE, ACTION_TO_BIRD_ID[action])
             self.marquise_actions += 1
         elif action >= AID_BATTLE and action <= AID_BATTLE + 11:
@@ -1506,6 +1571,7 @@ class root2pCatsVsEyrie:
                 self.marquise_moves = 1
                 self.phase_steps = 3
         elif action == AID_RECRUIT:
+            logger.warning("Attempting to Recruit:")
             all_recruited = self.place_marquise_warriors(current_player)
             self.recruited_this_turn = 1
             self.marquise_actions -= 1
@@ -1531,17 +1597,18 @@ class root2pCatsVsEyrie:
                 self.phase_steps = 5
         elif action >= AID_OVERWORK and action <= AID_OVERWORK + 503:
             card_id,clearing_id = divmod(action - AID_OVERWORK, 12)
+            logger.warning(f"Overworking the Sawmill in clearing {clearing_id}")
             self.marquise_actions -= 1
             self.discard_from_hand(PIND_MARQUISE,card_id)
             current_player.change_num_tokens(TIND_WOOD,-1)
             self.board.place_token(PIND_MARQUISE,TIND_WOOD,clearing_id)
         elif self.phase_steps == 5:
             # we are choosing where to take wood from
-            logger.debug(f"\tChose wood from clearing {action - AID_CHOOSE_CLEARING}")
+            logger.warning(f"\tChose wood from clearing {action - AID_CHOOSE_CLEARING}")
             self.board.clearings[action - AID_CHOOSE_CLEARING].remove_token(PIND_MARQUISE,TIND_WOOD)
             current_player.change_num_tokens(TIND_WOOD,1)
             self.remaining_wood_cost -= 1
-            logger.debug(f"\t\tRemaining wood cost: {self.remaining_wood_cost}")
+            logger.warning(f"\t\tRemaining wood cost: {self.remaining_wood_cost}")
             self.available_wood_spots[action - AID_CHOOSE_CLEARING] -= 1
             can_spend = [(x > 0) for x in self.available_wood_spots]
             if self.remaining_wood_cost == 0:
@@ -1550,7 +1617,7 @@ class root2pCatsVsEyrie:
             elif sum(can_spend) == 1:
                 # we can only take wood from this one spot
                 i = can_spend.index(True)
-                logger.debug(f"\tWe can take the rest from clearing {i}")
+                logger.warning(f"\tWe can take the rest from clearing {i}")
                 amount_to_take = self.available_wood_spots[i]
                 while amount_to_take:
                     current_player.change_num_tokens(TIND_WOOD,1)
@@ -1564,6 +1631,7 @@ class root2pCatsVsEyrie:
 
         elif self.phase_steps == 4:
             # we are choosing where to recruit
+            logger.warning(f"Chose to recruit in clearing {action - AID_CHOOSE_CLEARING}")
             current_player.change_num_warriors(-1)
             self.board.place_warriors(PIND_MARQUISE,1,action - AID_CHOOSE_CLEARING)
             self.available_recruiters[action - AID_CHOOSE_CLEARING] -= 1
@@ -1574,6 +1642,7 @@ class root2pCatsVsEyrie:
             elif sum(can_recruit) == 1:
                 # there is no choice left of where to place
                 i = can_recruit.index(True)
+                logger.warning(f"\tWe can recruit the rest in clearing {i}")
                 foo = self.available_recruiters[i]
                 amount_to_place = min(foo, current_player.warrior_storage)
                 current_player.change_num_warriors(-amount_to_place)
@@ -1590,6 +1659,7 @@ class root2pCatsVsEyrie:
             self.persistent_used_this_turn.add(CID_TAX_COLLECTOR)
             self.activate_tax_collector(PIND_MARQUISE,action - AID_CARD_TAX_COLLECTOR)
         elif action >= AID_CARD_COMMAND_WARREN and action <= AID_CARD_COMMAND_WARREN + 11: # activate command warren
+            logger.warning("Command Warren Activated:")
             self.phase_steps = 1
             self.persistent_used_this_turn.add(CID_COMMAND_WARREN)
             self.battle = Battle(PIND_MARQUISE,PIND_EYRIE,action - AID_CARD_COMMAND_WARREN)
@@ -1599,12 +1669,14 @@ class root2pCatsVsEyrie:
     def marquise_evening(self,action:int):
         "Performs the given action for the Marquise in Evening."
         if action >= AID_MOVE and action <= AID_MOVE + 3599: # Cobbler
+            logger.warning("Cobbler Activated:")
             start,foo = divmod(action - AID_MOVE,300)
             end,amount = divmod(foo,25)
             self.board.move_warriors(PIND_MARQUISE,amount + 1,start,end)
             self.persistent_used_this_turn.add(CID_COBBLER)
             self.phase_steps = 1
         elif action == AID_GENERIC_SKIP: # choose not to use cobbler
+            logger.warning("- Chose to Skip")
             self.phase_steps = 1
         elif action >= AID_DISCARD_CARD and action <= AID_DISCARD_CARD + 41: # Discard excess card
             self.discard_from_hand(PIND_MARQUISE, action - AID_DISCARD_CARD)
@@ -1632,6 +1704,7 @@ class root2pCatsVsEyrie:
             self.persistent_used_this_turn.add(CID_BBB)
             self.phase_steps = 1
         elif action == AID_GENERIC_SKIP: # don't use BBB OR Don't add second card to decree
+            logger.warning("- Chose to Skip")
             self.phase_steps += 1
 
         elif action >= AID_DECREE_RECRUIT and action <= AID_DECREE_RECRUIT + 41: # add card to RECRUIT
@@ -1686,6 +1759,7 @@ class root2pCatsVsEyrie:
         if action >= AID_CRAFT_CARD and action <= AID_CRAFT_CARD + 40: # craft a card
             self.craft_card(PIND_EYRIE,action - AID_CRAFT_CARD)
         elif action == AID_GENERIC_SKIP:
+            logger.warning("- Chose to Skip")
             if self.phase_steps == 2: # we are choosing not to use cards when given a last choice
                 if any(any(x) for x in self.remaining_decree.values()):
                     self.phase_steps = 3
@@ -1695,19 +1769,22 @@ class root2pCatsVsEyrie:
                 self.phase_steps += 1
 
         elif action >= AID_BATTLE and action <= AID_BATTLE + 11:
+            logger.warning(">> Decree: BATTLE")
             self.battle = Battle(PIND_EYRIE,PIND_MARQUISE,action - AID_BATTLE)
             self.reduce_decree_count(DECREE_BATTLE, self.board.clearings[action - AID_BATTLE].suit)
         elif action >= AID_MOVE and action <= AID_MOVE + 3599:
+            logger.warning(">> Decree: MOVE")
             start,foo = divmod(action - AID_MOVE,300)
             end,amount = divmod(foo,25)
             self.board.move_warriors(PIND_EYRIE,amount + 1,start,end)
             self.reduce_decree_count(DECREE_MOVE, self.board.clearings[start].suit)
         elif action >= AID_CHOOSE_CLEARING and action <= AID_CHOOSE_CLEARING + 11:
             # choosing where to recruit (assuming we have the warriors to place ALL (even charismatic))
+            logger.warning(">> Decree: RECRUIT")
             amount = 2 if (current_player.chosen_leader_index == LEADER_CHARISMATIC) else 1
             if amount > current_player.warrior_storage:
                 # trying to recruit with charismatic, but only 1 warrior in store
-                logger.info("\tCannot recruit 2 with Charismatic, so Eyrie will turmoil!")
+                logger.warning("\tCannot recruit 2 with Charismatic, so Eyrie will turmoil!")
                 amount = 1
                 turmoil = True
             else:
@@ -1719,6 +1796,7 @@ class root2pCatsVsEyrie:
                 self.phase_steps = 3
         elif action >= AID_BUILD1 and action <= AID_BUILD1 + 11:
             # building a Roost
+            logger.warning(">> Decree: BUILD")
             self.board.place_building(PIND_EYRIE,BIND_ROOST,action - AID_BUILD1)
             current_player.place_roost()
             self.reduce_decree_count(DECREE_BUILD, self.board.clearings[action - AID_BUILD1].suit)
@@ -1734,6 +1812,7 @@ class root2pCatsVsEyrie:
             self.persistent_used_this_turn.add(CID_TAX_COLLECTOR)
             self.activate_tax_collector(PIND_EYRIE,action - AID_CARD_TAX_COLLECTOR)
         elif action >= AID_CARD_COMMAND_WARREN and action <= AID_CARD_COMMAND_WARREN + 11: # activate command warren
+            logger.warning("Command Warren Activated:")
             self.phase_steps = 1
             self.persistent_used_this_turn.add(CID_COMMAND_WARREN)
             self.battle = Battle(PIND_EYRIE,PIND_MARQUISE,action - AID_CARD_COMMAND_WARREN)
@@ -1743,12 +1822,14 @@ class root2pCatsVsEyrie:
     def eyrie_evening(self,action:int):
         "Performs the given action for the Eyrie in Evening."
         if action >= AID_MOVE and action <= AID_MOVE + 3599: # Cobbler
+            logger.warning("Cobbler Activated:")
             start,foo = divmod(action - AID_MOVE,300)
             end,amount = divmod(foo,25)
             self.board.move_warriors(PIND_EYRIE,amount + 1,start,end)
             self.persistent_used_this_turn.add(CID_COBBLER)
             self.phase_steps = 1
         elif action == AID_GENERIC_SKIP: # choose not to use cobbler
+            logger.warning("- Chose to Skip")
             self.phase_steps = 1
         elif action >= AID_DISCARD_CARD and action <= AID_DISCARD_CARD + 41: # Discard excess card
             self.discard_from_hand(PIND_EYRIE, action - AID_DISCARD_CARD)
