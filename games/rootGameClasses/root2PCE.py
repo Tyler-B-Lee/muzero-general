@@ -1,4 +1,3 @@
-import math
 import random
 import numpy as np
 from classes import *
@@ -50,6 +49,7 @@ class root2pCatsVsEyrie:
         self.battle = Battle(-1,-1,-1)
         self.battle.stage = Battle.STAGE_DONE
         self.discard_pile = []
+        self.discard_array = np.zeros((38,3))
         self.available_items = {
             ITEM_COINS: 2,
             ITEM_BOOT: 2,
@@ -165,6 +165,9 @@ class root2pCatsVsEyrie:
             self.saved_actions = actions_to_return
         else:
             self.saved_actions = self.advance_game()
+        
+        for c in self.board.clearings:
+            print(c.get_obs_array())
 
         done = (max(self.victory_points) >= 30) and (self.battle.stage == Battle.STAGE_DONE)
 
@@ -174,10 +177,32 @@ class root2pCatsVsEyrie:
         # return self.get_observation(), reward, done
 
     def get_observation(self):
-        board_player1 = np.where(self.board == 1, 1.0, 0.0)
-        board_player2 = np.where(self.board == -1, 1.0, 0.0)
-        board_to_play = np.full((11, 11), self.current_player, dtype="int32")
-        return np.array([board_player1, board_player2, board_to_play])
+        ret = np.zeros((12,3))
+        for i,c in enumerate(self.board.clearings):
+            ret[i][c.suit] = 1
+        foo = np.zeros(50)
+        foo[self.deck.size() - 1] = 1
+        ret = np.append(ret,foo)
+
+        ret = np.append(ret,self.discard_array)
+
+        foo = np.zeros((7,2))
+        for i,a in self.available_items.items():
+            if a > 0:
+                foo[i][a - 1] = 1
+        ret = np.append(ret,foo)
+        
+        foo = np.zeros((2,31))
+        for i in range(2):
+            foo[i][min(30,self.victory_points[i])] = 1
+        ret = np.append(ret,foo)
+        
+        foo = np.zeros(15)
+        foo[self.phase] = 1
+        foo[self.phase_steps + 8] = 1
+        ret = np.append(ret,foo)
+
+
 
     def legal_actions(self):
         while self.saved_actions is None:
@@ -214,6 +239,7 @@ class root2pCatsVsEyrie:
             if self.deck.size() == 0:
                 self.deck.add(self.discard_pile) # includes shuffling
                 self.discard_pile = []
+                self.discard_array = np.zeros((38,3))
             amount -= 1
     
     def get_card(self,player_index:int,card_id:int,location:str) -> Card:
@@ -229,12 +255,30 @@ class root2pCatsVsEyrie:
         c_to_discard = self.get_card(player_index,card_id,"hand")
         logger.warning(f"\t{c_to_discard.name} added to discard pile")
         self.discard_pile.append(c_to_discard)
+        i = c_to_discard.id
+        if self.discard_array[i][0] == 1:
+            self.discard_array[i][0] = 0
+            self.discard_array[i][1] = 1
+        elif self.discard_array[i][1] == 1:
+            self.discard_array[i][1] = 0
+            self.discard_array[i][2] = 1
+        else:
+            self.discard_array[i][0] = 1
     
     def discard_from_persistent(self,player_index:int,card_id:int):
         "Makes a player discard a card of the matching id from their persistent cards, assuming they have it."
         c_to_discard = self.get_card(player_index,card_id,"persistent")
         logger.warning(f"\t{c_to_discard.name} added to discard pile")
         self.discard_pile.append(c_to_discard)
+        i = c_to_discard.id
+        if self.discard_array[i][0] == 1:
+            self.discard_array[i][0] = 0
+            self.discard_array[i][1] = 1
+        elif self.discard_array[i][1] == 1:
+            self.discard_array[i][1] = 0
+            self.discard_array[i][2] = 1
+        else:
+            self.discard_array[i][0] = 1
 
     def change_score(self,player_index:int,amount:int):
         "Makes a player score some amount of points. Use a negative amount to lose points."
@@ -430,14 +474,16 @@ class root2pCatsVsEyrie:
 
         attacker = self.players[self.battle.attacker_id]
         if self.battle.stage == Battle.STAGE_DEF_ORDER:
-            logger.warning(f"{ID_TO_PLAYER[self.battle.defender_id]} chose what piece to remove")
             # action is what defender building/token to hit with the next hit
             if action in {AID_ORDER_KEEP,AID_ORDER_WOOD}:
                 clearing.remove_token(self.battle.defender_id,action - AID_ORDER_KEEP)
                 defender.change_num_tokens(action - AID_ORDER_KEEP,1)
+                item = ID_TO_MTOKEN[action - AID_ORDER_KEEP]
             else:
                 clearing.remove_building(self.battle.defender_id,action - AID_ORDER_SAWMILL)
                 defender.change_num_buildings(action - AID_ORDER_SAWMILL,1)
+                item = ID_TO_MBUILD[action - AID_ORDER_SAWMILL]
+            logger.warning(f"{ID_TO_PLAYER[self.battle.defender_id]} chose to destroy {item}")
             self.score_battle_points(self.battle.attacker_id,True,1)
             # see if there is a choice anymore
             self.battle.att_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.defender_id, self.battle.att_hits_to_deal - 1, self.battle.clearing_id)
@@ -475,14 +521,16 @@ class root2pCatsVsEyrie:
                 return []
             
         if self.battle.stage == Battle.STAGE_ATT_ORDER:
-            logger.warning(f"{ID_TO_PLAYER[self.battle.attacker_id]} chose what piece to remove")
             # action is what attacker building/token to hit with the next hit
             if action in {AID_ORDER_KEEP,AID_ORDER_WOOD}:
                 clearing.remove_token(self.battle.attacker_id,action - AID_ORDER_KEEP)
                 attacker.change_num_tokens(action - AID_ORDER_KEEP,1)
+                item = ID_TO_MTOKEN[action - AID_ORDER_KEEP]
             else:
                 clearing.remove_building(self.battle.attacker_id,action - AID_ORDER_SAWMILL)
                 attacker.change_num_buildings(action - AID_ORDER_SAWMILL,1)
+                item = ID_TO_MBUILD[action - AID_ORDER_SAWMILL]
+            logger.warning(f"{ID_TO_PLAYER[self.battle.attacker_id]} chose to destroy {item}")
             self.score_battle_points(self.battle.defender_id,False,1)
             # see if there is a choice anymore
             self.battle.def_hits_to_deal,warriors_killed,cardboard_removed = self.deal_hits(self.battle.attacker_id, self.battle.def_hits_to_deal - 1, self.battle.clearing_id)
@@ -1402,6 +1450,16 @@ class root2pCatsVsEyrie:
                 to_discard,pts = current_player.turmoil_helper()
                 self.change_score(PIND_EYRIE,-pts)
                 self.discard_pile += to_discard
+                for c in to_discard:
+                    i = c.id
+                    if self.discard_array[i][0] == 1:
+                        self.discard_array[i][0] = 0
+                        self.discard_array[i][1] = 1
+                    elif self.discard_array[i][1] == 1:
+                        self.discard_array[i][1] = 0
+                        self.discard_array[i][2] = 1
+                    else:
+                        self.discard_array[i][0] = 1
                 logger.warning("Choosing new leader after turmoil...")
                 return [i+AID_CHOOSE_LEADER for i in current_player.available_leaders]
             if self.phase_steps == 4: # End of daylight

@@ -2,6 +2,7 @@ import copy
 import random
 from typing import Tuple
 import logging
+import numpy as np
 
 Recipe = Tuple[int,int,int,int]
 
@@ -186,6 +187,34 @@ class Clearing:
             ret += "\nTokens: " + " ".join(foo)
         return ret + "\n"
     
+    def get_obs_array(self):
+        "Returns an 8x8 array describing the current state of this clearing."
+        ret = np.zeros(25)
+        if self.get_num_warriors(PIND_MARQUISE) > 0:
+            ret[self.get_num_warriors(PIND_MARQUISE) - 1] = 1
+        foo = np.zeros(9)
+        if self.get_num_tokens(PIND_MARQUISE,TIND_WOOD) > 0:
+            foo[self.get_num_tokens(PIND_MARQUISE,TIND_WOOD) - 1] = 1
+        if self.get_num_tokens(PIND_MARQUISE,TIND_KEEP) > 0:
+            foo[8] = 1
+        ret = np.append(ret,foo)
+
+        foo = np.zeros(6)
+        if self.get_num_buildings(PIND_MARQUISE,BIND_SAWMILL) > 0:
+            foo[self.get_num_buildings(PIND_MARQUISE,BIND_SAWMILL) - 1] = 1
+        if self.get_num_buildings(PIND_MARQUISE,BIND_WORKSHOP) > 0:
+            foo[self.get_num_buildings(PIND_MARQUISE,BIND_WORKSHOP) + 1] = 1
+        if self.get_num_buildings(PIND_MARQUISE,BIND_RECRUITER) > 0:
+            foo[self.get_num_buildings(PIND_MARQUISE,BIND_RECRUITER) + 3] = 1
+        ret = np.append(ret,foo)
+
+        foo = np.zeros(24)
+        if self.get_num_warriors(PIND_EYRIE) > 0:
+            foo[self.get_num_warriors(PIND_EYRIE) - 1] = 1
+        if self.get_num_buildings(PIND_EYRIE,BIND_ROOST) > 0:
+            foo[20:] = 1
+        return np.append(ret,foo).reshape(8,8)
+    
     def get_num_empty_slots(self) -> int:
         "Returns the number of empty slots available to build in for the clearing."
         return self.num_building_slots - sum(len(x) for x in self.buildings.values())
@@ -322,6 +351,10 @@ class Board:
         for c in self.clearings:
             s += str(c) + "\n"
         return s
+    
+    def get_obs_array(self):
+        "Returns a list of 12 8x8 arrays of the current board's state."
+        return np.asarray([c.get_obs_array() for c in self.clearings])
 
     def reset(self):
         "Resets the map to the cleared starting state."
@@ -714,6 +747,39 @@ class Marquise(Player):
     def __str__(self) -> str:
         return "--- Marquise de Cat ---\n" + super().__str__() + f"\nKeep placed in clearing {self.keep_clearing_id}"
 
+    def get_obs_array(self):
+        ret = np.zeros(25)
+        if self.warrior_storage > 0:
+            ret[self.warrior_storage - 1] = 1
+        
+        foo = np.zeros((3,6))
+        for i,a in self.buildings.items():
+            if a > 0:
+                foo[i][a - 1] = 1
+        ret = np.append(ret,foo)
+        
+        foo = np.zeros(9)
+        if self.tokens[TIND_WOOD] > 0:
+            foo[self.get_num_tokens_in_store(TIND_WOOD) - 1] = 1
+        if self.tokens[TIND_KEEP] > 0:
+            foo[8] = 1
+        ret = np.append(ret,foo)
+
+        foo = np.zeros(10)
+        if len(self.hand) > 0:
+            foo[len(self.hand) - 1] = 1
+        ret = np.append(ret,foo)
+        
+        foo = np.zeros(11)
+        foo.put([CID_TO_PERS_INDEX[c.id] for c in self.persistent_cards], 1)
+        ret = np.append(ret,foo)
+        
+        foo = np.zeros((7,2))
+        for i,a in self.crafted_items.items():
+            if a > 0:
+                foo[i][a - 1] = 1
+        return np.append(ret,foo)
+
     def get_num_cards_to_draw(self) -> int:
         "Returns the number of cards to draw at the end of the turn (In Evening)."
         recruiters_left = self.get_num_buildings_on_track(BIND_RECRUITER)
@@ -763,6 +829,51 @@ class Eyrie(Player):
         for i,lst in self.decree.items():
             ret += f"\t{ID_TO_DECREE[i]}: {[(card.name,ID_TO_SUIT[card.suit]) for card in lst]}\n"
         return ret
+    
+    def get_obs_array(self):
+        ret = np.zeros(20)
+        if self.warrior_storage > 0:
+            ret[self.warrior_storage - 1] = 1
+        
+        foo = np.zeros(7)
+        if self.buildings[BIND_ROOST] > 0:
+            foo[self.buildings[BIND_ROOST] - 1] = 1
+        ret = np.append(ret,foo)
+
+        foo = np.zeros(10)
+        if len(self.hand) > 0:
+            foo[len(self.hand) - 1] = 1
+        ret = np.append(ret,foo)
+        
+        foo = np.zeros(11)
+        foo.put([CID_TO_PERS_INDEX[c.id] for c in self.persistent_cards], 1)
+        ret = np.append(ret,foo)
+        
+        foo = np.zeros((7,2))
+        for i,a in self.crafted_items.items():
+            if a > 0:
+                foo[i][a - 1] = 1
+        ret = np.append(ret,foo)
+
+        foo = np.zeros(8)
+        foo.put(self.available_leaders, 1)
+        if self.chosen_leader_index is not None:
+            foo[self.chosen_leader_index + 4] = 1
+        ret = np.append(ret,foo)
+
+        foo = np.zeros((4,39,3))
+        for dec_i in range(4):
+            for c in self.decree[dec_i]:
+                cid = c.id
+                if foo[dec_i][cid][0] == 1:
+                    foo[dec_i][cid][0] = 0
+                    foo[dec_i][cid][1] = 1
+                elif foo[dec_i][cid][1] == 1:
+                    foo[dec_i][cid][1] = 0
+                    foo[dec_i][cid][2] = 1
+                else:
+                    foo[dec_i][i][0] = 1
+        return np.append(ret,foo)
 
     def get_num_cards_to_draw(self) -> int:
         "Returns the number of cards to draw at the end of the turn (In Evening)."
@@ -952,6 +1063,20 @@ CID_BBB = 9
 CID_ROYAL_CLAIM = 37
 CID_FAVORS = {17,18,19}
 CID_LOYAL_VIZIER = len(STANDARD_DECK_COMP)
+
+CID_TO_PERS_INDEX = {
+    CID_ARMORERS: 0,
+    CID_BRUTAL_TACTICS: 1,
+    CID_SAPPERS: 2,
+    CID_SCOUTING_PARTY: 3,
+    CID_COBBLER: 4,
+    CID_COMMAND_WARREN: 5,
+    CID_CODEBREAKERS: 6,
+    CID_STAND_AND_DELIVER: 7,
+    CID_TAX_COLLECTOR: 8,
+    CID_BBB: 9,
+    CID_ROYAL_CLAIM: 10
+}
 
 ACTION_TO_BIRD_ID = {
     AID_SPEND_BIRD: CID_AMBUSH_BIRD,
