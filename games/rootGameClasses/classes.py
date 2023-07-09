@@ -188,7 +188,7 @@ class Clearing:
         return ret + "\n"
     
     def get_obs_array(self):
-        "Returns an 8x8 array describing the current state of this clearing."
+        "Returns an array describing the current state of this clearing."
         ret = np.zeros(25)
         if self.get_num_warriors(PIND_MARQUISE) > 0:
             ret[self.get_num_warriors(PIND_MARQUISE) - 1] = 1
@@ -208,12 +208,12 @@ class Clearing:
             foo[self.get_num_buildings(PIND_MARQUISE,BIND_RECRUITER) + 3] = 1
         ret = np.append(ret,foo)
 
-        foo = np.zeros(24)
+        foo = np.zeros(21)
         if self.get_num_warriors(PIND_EYRIE) > 0:
             foo[self.get_num_warriors(PIND_EYRIE) - 1] = 1
         if self.get_num_buildings(PIND_EYRIE,BIND_ROOST) > 0:
-            foo[20:] = 1
-        return np.append(ret,foo).reshape(8,8)
+            foo[20] = 1
+        return np.append(ret,foo)
     
     def get_num_empty_slots(self) -> int:
         "Returns the number of empty slots available to build in for the clearing."
@@ -241,7 +241,7 @@ class Clearing:
         num_marquise = self.get_ruling_power(PIND_MARQUISE)
         num_eyrie = self.get_ruling_power(PIND_EYRIE)
 
-        if not (num_marquise + num_eyrie):
+        if (num_marquise == 0) and (num_eyrie == 0):
             return -1
         # the Eyrie rule tied clearings they have a piece in with "Lords of the Forest"
         return PIND_EYRIE if (num_eyrie >= num_marquise) else PIND_MARQUISE
@@ -353,7 +353,7 @@ class Board:
         return s
     
     def get_obs_array(self):
-        "Returns a list of 12 8x8 arrays of the current board's state."
+        "Returns a 12-long array of the current board's state."
         return np.asarray([c.get_obs_array() for c in self.clearings])
 
     def reset(self):
@@ -513,6 +513,7 @@ class Board:
         If the Marquise do NOT rule clearing i, the amount of wood
         in that clearing is given as -1.
         """
+        logger.debug("GWA Function")
         ans = [-1 for i in range(12)]
         # find out which clearings the Marquise rule - which is where wood actually counts
         foo = [(x == PIND_MARQUISE) for x in self.get_rulers()]
@@ -521,6 +522,7 @@ class Board:
         # make groups of connected clearings ruled by the Marquise
         while clearings_left_to_assign:
             i = clearings_left_to_assign.pop()
+            logger.debug(f"\tStarting new group at clearing {i}")
             new_group = {i}
             total = self.clearings[i].get_num_tokens(PIND_MARQUISE,TIND_WOOD)
             c_to_add_to_group = {j for j in self.clearings[i].adjacent_clearing_ids if j in clearings_left_to_assign}
@@ -529,10 +531,12 @@ class Board:
                 clearings_left_to_assign.remove(j)
                 new_group.add(j)
                 total += self.clearings[j].get_num_tokens(PIND_MARQUISE,TIND_WOOD)
+                logger.debug(f"\tAdded clearing {j} to the group. New total: {total}")
                 c_to_add_to_group.update( {k for k in self.clearings[j].adjacent_clearing_ids if k in (clearings_left_to_assign - c_to_add_to_group)} )
 
             for i in new_group:
                 ans[i] = total
+        logger.debug(f"GWA Answer: {ans}")
         return ans
     
     def get_wood_to_build_in(self, clearing_index:int):
@@ -546,16 +550,21 @@ class Board:
         the building clearing will show up as 0, as it has no usable wood for this build.
         """
         ans = [0 for i in range(12)]
+        logger.debug("GWB Function")
         # it is assumed that the given clearing is ruled by the Marquise (required to build)
         clearings_checked = set()
         clearings_to_check = {clearing_index}
+        logger.debug(f"\tStarting check at clearing {clearing_index}")
         while clearings_to_check:
             i = clearings_to_check.pop()
             clearings_checked.add(i)
+            logger.debug(f"\t  Adding wood in clearing {i}...")
             ans[i] = self.clearings[i].get_num_tokens(PIND_MARQUISE,TIND_WOOD)
             for j in self.clearings[i].adjacent_clearing_ids:
                 if (j not in clearings_checked) and (self.clearings[j].get_ruler() == PIND_MARQUISE):
+                    logger.debug(f"\t\tClearing {j} needs to be added...")
                     clearings_to_check.add(j)
+        logger.debug(f"GWB Answer: {ans}")
         return ans
     
 
@@ -996,6 +1005,39 @@ class Battle:
         ret = f"--- BATTLE: {ID_TO_PLAYER[self.attacker_id]} attacking {ID_TO_PLAYER[self.defender_id]} in Clearing {self.clearing_id} ---\n"
         ret += f"Roll: {(self.att_rolled_hits,self.def_rolled_hits)}"
         return ret
+    
+    def get_obs_array(self):
+        ret = np.zeros(9)
+        if self.stage is not None:
+            ret[self.stage] = 1
+        if self.stage == self.STAGE_DONE:
+            return np.append(ret,np.zeros(55))
+        foo = np.zeros(5)
+        foo[0:3] = 1 if (self.attacker_id == 0) else -1
+        foo[3:5] = 1 if (self.defender_id == 0) else -1
+        ret = np.append(ret,foo)
+
+        foo = np.zeros(12)
+        foo[self.clearing_id] = 1
+        ret = np.append(ret,foo)
+
+        foo = np.zeros((6,4))
+        if self.att_rolled_hits is not None:
+            foo[0][self.att_rolled_hits] = 1
+        if self.def_rolled_hits is not None:
+            foo[1][self.def_rolled_hits] = 1
+        foo[2][self.att_extra_hits] = 1
+        foo[3][self.def_extra_hits] = 1
+        if self.att_ambush_id is not None:
+            foo[4][self.att_ambush_id] = 1
+        if self.def_ambush_id is not None:
+            foo[5][self.def_ambush_id] = 1
+        ret = np.append(ret,foo)
+
+        foo = np.zeros((2,7))
+        foo[0][self.att_hits_to_deal] = 1
+        foo[1][self.def_hits_to_deal] = 1
+        return np.append(ret,foo)
 
 # (Card info, Amount in deck)
 # Recipe amounts are (Mouse, Bunny, Fox, Wild)

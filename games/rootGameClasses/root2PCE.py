@@ -1,6 +1,9 @@
 import random
 import numpy as np
+# from .classes import *
 from classes import *
+
+# python -m tensorboard.main --logdir="C:\Users\tyler\Desktop\Desktop Work\muzero-general\results"
 
 class root2pCatsVsEyrie:
     PHASE_SETUP_MARQUISE = 0
@@ -62,6 +65,8 @@ class root2pCatsVsEyrie:
         self.first_player = random.choice([-1,1])
         self.draw_cards(PIND_MARQUISE,3)
         self.draw_cards(PIND_EYRIE,3)
+        self.marquise_seen_hands = {PIND_EYRIE:[np.full((38,3),-1) for _ in range(3)]}
+        self.eyrie_seen_hands = {PIND_MARQUISE:[np.full((38,3),-1) for _ in range(3)]}
 
     def reset_for_marquise(self):
         # print(self.board)
@@ -76,6 +81,8 @@ class root2pCatsVsEyrie:
 
         self.persistent_used_this_turn = set()
         self.remaining_craft_power = [0]
+        self.marquise_seen_hands[PIND_EYRIE].insert(0,np.full((38,3),-1))
+        self.marquise_seen_hands[PIND_EYRIE].pop()
     def reset_for_eyrie(self):
         # print(self.board)
         self.eyrie_cards_added = 0
@@ -88,6 +95,8 @@ class root2pCatsVsEyrie:
         }
         self.persistent_used_this_turn = set()
         self.remaining_craft_power = [0]
+        self.eyrie_seen_hands[PIND_MARQUISE].insert(0,np.full((38,3),-1))
+        self.eyrie_seen_hands[PIND_MARQUISE].pop()
 
     def reset(self):
         self.reset_general_items()
@@ -99,7 +108,7 @@ class root2pCatsVsEyrie:
         actions_to_return = []
         self.points_scored_this_action = 0
         self.acting_player = self.to_play()
-        self.outside_turn_this_action = PIND_EYRIE if self.phase in {self.PHASE_BIRDSONG_EYRIE,self.PHASE_DAYLIGHT_EYRIE,self.PHASE_EVENING_EYRIE} else PIND_MARQUISE
+        self.outside_turn_this_action = PIND_EYRIE if self.phase in {self.PHASE_SETUP_EYRIE,self.PHASE_BIRDSONG_EYRIE,self.PHASE_DAYLIGHT_EYRIE,self.PHASE_EVENING_EYRIE} else PIND_MARQUISE
         # check if we are resolving field hospitals
         if len(self.field_hospitals) > 0:
             # the action is say if the marquise are discarding a card or not
@@ -166,15 +175,14 @@ class root2pCatsVsEyrie:
         else:
             self.saved_actions = self.advance_game()
         
-        for c in self.board.clearings:
-            print(c.get_obs_array())
+        # for c in self.board.clearings:
+        #     print(c.get_obs_array())
 
         done = (max(self.victory_points) >= 30) and (self.battle.stage == Battle.STAGE_DONE)
 
-        reward = self.get_winner_points() if done else self.points_scored_this_action
+        reward = self.get_winner_points() if done else (self.points_scored_this_action / 10)
 
-        return reward,done
-        # return self.get_observation(), reward, done
+        return self.get_observation(), reward, done
 
     def get_observation(self):
         ret = np.zeros((12,3))
@@ -202,7 +210,77 @@ class root2pCatsVsEyrie:
         foo[self.phase_steps + 8] = 1
         ret = np.append(ret,foo)
 
+        ret = np.append(ret,np.full(5,self.index_to_id(self.outside_turn_this_action)))
+        ret = np.append(ret,np.full(5,self.current_player))
+        ret = np.append(ret,np.full(3,self.first_player))
 
+        ret = np.append(ret,self.players[0].get_obs_array())
+        ret = np.append(ret,self.players[1].get_obs_array())
+
+        curr_player = self.players[self.to_play()]
+        foo = np.zeros((38,3))
+        for c in curr_player.hand:
+            cid = c.id
+            if foo[cid][0] == 1:
+                foo[cid][0] = 0
+                foo[cid][1] = 1
+            elif foo[cid][1] == 1:
+                foo[cid][1] = 0
+                foo[cid][2] = 1
+            else:
+                foo[cid][0] = 1
+        ret = np.append(ret,foo)
+
+        foo = np.zeros((3,4))
+        if len(self.remaining_craft_power) == 3:
+            for i,a in enumerate(self.remaining_craft_power):
+                if a > 0:
+                    foo[i][a - 1] = 1
+        ret = np.append(ret,foo)
+        
+        foo = np.zeros((4,25))
+        for i,a in enumerate(self.field_hospitals):
+            foo[i][a[0] - 1] = 1
+        ret = np.append(ret,foo)
+        
+        foo = np.zeros(11)
+        foo.put(list(CID_TO_PERS_INDEX[i] for i in self.persistent_used_this_turn), 1)
+        ret = np.append(ret,foo)
+
+        if self.to_play() == PIND_MARQUISE:
+            foo = np.zeros(14)
+            if self.marquise_actions > 0:
+                foo[self.marquise_actions - 1] = 1
+            if self.remaining_wood_cost > 0:
+                foo[self.remaining_wood_cost - 1 + 10] = 1
+            foo = np.append(foo,np.full(242,-1))
+        else:
+            foo = np.zeros(2)
+            if self.eyrie_cards_added > 0:
+                foo[0] = 1
+            if self.eyrie_bird_added > 0:
+                foo[1] = 1
+            bar = np.zeros((4,4,15))
+            for dec_i,lst in self.remaining_decree.items():
+                for i,a in enumerate(lst):
+                    if a > 0:
+                        bar[dec_i][i][a - 1] = 1
+            foo = np.append(foo,bar)
+            foo = np.append(np.full(14,-1),foo)
+        ret = np.append(ret,foo)
+        
+        ret = np.append(ret,self.battle.get_obs_array())
+        ret = np.append(ret,self.board.get_obs_array())
+
+        if self.to_play() == PIND_MARQUISE:
+            seen = self.marquise_seen_hands[PIND_EYRIE]
+        elif self.to_play() == PIND_EYRIE:
+            seen = self.eyrie_seen_hands[PIND_MARQUISE]
+        
+        for hand in seen:
+            ret = np.append(ret,hand)
+
+        return ret.reshape((40,8,8))
 
     def legal_actions(self):
         while self.saved_actions is None:
@@ -217,11 +295,11 @@ class root2pCatsVsEyrie:
         mpoints = self.victory_points[PIND_MARQUISE]
         epoints = self.victory_points[PIND_EYRIE]
         if mpoints == epoints:
-            return 30 if (self.acting_player == self.outside_turn_this_action) else -30
+            return 10 if (self.acting_player == self.outside_turn_this_action) else -10
         elif mpoints < epoints:
-            return 30 if (self.acting_player == PIND_EYRIE) else -30
+            return 10 if (self.acting_player == PIND_EYRIE) else -10
         else:
-            return 30 if (self.acting_player == PIND_MARQUISE) else -30
+            return 10 if (self.acting_player == PIND_MARQUISE) else -10
         
     def draw_cards(self,player_index:int,amount:int):
         """
@@ -868,9 +946,23 @@ class root2pCatsVsEyrie:
         self.draw_cards(target_index,1)
     
     def activate_codebreakers(self,player_index:int,target_index:int):
-        "TODO: Implement"
+        "Once in Daylight, may look at another player's hand."
         logger.warning(f"\t{ID_TO_PLAYER[player_index]} activates Codebreakers...")
-        
+        target_hand = np.zeros((38,3))
+        for c in self.players[target_index].hand:
+            cid = c.id
+            if target_hand[cid][0] == 1:
+                target_hand[cid][0] = 0
+                target_hand[cid][1] = 1
+            elif target_hand[cid][1] == 1:
+                target_hand[cid][1] = 0
+                target_hand[cid][2] = 1
+            else:
+                target_hand[cid][0] = 1
+        if player_index == PIND_MARQUISE:
+            self.marquise_seen_hands[target_index][0] = target_hand
+        elif player_index == PIND_EYRIE:
+            self.eyrie_seen_hands[target_index][0] = target_hand
 
     def can_craft(self,card:Card,player:Player):
         "Returns True only if the current player can currently craft the given card. Checks the remaining crafting power."
@@ -1001,6 +1093,8 @@ class root2pCatsVsEyrie:
             return True
         # wood is in more than 1 clearing and we have too much, so
         # we have to choose where to take it from
+        logger.debug("\t\tWood cannot be automatically taken")
+        logger.debug(f"\t\tNeed to spend {wood_cost} from: {usable_wood}")
         self.available_wood_spots = usable_wood
         self.remaining_wood_cost = wood_cost
         return False
@@ -1110,6 +1204,8 @@ class root2pCatsVsEyrie:
                 if self.board.clearings[i].suit in valid_suits:
                     ans.append(i + AID_BATTLE)
         elif sum(self.remaining_decree[DECREE_BUILD]) > 0:
+            if eplayer.get_num_buildings_on_track(BIND_ROOST) == 0:
+                return ans
             remaining = self.remaining_decree[DECREE_BUILD]
             if remaining[SUIT_BIRD] > 0:
                 valid_suits = {SUIT_MOUSE,SUIT_RABBIT,SUIT_FOX}
@@ -1132,7 +1228,7 @@ class root2pCatsVsEyrie:
         """
         if self.phase == self.PHASE_SETUP_MARQUISE:
             if self.phase_steps == 0:
-                logger.warning(f"\t\t--- GAME START ---\nStart Player: {ID_TO_PLAYER[0 if (self.first_player == 1) else 1]}")
+                logger.warning(f"\t\t--- GAME START --- Start Player: {ID_TO_PLAYER[0 if (self.first_player == 1) else 1]}")
                 return [i+AID_CHOOSE_CLEARING for i,x in enumerate(self.board.clearings) if (x.opposite_corner_id >= 0)]
             if self.phase_steps == 1:
                 i = self.players[PIND_MARQUISE].keep_clearing_id
@@ -1150,7 +1246,7 @@ class root2pCatsVsEyrie:
                 return [x for x in range(AID_CHOOSE_LEADER,AID_CHOOSE_LEADER + 4)]
         if self.phase == self.PHASE_SETUP_EYRIE and self.phase_steps == 1:
             # START GAME - Random Starting Player?
-            logger.warning(f"--- STARTING GAME ---")
+            logger.warning(f"--- STARTING TURN 1 ---")
             self.phase_steps = 0
             if self.first_player == 1: # Marquise start
                 self.phase = self.PHASE_BIRDSONG_MARQUISE
@@ -1220,6 +1316,7 @@ class root2pCatsVsEyrie:
             if self.phase_steps == 1:
                 if len(self.remaining_craft_power) == 1:
                     self.remaining_craft_power = self.board.get_crafting_power(PIND_MARQUISE)
+                    logger.warning(f"\tCrafting power: {self.remaining_craft_power}")
                 ans = list({i+AID_CRAFT_CARD for i in self.get_craftable_ids(current_player)})
                 if (CID_ROYAL_CLAIM+AID_CRAFT_CARD) in ans:
                     # find all ways to craft royal claim
@@ -1311,9 +1408,12 @@ class root2pCatsVsEyrie:
                 logger.warning("Marquise must discard from hand...")
                 return list(ans)
             # turn done!
+            if max(self.victory_points) >= 30:
+                return [0]
             self.phase_steps = 0
             self.phase = self.PHASE_BIRDSONG_EYRIE
             self.current_player = -1
+            self.outside_turn_this_action = PIND_EYRIE
             logger.warning("--- End of Marquise Turn ---\n")
             return self.advance_eyrie(self.players[PIND_EYRIE])
     
@@ -1397,6 +1497,7 @@ class root2pCatsVsEyrie:
             if self.phase_steps == 1:
                 if len(self.remaining_craft_power) == 1:
                     self.remaining_craft_power = self.board.get_crafting_power(PIND_EYRIE)
+                    logger.warning(f"\tCrafting power: {self.remaining_craft_power}")
                 ans = list({i+AID_CRAFT_CARD for i in self.get_craftable_ids(current_player)})
                 if (CID_ROYAL_CLAIM+AID_CRAFT_CARD) in ans:
                     # find all ways to craft royal claim
@@ -1447,6 +1548,8 @@ class root2pCatsVsEyrie:
                     logger.warning(">>> DECREE COMPLETED")
                     self.phase_steps = 4
             if self.phase_steps == 3: # we are turmoiling
+                if max(self.victory_points) >= 30: # make sure we don't take away a win
+                    return [0]
                 to_discard,pts = current_player.turmoil_helper()
                 self.change_score(PIND_EYRIE,-pts)
                 self.discard_pile += to_discard
@@ -1485,9 +1588,12 @@ class root2pCatsVsEyrie:
                 logger.warning("Eyrie must discard from hand...")
                 return list(ans)
             # turn done!
+            if max(self.victory_points) >= 30:
+                return [0]
             self.phase_steps = 0
             self.phase = self.PHASE_BIRDSONG_MARQUISE
             self.current_player = 1
+            self.outside_turn_this_action = PIND_MARQUISE
             logger.warning("--- End of Eyrie Turn ---\n")
             return self.advance_marquise(self.players[PIND_MARQUISE])
 
@@ -1668,7 +1774,10 @@ class root2pCatsVsEyrie:
             self.remaining_wood_cost -= 1
             logger.warning(f"\t\tRemaining wood cost: {self.remaining_wood_cost}")
             self.available_wood_spots[action - AID_CHOOSE_CLEARING] -= 1
+
+            logger.debug(f"\t\tNew available_wood_spots: {self.available_wood_spots}")
             can_spend = [(x > 0) for x in self.available_wood_spots]
+            logger.debug(f"\t\tcan_spend: {can_spend}")
             if self.remaining_wood_cost == 0:
                 # we have taken the last wood needed to spend
                 self.phase_steps = 2
@@ -1676,12 +1785,10 @@ class root2pCatsVsEyrie:
                 # we can only take wood from this one spot
                 i = can_spend.index(True)
                 logger.warning(f"\tWe can take the rest from clearing {i}")
-                amount_to_take = self.available_wood_spots[i]
-                while amount_to_take:
+                while self.remaining_wood_cost:
                     current_player.change_num_tokens(TIND_WOOD,1)
                     self.board.clearings[i].remove_token(PIND_MARQUISE,TIND_WOOD)
                     self.remaining_wood_cost -= 1
-                    amount_to_take -= 1
                 self.phase_steps = 2
             # if neither of the two conditions above are
             # satisfied, then we still have a choice and
@@ -1902,27 +2009,70 @@ class root2pCatsVsEyrie:
             print(self.players[self.to_play()])
             print(self.deck)
 
+
+
+#obs_sparse = [i if o == 1 else (i,o) for i,o in enumerate(self.observation) if o != 0]
 if __name__ == "__main__":
     env = root2pCatsVsEyrie(MAP_AUTUMN,STANDARD_DECK_COMP)
-    action_count = 0
+
     done = False
-    # while action_count < 50:
-    # while max(env.victory_points) < 8:
+    action_count = 0
+    np.set_printoptions(threshold=np.inf)
+    env.reset()
+    # while action_count < 15:
     while not done:
         legal_actions = env.legal_actions()
-        logger.info(f"Player: {ID_TO_PLAYER[env.to_play()]}")
-        logger.info(f"> Action {action_count} - Legal Actions: {legal_actions}")
-        print(f"Player: {ID_TO_PLAYER[env.to_play()]}")
-        print(f"> Action {action_count} - Legal Actions: {legal_actions}")
+        logger.warning(f"> Action {action_count} - Player: {ID_TO_PLAYER[env.to_play()]}")
+        logger.info(f"Legal Actions: {legal_actions}")
+        # print(f"Player: {ID_TO_PLAYER[env.to_play()]}")
+        # print(f"> Action {action_count} - Legal Actions: {legal_actions}")
 
         # action = -1
         # while action not in legal_actions:
         #     action = int(input("Choose a valid action: "))
         action = random.choice(legal_actions)
-        print(f"\tAction Chosen: {action}")
+        # print(f"\tAction Chosen: {action}")
         logger.info(f"\t> Action Chosen: {action}")
-        reward,done = env.step(action)
-        print(f"-> Earned {reward} points from this action")
-        if done:
-            env.render()
+        obs,reward,done = env.step(action)
+        if env.battle.stage != Battle.STAGE_DONE:
+            for i,sq in enumerate(obs):
+                logger.warning(f"- Observation Square {i}:\n{sq}\n")
+        # print(f"-> Earned {reward} points from this action")
+        # if done:
+        #     env.render()
         action_count += 1
+    obs = env.get_observation().reshape((40,8,8))
+    for i,sq in enumerate(obs):
+        logger.warning(f"- Observation Square {i}:\n{sq}\n")
+
+    # logger.setLevel(logging.WARNING)
+    # glens = []
+    # for _ in range(25):
+    #     done = False
+    #     action_count = 0
+    #     while not done:
+    #         legal_actions = env.legal_actions()
+    #         logger.info(f"Player: {ID_TO_PLAYER[env.to_play()]}")
+    #         logger.info(f"> Action {action_count} - Legal Actions: {legal_actions}")
+    #         # print(f"Player: {ID_TO_PLAYER[env.to_play()]}")
+    #         # print(f"> Action {action_count} - Legal Actions: {legal_actions}")
+
+    #         # action = -1
+    #         # while action not in legal_actions:
+    #         #     action = int(input("Choose a valid action: "))
+    #         action = random.choice(legal_actions)
+    #         # print(f"\tAction Chosen: {action}")
+    #         logger.info(f"\t> Action Chosen: {action}")
+    #         reward,done = env.step(action)
+    #         # print(f"-> Earned {reward} points from this action")
+    #         # if done:
+    #         #     env.render()
+    #         action_count += 1
+    #     glens.append(action_count)
+    #     print(env.victory_points)
+    #     env.reset()
+
+    # print(f"\nGames: {glens}")
+    # print(f"\nLongest Length: {max(glens)}")
+    # print(f"Shortest Length: {min(glens)}")
+    # print(f"Average Length: {sum(glens)/25}")

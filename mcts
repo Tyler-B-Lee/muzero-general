@@ -2,1329 +2,189 @@
 digraph {
 	graph [overlap=false rankdir=LR splines=true]
 	0 [label="Action: None
-Value: -0.00
-Visit count: 220
+Value: 1.34
+Visit count: 30
 Prior: 0.00
 Reward: -0.00" color=orange]
-	1 [label="Action: 0
-Value: 0.03
-Visit count: 25
-Prior: 0.12
-Reward: 0.03" color=black]
+	1 [label="Action: 1
+Value: 1.05
+Visit count: 14
+Prior: 0.50
+Reward: 2.25" color=orange]
 	0 -> 1 [constraint=false]
-	2 [label="Action: 0
-Value: 0.02
-Visit count: 4
-Prior: 0.18
-Reward: 0.04" color=black]
+	2 [label="Action: 2658
+Value: -1.06
+Visit count: 13
+Prior: 0.08
+Reward: 0.00" color=orange]
 	1 -> 2 [constraint=false]
-	3 [label="Action: 5
-Value: 0.03
-Visit count: 3
-Prior: 0.20
-Reward: 0.04" color=orange]
+	3 [label="Action: 2329
+Value: 1.26
+Visit count: 5
+Prior: 0.09
+Reward: 0.00" color=black]
 	2 -> 3 [constraint=false]
-	4 [label="Action: 1
-Value: 0.01
-Visit count: 2
-Prior: 0.18
-Reward: 0.03" color=orange]
+	4 [label="Action: 0
+Value: -0.80
+Visit count: 4
+Prior: 0.71
+Reward: 0.69" color=orange]
 	3 -> 4 [constraint=false]
-	5 [label="Action: 5
-Value: 0.02
-Visit count: 1
-Prior: 0.18
-Reward: 0.05" color=orange]
+	5 [label="Action: 650
+Value: 0.85
+Visit count: 3
+Prior: 0.22
+Reward: 0.00" color=orange]
 	4 -> 5 [constraint=false]
-	6 [label="Action: 1
-Value: 0.03
-Visit count: 3
-Prior: 0.16
-Reward: 0.05" color=black]
-	1 -> 6 [constraint=false]
-	7 [label="Action: 5
-Value: 0.02
+	6 [label="Action: 4516
+Value: -1.41
 Visit count: 2
-Prior: 0.20
-Reward: 0.05" color=orange]
+Prior: 0.21
+Reward: 0.00" color=orange]
+	5 -> 6 [constraint=false]
+	7 [label="Action: 0
+Value: 1.94
+Visit count: 1
+Prior: 0.81
+Reward: -0.14" color=orange]
 	6 -> 7 [constraint=false]
-	8 [label="Action: 1
-Value: 0.01
-Visit count: 1
-Prior: 0.18
-Reward: 0.03" color=orange]
-	7 -> 8 [constraint=false]
-	9 [label="Action: 3
-Value: 0.05
-Visit count: 3
-Prior: 0.16
-Reward: 0.05" color=black]
-	1 -> 9 [constraint=false]
-	10 [label="Action: 5
-Value: -0.01
-Visit count: 2
-Prior: 0.20
-Reward: 0.05" color=orange]
+	8 [label="Action: 2754
+Value: 1.18
+Visit count: 7
+Prior: 0.10
+Reward: 0.00" color=orange]
+	2 -> 8 [constraint=false]
+	9 [label="Action: 0
+Value: -0.65
+Visit count: 6
+Prior: 0.66
+Reward: 0.66" color=orange]
+	8 -> 9 [constraint=false]
+	10 [label="Action: 650
+Value: 0.62
+Visit count: 5
+Prior: 0.21
+Reward: 0.00" color=orange]
 	9 -> 10 [constraint=false]
-	11 [label="Action: 1
-Value: 0.09
-Visit count: 1
-Prior: 0.18
-Reward: 0.04" color=orange]
+	11 [label="Action: 4455
+Value: -0.74
+Visit count: 4
+Prior: 0.19
+Reward: 0.00" color=orange]
 	10 -> 11 [constraint=false]
-	12 [label="Action: 4
-Value: 0.02
-Visit count: 4
-Prior: 0.18
-Reward: 0.05" color=black]
-	1 -> 12 [constraint=false]
-	13 [label="Action: 5
-Value: 0.04
+	12 [label="Action: 0
+Value: 0.77
 Visit count: 3
-Prior: 0.19
-Reward: 0.05" color=orange]
+Prior: 0.90
+Reward: -0.17" color=orange]
+	11 -> 12 [constraint=false]
+	13 [label="Action: 0
+Value: -0.27
+Visit count: 2
+Prior: 0.74
+Reward: -0.01" color=orange]
 	12 -> 13 [constraint=false]
-	14 [label="Action: 5
-Value: 0.03
-Visit count: 2
-Prior: 0.18
-Reward: 0.07" color=orange]
+	14 [label="Action: 2280
+Value: 1.59
+Visit count: 1
+Prior: 0.14
+Reward: -0.01" color=orange]
 	13 -> 14 [constraint=false]
-	15 [label="Action: 5
-Value: 0.04
-Visit count: 1
-Prior: 0.18
-Reward: 0.03" color=orange]
-	14 -> 15 [constraint=false]
-	16 [label="Action: 5
-Value: 0.01
-Visit count: 10
-Prior: 0.19
-Reward: 0.05" color=orange]
-	1 -> 16 [constraint=false]
-	17 [label="Action: 0
-Value: -0.04
-Visit count: 1
-Prior: 0.18
-Reward: 0.03" color=black]
+	15 [label="Action: 9
+Value: 0.75
+Visit count: 6
+Prior: 0.16
+Reward: 2.26" color=black]
+	0 -> 15 [constraint=false]
+	16 [label="Action: 2658
+Value: -0.63
+Visit count: 5
+Prior: 0.08
+Reward: 0.00" color=orange]
+	15 -> 16 [constraint=false]
+	17 [label="Action: 2754
+Value: 0.93
+Visit count: 4
+Prior: 0.10
+Reward: 0.00" color=orange]
 	16 -> 17 [constraint=false]
-	18 [label="Action: 5
-Value: 0.06
-Visit count: 8
-Prior: 0.19
-Reward: 0.06" color=orange]
-	16 -> 18 [constraint=false]
-	19 [label="Action: 5
-Value: 0.03
-Visit count: 7
-Prior: 0.18
-Reward: 0.08" color=orange]
+	18 [label="Action: 0
+Value: -0.41
+Visit count: 3
+Prior: 0.67
+Reward: 0.65" color=orange]
+	17 -> 18 [constraint=false]
+	19 [label="Action: 650
+Value: 0.19
+Visit count: 2
+Prior: 0.21
+Reward: 0.00" color=orange]
 	18 -> 19 [constraint=false]
-	20 [label="Action: 5
-Value: 0.01
-Visit count: 6
-Prior: 0.18
-Reward: 0.04" color=orange]
+	20 [label="Action: 4455
+Value: -0.17
+Visit count: 1
+Prior: 0.19
+Reward: 0.00" color=orange]
 	19 -> 20 [constraint=false]
-	21 [label="Action: 5
-Value: 0.03
-Visit count: 5
-Prior: 0.18
-Reward: 0.03" color=orange]
-	20 -> 21 [constraint=false]
-	22 [label="Action: 1
-Value: -0.00
-Visit count: 4
-Prior: 0.18
-Reward: 0.03" color=orange]
+	21 [label="Action: 12
+Value: 0.90
+Visit count: 10
+Prior: 0.34
+Reward: 2.26" color=black]
+	0 -> 21 [constraint=false]
+	22 [label="Action: 2658
+Value: -0.85
+Visit count: 9
+Prior: 0.08
+Reward: 0.00" color=orange]
 	21 -> 22 [constraint=false]
-	23 [label="Action: 1
-Value: 0.03
+	23 [label="Action: 2329
+Value: 0.74
 Visit count: 3
-Prior: 0.18
-Reward: 0.03" color=orange]
+Prior: 0.09
+Reward: 0.00" color=black]
 	22 -> 23 [constraint=false]
-	24 [label="Action: 1
-Value: 0.00
+	24 [label="Action: 0
+Value: -0.25
 Visit count: 2
-Prior: 0.18
-Reward: 0.04" color=orange]
+Prior: 0.72
+Reward: 0.68" color=orange]
 	23 -> 24 [constraint=false]
-	25 [label="Action: 3
-Value: 0.01
+	25 [label="Action: 650
+Value: -0.21
 Visit count: 1
-Prior: 0.18
-Reward: 0.06" color=orange]
+Prior: 0.21
+Reward: 0.00" color=orange]
 	24 -> 25 [constraint=false]
-	26 [label="Action: 1
-Value: 0.05
-Visit count: 21
-Prior: 0.14
-Reward: 0.03" color=black]
-	0 -> 26 [constraint=false]
+	26 [label="Action: 2754
+Value: 1.23
+Visit count: 5
+Prior: 0.10
+Reward: 0.00" color=orange]
+	22 -> 26 [constraint=false]
 	27 [label="Action: 0
-Value: 0.01
-Visit count: 5
-Prior: 0.19
-Reward: 0.05" color=black]
+Value: -0.77
+Visit count: 4
+Prior: 0.67
+Reward: 0.65" color=orange]
 	26 -> 27 [constraint=false]
-	28 [label="Action: 5
-Value: 0.06
-Visit count: 4
-Prior: 0.20
-Reward: 0.06" color=orange]
+	28 [label="Action: 650
+Value: 0.76
+Visit count: 3
+Prior: 0.21
+Reward: 0.00" color=orange]
 	27 -> 28 [constraint=false]
-	29 [label="Action: 0
-Value: 0.00
-Visit count: 3
-Prior: 0.17
-Reward: 0.04" color=orange]
+	29 [label="Action: 4455
+Value: -1.05
+Visit count: 2
+Prior: 0.19
+Reward: 0.00" color=orange]
 	28 -> 29 [constraint=false]
-	30 [label="Action: 5
-Value: 0.05
-Visit count: 2
-Prior: 0.19
-Reward: 0.05" color=orange]
+	30 [label="Action: 0
+Value: 1.81
+Visit count: 1
+Prior: 0.90
+Reward: -0.17" color=orange]
 	29 -> 30 [constraint=false]
-	31 [label="Action: 5
-Value: 0.01
-Visit count: 1
-Prior: 0.18
-Reward: 0.04" color=orange]
-	30 -> 31 [constraint=false]
-	32 [label="Action: 1
-Value: 0.02
-Visit count: 1
-Prior: 0.16
-Reward: 0.05" color=black]
-	26 -> 32 [constraint=false]
-	33 [label="Action: 4
-Value: -0.00
-Visit count: 4
-Prior: 0.17
-Reward: 0.05" color=black]
-	26 -> 33 [constraint=false]
-	34 [label="Action: 5
-Value: 0.07
-Visit count: 3
-Prior: 0.19
-Reward: 0.07" color=orange]
-	33 -> 34 [constraint=false]
-	35 [label="Action: 1
-Value: -0.01
-Visit count: 2
-Prior: 0.17
-Reward: 0.08" color=orange]
-	34 -> 35 [constraint=false]
-	36 [label="Action: 5
-Value: 0.08
-Visit count: 1
-Prior: 0.19
-Reward: 0.04" color=orange]
-	35 -> 36 [constraint=false]
-	37 [label="Action: 5
-Value: 0.01
-Visit count: 10
-Prior: 0.20
-Reward: 0.06" color=orange]
-	26 -> 37 [constraint=false]
-	38 [label="Action: 0
-Value: -0.02
-Visit count: 1
-Prior: 0.18
-Reward: 0.05" color=black]
-	37 -> 38 [constraint=false]
-	39 [label="Action: 5
-Value: 0.07
-Visit count: 8
-Prior: 0.19
-Reward: 0.07" color=orange]
-	37 -> 39 [constraint=false]
-	40 [label="Action: 1
-Value: 0.01
-Visit count: 7
-Prior: 0.17
-Reward: 0.09" color=orange]
-	39 -> 40 [constraint=false]
-	41 [label="Action: 5
-Value: 0.03
-Visit count: 6
-Prior: 0.19
-Reward: 0.05" color=orange]
-	40 -> 41 [constraint=false]
-	42 [label="Action: 4
-Value: 0.02
-Visit count: 5
-Prior: 0.19
-Reward: 0.04" color=orange]
-	41 -> 42 [constraint=false]
-	43 [label="Action: 1
-Value: 0.04
-Visit count: 4
-Prior: 0.17
-Reward: 0.03" color=orange]
-	42 -> 43 [constraint=false]
-	44 [label="Action: 5
-Value: -0.01
-Visit count: 3
-Prior: 0.19
-Reward: 0.04" color=orange]
-	43 -> 44 [constraint=false]
-	45 [label="Action: 4
-Value: 0.02
-Visit count: 2
-Prior: 0.18
-Reward: 0.06" color=orange]
-	44 -> 45 [constraint=false]
-	46 [label="Action: 5
-Value: -0.03
-Visit count: 1
-Prior: 0.19
-Reward: 0.04" color=orange]
-	45 -> 46 [constraint=false]
-	47 [label="Action: 2
-Value: 0.06
-Visit count: 37
-Prior: 0.28
-Reward: 0.03" color=black]
-	0 -> 47 [constraint=false]
-	48 [label="Action: 0
-Value: 0.02
-Visit count: 5
-Prior: 0.19
-Reward: 0.05" color=black]
-	47 -> 48 [constraint=false]
-	49 [label="Action: 5
-Value: 0.04
-Visit count: 4
-Prior: 0.20
-Reward: 0.06" color=orange]
-	48 -> 49 [constraint=false]
-	50 [label="Action: 0
-Value: 0.04
-Visit count: 3
-Prior: 0.18
-Reward: 0.06" color=orange]
-	49 -> 50 [constraint=false]
-	51 [label="Action: 5
-Value: -0.00
-Visit count: 2
-Prior: 0.18
-Reward: 0.03" color=orange]
-	50 -> 51 [constraint=false]
-	52 [label="Action: 5
-Value: 0.05
-Visit count: 1
-Prior: 0.18
-Reward: 0.05" color=orange]
-	51 -> 52 [constraint=false]
-	53 [label="Action: 1
-Value: 0.01
-Visit count: 5
-Prior: 0.15
-Reward: 0.05" color=black]
-	47 -> 53 [constraint=false]
-	54 [label="Action: 5
-Value: 0.05
-Visit count: 4
-Prior: 0.20
-Reward: 0.06" color=orange]
-	53 -> 54 [constraint=false]
-	55 [label="Action: 5
-Value: 0.02
-Visit count: 3
-Prior: 0.17
-Reward: 0.07" color=orange]
-	54 -> 55 [constraint=false]
-	56 [label="Action: 4
-Value: 0.02
-Visit count: 2
-Prior: 0.18
-Reward: 0.03" color=orange]
-	55 -> 56 [constraint=false]
-	57 [label="Action: 4
-Value: 0.05
-Visit count: 1
-Prior: 0.18
-Reward: 0.04" color=orange]
-	56 -> 57 [constraint=false]
-	58 [label="Action: 2
-Value: 0.00
-Visit count: 4
-Prior: 0.12
-Reward: 0.05" color=black]
-	47 -> 58 [constraint=false]
-	59 [label="Action: 5
-Value: 0.06
-Visit count: 3
-Prior: 0.20
-Reward: 0.06" color=orange]
-	58 -> 59 [constraint=false]
-	60 [label="Action: 3
-Value: -0.01
-Visit count: 2
-Prior: 0.17
-Reward: 0.07" color=orange]
-	59 -> 60 [constraint=false]
-	61 [label="Action: 5
-Value: 0.06
-Visit count: 1
-Prior: 0.18
-Reward: 0.03" color=orange]
-	60 -> 61 [constraint=false]
-	62 [label="Action: 3
-Value: -0.03
-Visit count: 6
-Prior: 0.15
-Reward: 0.06" color=black]
-	47 -> 62 [constraint=false]
-	63 [label="Action: 5
-Value: 0.09
-Visit count: 5
-Prior: 0.20
-Reward: 0.06" color=orange]
-	62 -> 63 [constraint=false]
-	64 [label="Action: 3
-Value: -0.02
-Visit count: 4
-Prior: 0.18
-Reward: 0.08" color=orange]
-	63 -> 64 [constraint=false]
-	65 [label="Action: 5
-Value: 0.09
-Visit count: 3
-Prior: 0.18
-Reward: 0.04" color=orange]
-	64 -> 65 [constraint=false]
-	66 [label="Action: 1
-Value: -0.05
-Visit count: 2
-Prior: 0.18
-Reward: 0.06" color=orange]
-	65 -> 66 [constraint=false]
-	67 [label="Action: 1
-Value: 0.20
-Visit count: 1
-Prior: 0.19
-Reward: 0.03" color=orange]
-	66 -> 67 [constraint=false]
-	68 [label="Action: 4
-Value: 0.03
-Visit count: 5
-Prior: 0.17
-Reward: 0.06" color=black]
-	47 -> 68 [constraint=false]
-	69 [label="Action: 5
-Value: 0.02
-Visit count: 4
-Prior: 0.20
-Reward: 0.06" color=orange]
-	68 -> 69 [constraint=false]
-	70 [label="Action: 3
-Value: 0.08
-Visit count: 3
-Prior: 0.18
-Reward: 0.09" color=orange]
-	69 -> 70 [constraint=false]
-	71 [label="Action: 4
-Value: -0.01
-Visit count: 2
-Prior: 0.18
-Reward: 0.05" color=orange]
-	70 -> 71 [constraint=false]
-	72 [label="Action: 4
-Value: 0.12
-Visit count: 1
-Prior: 0.18
-Reward: 0.08" color=orange]
-	71 -> 72 [constraint=false]
-	73 [label="Action: 5
-Value: -0.01
-Visit count: 11
-Prior: 0.21
-Reward: 0.06" color=orange]
-	47 -> 73 [constraint=false]
-	74 [label="Action: 4
-Value: 0.08
-Visit count: 3
-Prior: 0.18
-Reward: 0.06" color=black]
-	73 -> 74 [constraint=false]
-	75 [label="Action: 5
-Value: 0.01
-Visit count: 2
-Prior: 0.18
-Reward: 0.10" color=orange]
-	74 -> 75 [constraint=false]
-	76 [label="Action: 3
-Value: 0.08
-Visit count: 1
-Prior: 0.17
-Reward: 0.05" color=orange]
-	75 -> 76 [constraint=false]
-	77 [label="Action: 5
-Value: 0.06
-Visit count: 7
-Prior: 0.20
-Reward: 0.06" color=orange]
-	73 -> 77 [constraint=false]
-	78 [label="Action: 5
-Value: 0.03
-Visit count: 6
-Prior: 0.18
-Reward: 0.10" color=orange]
-	77 -> 78 [constraint=false]
-	79 [label="Action: 3
-Value: 0.03
-Visit count: 5
-Prior: 0.18
-Reward: 0.05" color=orange]
-	78 -> 79 [constraint=false]
-	80 [label="Action: 1
-Value: 0.03
-Visit count: 4
-Prior: 0.17
-Reward: 0.06" color=orange]
-	79 -> 80 [constraint=false]
-	81 [label="Action: 5
-Value: 0.01
-Visit count: 3
-Prior: 0.18
-Reward: 0.07" color=orange]
-	80 -> 81 [constraint=false]
-	82 [label="Action: 0
-Value: 0.01
-Visit count: 2
-Prior: 0.20
-Reward: 0.04" color=orange]
-	81 -> 82 [constraint=false]
-	83 [label="Action: 5
-Value: 0.01
-Visit count: 1
-Prior: 0.18
-Reward: 0.05" color=orange]
-	82 -> 83 [constraint=false]
-	84 [label="Action: 3
-Value: 0.09
-Visit count: 10
-Prior: 0.12
-Reward: 0.04" color=black]
-	0 -> 84 [constraint=false]
-	85 [label="Action: 5
-Value: -0.01
-Visit count: 9
-Prior: 0.22
-Reward: 0.05" color=orange]
-	84 -> 85 [constraint=false]
-	86 [label="Action: 5
-Value: 0.06
-Visit count: 8
-Prior: 0.20
-Reward: 0.06" color=orange]
-	85 -> 86 [constraint=false]
-	87 [label="Action: 3
-Value: 0.01
-Visit count: 7
-Prior: 0.18
-Reward: 0.08" color=orange]
-	86 -> 87 [constraint=false]
-	88 [label="Action: 2
-Value: 0.04
-Visit count: 6
-Prior: 0.18
-Reward: 0.05" color=orange]
-	87 -> 88 [constraint=false]
-	89 [label="Action: 4
-Value: 0.02
-Visit count: 5
-Prior: 0.17
-Reward: 0.06" color=orange]
-	88 -> 89 [constraint=false]
-	90 [label="Action: 4
-Value: 0.02
-Visit count: 4
-Prior: 0.19
-Reward: 0.04" color=orange]
-	89 -> 90 [constraint=false]
-	91 [label="Action: 0
-Value: 0.01
-Visit count: 3
-Prior: 0.19
-Reward: 0.03" color=orange]
-	90 -> 91 [constraint=false]
-	92 [label="Action: 4
-Value: 0.02
-Visit count: 2
-Prior: 0.18
-Reward: 0.06" color=orange]
-	91 -> 92 [constraint=false]
-	93 [label="Action: 1
-Value: -0.02
-Visit count: 1
-Prior: 0.18
-Reward: 0.05" color=orange]
-	92 -> 93 [constraint=false]
-	94 [label="Action: 4
-Value: 0.02
-Visit count: 79
-Prior: 0.21
-Reward: 0.04" color=orange]
-	0 -> 94 [constraint=false]
-	95 [label="Action: 0
-Value: 0.03
-Visit count: 13
-Prior: 0.19
-Reward: 0.04" color=black]
-	94 -> 95 [constraint=false]
-	96 [label="Action: 4
-Value: 0.01
-Visit count: 2
-Prior: 0.18
-Reward: 0.06" color=black]
-	95 -> 96 [constraint=false]
-	97 [label="Action: 0
-Value: 0.01
-Visit count: 1
-Prior: 0.19
-Reward: 0.04" color=orange]
-	96 -> 97 [constraint=false]
-	98 [label="Action: 5
-Value: 0.03
-Visit count: 10
-Prior: 0.18
-Reward: 0.06" color=orange]
-	95 -> 98 [constraint=false]
-	99 [label="Action: 0
-Value: 0.01
-Visit count: 9
-Prior: 0.19
-Reward: 0.04" color=orange]
-	98 -> 99 [constraint=false]
-	100 [label="Action: 4
-Value: 0.03
-Visit count: 8
-Prior: 0.18
-Reward: 0.04" color=orange]
-	99 -> 100 [constraint=false]
-	101 [label="Action: 5
-Value: 0.02
-Visit count: 7
-Prior: 0.18
-Reward: 0.06" color=orange]
-	100 -> 101 [constraint=false]
-	102 [label="Action: 0
-Value: 0.04
-Visit count: 6
-Prior: 0.18
-Reward: 0.05" color=orange]
-	101 -> 102 [constraint=false]
-	103 [label="Action: 0
-Value: -0.01
-Visit count: 5
-Prior: 0.17
-Reward: 0.02" color=orange]
-	102 -> 103 [constraint=false]
-	104 [label="Action: 0
-Value: 0.05
-Visit count: 4
-Prior: 0.18
-Reward: 0.04" color=orange]
-	103 -> 104 [constraint=false]
-	105 [label="Action: 0
-Value: -0.01
-Visit count: 3
-Prior: 0.18
-Reward: 0.05" color=orange]
-	104 -> 105 [constraint=false]
-	106 [label="Action: 1
-Value: 0.05
-Visit count: 2
-Prior: 0.17
-Reward: 0.05" color=orange]
-	105 -> 106 [constraint=false]
-	107 [label="Action: 5
-Value: -0.06
-Visit count: 1
-Prior: 0.19
-Reward: 0.04" color=orange]
-	106 -> 107 [constraint=false]
-	108 [label="Action: 1
-Value: 0.07
-Visit count: 6
-Prior: 0.14
-Reward: 0.05" color=black]
-	94 -> 108 [constraint=false]
-	109 [label="Action: 4
-Value: -0.03
-Visit count: 5
-Prior: 0.18
-Reward: 0.06" color=orange]
-	108 -> 109 [constraint=false]
-	110 [label="Action: 0
-Value: 0.07
-Visit count: 4
-Prior: 0.18
-Reward: 0.04" color=orange]
-	109 -> 110 [constraint=false]
-	111 [label="Action: 3
-Value: -0.04
-Visit count: 3
-Prior: 0.18
-Reward: 0.04" color=orange]
-	110 -> 111 [constraint=false]
-	112 [label="Action: 1
-Value: 0.08
-Visit count: 2
-Prior: 0.17
-Reward: 0.03" color=orange]
-	111 -> 112 [constraint=false]
-	113 [label="Action: 1
-Value: 0.01
-Visit count: 1
-Prior: 0.19
-Reward: 0.03" color=orange]
-	112 -> 113 [constraint=false]
-	114 [label="Action: 2
-Value: 0.02
-Visit count: 10
-Prior: 0.12
-Reward: 0.05" color=black]
-	94 -> 114 [constraint=false]
-	115 [label="Action: 4
-Value: 0.04
-Visit count: 8
-Prior: 0.18
-Reward: 0.06" color=orange]
-	114 -> 115 [constraint=false]
-	116 [label="Action: 3
-Value: 0.01
-Visit count: 7
-Prior: 0.17
-Reward: 0.05" color=orange]
-	115 -> 116 [constraint=false]
-	117 [label="Action: 4
-Value: 0.04
-Visit count: 6
-Prior: 0.17
-Reward: 0.05" color=orange]
-	116 -> 117 [constraint=false]
-	118 [label="Action: 5
-Value: -0.00
-Visit count: 5
-Prior: 0.18
-Reward: 0.05" color=orange]
-	117 -> 118 [constraint=false]
-	119 [label="Action: 1
-Value: 0.03
-Visit count: 4
-Prior: 0.18
-Reward: 0.03" color=orange]
-	118 -> 119 [constraint=false]
-	120 [label="Action: 5
-Value: 0.03
-Visit count: 3
-Prior: 0.19
-Reward: 0.07" color=orange]
-	119 -> 120 [constraint=false]
-	121 [label="Action: 3
-Value: 0.04
-Visit count: 2
-Prior: 0.17
-Reward: 0.04" color=orange]
-	120 -> 121 [constraint=false]
-	122 [label="Action: 5
-Value: -0.04
-Visit count: 1
-Prior: 0.19
-Reward: 0.05" color=orange]
-	121 -> 122 [constraint=false]
-	123 [label="Action: 5
-Value: -0.04
-Visit count: 1
-Prior: 0.18
-Reward: 0.06" color=black]
-	114 -> 123 [constraint=false]
-	124 [label="Action: 3
-Value: 0.03
-Visit count: 13
-Prior: 0.16
-Reward: 0.05" color=black]
-	94 -> 124 [constraint=false]
-	125 [label="Action: 4
-Value: 0.01
-Visit count: 3
-Prior: 0.18
-Reward: 0.06" color=black]
-	124 -> 125 [constraint=false]
-	126 [label="Action: 3
-Value: 0.03
-Visit count: 2
-Prior: 0.18
-Reward: 0.06" color=orange]
-	125 -> 126 [constraint=false]
-	127 [label="Action: 4
-Value: -0.03
-Visit count: 1
-Prior: 0.18
-Reward: 0.05" color=orange]
-	126 -> 127 [constraint=false]
-	128 [label="Action: 5
-Value: 0.02
-Visit count: 9
-Prior: 0.19
-Reward: 0.06" color=orange]
-	124 -> 128 [constraint=false]
-	129 [label="Action: 3
-Value: 0.03
-Visit count: 8
-Prior: 0.18
-Reward: 0.05" color=orange]
-	128 -> 129 [constraint=false]
-	130 [label="Action: 4
-Value: 0.01
-Visit count: 7
-Prior: 0.18
-Reward: 0.04" color=orange]
-	129 -> 130 [constraint=false]
-	131 [label="Action: 4
-Value: 0.03
-Visit count: 6
-Prior: 0.18
-Reward: 0.04" color=orange]
-	130 -> 131 [constraint=false]
-	132 [label="Action: 0
-Value: 0.00
-Visit count: 5
-Prior: 0.18
-Reward: 0.04" color=orange]
-	131 -> 132 [constraint=false]
-	133 [label="Action: 4
-Value: 0.07
-Visit count: 4
-Prior: 0.18
-Reward: 0.04" color=orange]
-	132 -> 133 [constraint=false]
-	134 [label="Action: 1
-Value: -0.00
-Visit count: 3
-Prior: 0.18
-Reward: 0.04" color=orange]
-	133 -> 134 [constraint=false]
-	135 [label="Action: 5
-Value: 0.08
-Visit count: 2
-Prior: 0.19
-Reward: 0.06" color=orange]
-	134 -> 135 [constraint=false]
-	136 [label="Action: 5
-Value: -0.06
-Visit count: 1
-Prior: 0.18
-Reward: 0.04" color=orange]
-	135 -> 136 [constraint=false]
-	137 [label="Action: 4
-Value: 0.03
-Visit count: 16
-Prior: 0.17
-Reward: 0.05" color=black]
-	94 -> 137 [constraint=false]
-	138 [label="Action: 0
-Value: 0.00
-Visit count: 1
-Prior: 0.18
-Reward: 0.04" color=black]
-	137 -> 138 [constraint=false]
-	139 [label="Action: 4
-Value: 0.03
-Visit count: 4
-Prior: 0.18
-Reward: 0.05" color=black]
-	137 -> 139 [constraint=false]
-	140 [label="Action: 3
-Value: 0.01
-Visit count: 3
-Prior: 0.18
-Reward: 0.06" color=orange]
-	139 -> 140 [constraint=false]
-	141 [label="Action: 4
-Value: 0.01
-Visit count: 2
-Prior: 0.18
-Reward: 0.05" color=orange]
-	140 -> 141 [constraint=false]
-	142 [label="Action: 0
-Value: -0.03
-Visit count: 1
-Prior: 0.18
-Reward: 0.04" color=orange]
-	141 -> 142 [constraint=false]
-	143 [label="Action: 5
-Value: 0.02
-Visit count: 10
-Prior: 0.19
-Reward: 0.05" color=orange]
-	137 -> 143 [constraint=false]
-	144 [label="Action: 3
-Value: 0.04
-Visit count: 9
-Prior: 0.18
-Reward: 0.06" color=orange]
-	143 -> 144 [constraint=false]
-	145 [label="Action: 4
-Value: -0.00
-Visit count: 8
-Prior: 0.18
-Reward: 0.05" color=orange]
-	144 -> 145 [constraint=false]
-	146 [label="Action: 0
-Value: 0.04
-Visit count: 7
-Prior: 0.18
-Reward: 0.05" color=orange]
-	145 -> 146 [constraint=false]
-	147 [label="Action: 5
-Value: 0.01
-Visit count: 6
-Prior: 0.18
-Reward: 0.07" color=orange]
-	146 -> 147 [constraint=false]
-	148 [label="Action: 4
-Value: 0.05
-Visit count: 5
-Prior: 0.18
-Reward: 0.05" color=orange]
-	147 -> 148 [constraint=false]
-	149 [label="Action: 5
-Value: -0.01
-Visit count: 4
-Prior: 0.19
-Reward: 0.05" color=orange]
-	148 -> 149 [constraint=false]
-	150 [label="Action: 4
-Value: 0.07
-Visit count: 3
-Prior: 0.18
-Reward: 0.05" color=orange]
-	149 -> 150 [constraint=false]
-	151 [label="Action: 4
-Value: -0.03
-Visit count: 2
-Prior: 0.18
-Reward: 0.05" color=orange]
-	150 -> 151 [constraint=false]
-	152 [label="Action: 4
-Value: 0.08
-Visit count: 1
-Prior: 0.18
-Reward: 0.04" color=orange]
-	151 -> 152 [constraint=false]
-	153 [label="Action: 5
-Value: 0.02
-Visit count: 20
-Prior: 0.22
-Reward: 0.05" color=orange]
-	94 -> 153 [constraint=false]
-	154 [label="Action: 0
-Value: 0.01
-Visit count: 3
-Prior: 0.18
-Reward: 0.04" color=black]
-	153 -> 154 [constraint=false]
-	155 [label="Action: 3
-Value: 0.04
-Visit count: 2
-Prior: 0.18
-Reward: 0.06" color=orange]
-	154 -> 155 [constraint=false]
-	156 [label="Action: 5
-Value: -0.02
-Visit count: 1
-Prior: 0.18
-Reward: 0.05" color=orange]
-	155 -> 156 [constraint=false]
-	157 [label="Action: 1
-Value: 0.03
-Visit count: 2
-Prior: 0.17
-Reward: 0.05" color=black]
-	153 -> 157 [constraint=false]
-	158 [label="Action: 3
-Value: 0.00
-Visit count: 1
-Prior: 0.18
-Reward: 0.06" color=orange]
-	157 -> 158 [constraint=false]
-	159 [label="Action: 4
-Value: 0.02
-Visit count: 3
-Prior: 0.18
-Reward: 0.05" color=black]
-	153 -> 159 [constraint=false]
-	160 [label="Action: 3
-Value: 0.06
-Visit count: 2
-Prior: 0.18
-Reward: 0.06" color=orange]
-	159 -> 160 [constraint=false]
-	161 [label="Action: 4
-Value: -0.05
-Visit count: 1
-Prior: 0.18
-Reward: 0.06" color=orange]
-	160 -> 161 [constraint=false]
-	162 [label="Action: 5
-Value: 0.02
-Visit count: 11
-Prior: 0.19
-Reward: 0.05" color=orange]
-	153 -> 162 [constraint=false]
-	163 [label="Action: 0
-Value: -0.02
-Visit count: 1
-Prior: 0.17
-Reward: 0.05" color=black]
-	162 -> 163 [constraint=false]
-	164 [label="Action: 3
-Value: 0.05
-Visit count: 9
-Prior: 0.18
-Reward: 0.06" color=orange]
-	162 -> 164 [constraint=false]
-	165 [label="Action: 4
-Value: -0.01
-Visit count: 8
-Prior: 0.18
-Reward: 0.05" color=orange]
-	164 -> 165 [constraint=false]
-	166 [label="Action: 0
-Value: 0.05
-Visit count: 7
-Prior: 0.18
-Reward: 0.04" color=orange]
-	165 -> 166 [constraint=false]
-	167 [label="Action: 5
-Value: 0.01
-Visit count: 6
-Prior: 0.18
-Reward: 0.07" color=orange]
-	166 -> 167 [constraint=false]
-	168 [label="Action: 4
-Value: 0.02
-Visit count: 5
-Prior: 0.19
-Reward: 0.04" color=orange]
-	167 -> 168 [constraint=false]
-	169 [label="Action: 0
-Value: 0.00
-Visit count: 4
-Prior: 0.19
-Reward: 0.02" color=orange]
-	168 -> 169 [constraint=false]
-	170 [label="Action: 0
-Value: 0.03
-Visit count: 3
-Prior: 0.18
-Reward: 0.03" color=orange]
-	169 -> 170 [constraint=false]
-	171 [label="Action: 5
-Value: -0.02
-Visit count: 2
-Prior: 0.18
-Reward: 0.04" color=orange]
-	170 -> 171 [constraint=false]
-	172 [label="Action: 5
-Value: 0.10
-Visit count: 1
-Prior: 0.18
-Reward: 0.05" color=orange]
-	171 -> 172 [constraint=false]
-	173 [label="Action: 5
-Value: 0.03
-Visit count: 48
-Prior: 0.13
-Reward: 0.04" color=black]
-	0 -> 173 [constraint=false]
-	174 [label="Action: 0
-Value: 0.03
-Visit count: 7
-Prior: 0.19
-Reward: 0.04" color=black]
-	173 -> 174 [constraint=false]
-	175 [label="Action: 4
-Value: 0.01
-Visit count: 6
-Prior: 0.19
-Reward: 0.06" color=orange]
-	174 -> 175 [constraint=false]
-	176 [label="Action: 0
-Value: 0.03
-Visit count: 5
-Prior: 0.18
-Reward: 0.05" color=orange]
-	175 -> 176 [constraint=false]
-	177 [label="Action: 4
-Value: -0.01
-Visit count: 4
-Prior: 0.18
-Reward: 0.03" color=orange]
-	176 -> 177 [constraint=false]
-	178 [label="Action: 1
-Value: 0.03
-Visit count: 3
-Prior: 0.18
-Reward: 0.03" color=orange]
-	177 -> 178 [constraint=false]
-	179 [label="Action: 1
-Value: 0.02
-Visit count: 2
-Prior: 0.17
-Reward: 0.03" color=orange]
-	178 -> 179 [constraint=false]
-	180 [label="Action: 4
-Value: 0.03
-Visit count: 1
-Prior: 0.18
-Reward: 0.04" color=orange]
-	179 -> 180 [constraint=false]
-	181 [label="Action: 1
-Value: 0.05
-Visit count: 5
-Prior: 0.14
-Reward: 0.04" color=black]
-	173 -> 181 [constraint=false]
-	182 [label="Action: 4
-Value: -0.02
-Visit count: 4
-Prior: 0.19
-Reward: 0.06" color=orange]
-	181 -> 182 [constraint=false]
-	183 [label="Action: 0
-Value: 0.07
-Visit count: 3
-Prior: 0.18
-Reward: 0.05" color=orange]
-	182 -> 183 [constraint=false]
-	184 [label="Action: 5
-Value: -0.04
-Visit count: 2
-Prior: 0.18
-Reward: 0.04" color=orange]
-	183 -> 184 [constraint=false]
-	185 [label="Action: 1
-Value: 0.05
-Visit count: 1
-Prior: 0.18
-Reward: 0.04" color=orange]
-	184 -> 185 [constraint=false]
-	186 [label="Action: 2
-Value: 0.04
-Visit count: 5
-Prior: 0.12
-Reward: 0.05" color=black]
-	173 -> 186 [constraint=false]
-	187 [label="Action: 4
-Value: -0.02
-Visit count: 4
-Prior: 0.19
-Reward: 0.05" color=orange]
-	186 -> 187 [constraint=false]
-	188 [label="Action: 0
-Value: 0.06
-Visit count: 3
-Prior: 0.18
-Reward: 0.04" color=orange]
-	187 -> 188 [constraint=false]
-	189 [label="Action: 5
-Value: -0.02
-Visit count: 2
-Prior: 0.18
-Reward: 0.04" color=orange]
-	188 -> 189 [constraint=false]
-	190 [label="Action: 1
-Value: 0.06
-Visit count: 1
-Prior: 0.18
-Reward: 0.03" color=orange]
-	189 -> 190 [constraint=false]
-	191 [label="Action: 3
-Value: 0.01
-Visit count: 9
-Prior: 0.16
-Reward: 0.05" color=black]
-	173 -> 191 [constraint=false]
-	192 [label="Action: 4
-Value: 0.03
-Visit count: 8
-Prior: 0.18
-Reward: 0.05" color=orange]
-	191 -> 192 [constraint=false]
-	193 [label="Action: 0
-Value: 0.00
-Visit count: 7
-Prior: 0.18
-Reward: 0.04" color=orange]
-	192 -> 193 [constraint=false]
-	194 [label="Action: 5
-Value: 0.04
-Visit count: 6
-Prior: 0.18
-Reward: 0.04" color=orange]
-	193 -> 194 [constraint=false]
-	195 [label="Action: 0
-Value: -0.00
-Visit count: 5
-Prior: 0.18
-Reward: 0.05" color=orange]
-	194 -> 195 [constraint=false]
-	196 [label="Action: 1
-Value: 0.05
-Visit count: 4
-Prior: 0.18
-Reward: 0.04" color=orange]
-	195 -> 196 [constraint=false]
-	197 [label="Action: 4
-Value: 0.01
-Visit count: 3
-Prior: 0.20
-Reward: 0.05" color=orange]
-	196 -> 197 [constraint=false]
-	198 [label="Action: 1
-Value: 0.01
-Visit count: 2
-Prior: 0.18
-Reward: 0.03" color=orange]
-	197 -> 198 [constraint=false]
-	199 [label="Action: 4
-Value: 0.01
-Visit count: 1
-Prior: 0.19
-Reward: 0.05" color=orange]
-	198 -> 199 [constraint=false]
-	200 [label="Action: 4
-Value: 0.03
-Visit count: 8
-Prior: 0.17
-Reward: 0.05" color=black]
-	173 -> 200 [constraint=false]
-	201 [label="Action: 5
-Value: -0.00
-Visit count: 7
-Prior: 0.18
-Reward: 0.05" color=orange]
-	200 -> 201 [constraint=false]
-	202 [label="Action: 0
-Value: 0.04
-Visit count: 6
-Prior: 0.19
-Reward: 0.04" color=orange]
-	201 -> 202 [constraint=false]
-	203 [label="Action: 1
-Value: -0.02
-Visit count: 5
-Prior: 0.18
-Reward: 0.03" color=orange]
-	202 -> 203 [constraint=false]
-	204 [label="Action: 0
-Value: 0.06
-Visit count: 4
-Prior: 0.18
-Reward: 0.04" color=orange]
-	203 -> 204 [constraint=false]
-	205 [label="Action: 1
-Value: 0.01
-Visit count: 3
-Prior: 0.19
-Reward: 0.04" color=orange]
-	204 -> 205 [constraint=false]
-	206 [label="Action: 3
-Value: 0.08
-Visit count: 2
-Prior: 0.19
-Reward: 0.04" color=orange]
-	205 -> 206 [constraint=false]
-	207 [label="Action: 5
-Value: -0.09
-Visit count: 1
-Prior: 0.17
-Reward: 0.05" color=orange]
-	206 -> 207 [constraint=false]
-	208 [label="Action: 5
-Value: 0.02
-Visit count: 13
-Prior: 0.22
-Reward: 0.05" color=orange]
-	173 -> 208 [constraint=false]
-	209 [label="Action: 4
-Value: 0.04
-Visit count: 3
-Prior: 0.18
-Reward: 0.05" color=black]
-	208 -> 209 [constraint=false]
-	210 [label="Action: 0
-Value: -0.02
-Visit count: 2
-Prior: 0.18
-Reward: 0.05" color=orange]
-	209 -> 210 [constraint=false]
-	211 [label="Action: 5
-Value: 0.03
-Visit count: 1
-Prior: 0.18
-Reward: 0.04" color=orange]
-	210 -> 211 [constraint=false]
-	212 [label="Action: 5
-Value: 0.02
-Visit count: 9
-Prior: 0.18
-Reward: 0.05" color=orange]
-	208 -> 212 [constraint=false]
-	213 [label="Action: 0
-Value: 0.03
-Visit count: 8
-Prior: 0.19
-Reward: 0.05" color=orange]
-	212 -> 213 [constraint=false]
-	214 [label="Action: 3
-Value: -0.01
-Visit count: 7
-Prior: 0.17
-Reward: 0.04" color=orange]
-	213 -> 214 [constraint=false]
-	215 [label="Action: 0
-Value: 0.04
-Visit count: 6
-Prior: 0.19
-Reward: 0.04" color=orange]
-	214 -> 215 [constraint=false]
-	216 [label="Action: 1
-Value: 0.00
-Visit count: 5
-Prior: 0.18
-Reward: 0.05" color=orange]
-	215 -> 216 [constraint=false]
-	217 [label="Action: 5
-Value: 0.04
-Visit count: 4
-Prior: 0.19
-Reward: 0.05" color=orange]
-	216 -> 217 [constraint=false]
-	218 [label="Action: 5
-Value: -0.00
-Visit count: 3
-Prior: 0.20
-Reward: 0.06" color=orange]
-	217 -> 218 [constraint=false]
-	219 [label="Action: 4
-Value: 0.08
-Visit count: 2
-Prior: 0.18
-Reward: 0.06" color=orange]
-	218 -> 219 [constraint=false]
-	220 [label="Action: 0
-Value: -0.16
-Visit count: 1
-Prior: 0.18
-Reward: 0.04" color=orange]
-	219 -> 220 [constraint=false]
 	0 [color=red]
 }
