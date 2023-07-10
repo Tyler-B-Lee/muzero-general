@@ -1,7 +1,7 @@
 import random
 import numpy as np
-# from .classes import *
-from classes import *
+from .classes import *
+# from classes import *
 
 # python -m tensorboard.main --logdir="C:\Users\tyler\Desktop\Desktop Work\muzero-general\results"
 
@@ -180,7 +180,8 @@ class root2pCatsVsEyrie:
 
         done = (max(self.victory_points) >= 30) and (self.battle.stage == Battle.STAGE_DONE)
 
-        reward = self.get_winner_points() if done else (self.points_scored_this_action / 10)
+        # reward = self.get_winner_points() if done else (self.points_scored_this_action / 10)
+        reward = self.get_winner_points() if done else 0
 
         return self.get_observation(), reward, done
 
@@ -364,7 +365,9 @@ class root2pCatsVsEyrie:
         self.victory_points[player_index] = max(0, p + amount)
         logger.warning(f"\t{ID_TO_PLAYER[player_index]} Points changed by {amount}")
         logger.warning(f"\t\tNew Score: {self.victory_points}")
-        self.points_scored_this_action += amount if (player_index == self.acting_player) else -amount
+        # self.points_scored_this_action += amount if (player_index == self.acting_player) else -amount
+        if player_index == self.acting_player:
+            self.points_scored_this_action += amount
 
     def craft_card(self,player_index:int,card_id:int):
         "Makes the player craft the given card, assuming the action is legal."
@@ -2034,12 +2037,14 @@ if __name__ == "__main__":
         # print(f"\tAction Chosen: {action}")
         logger.info(f"\t> Action Chosen: {action}")
         obs,reward,done = env.step(action)
-        if env.battle.stage != Battle.STAGE_DONE:
-            for i,sq in enumerate(obs):
-                logger.warning(f"- Observation Square {i}:\n{sq}\n")
+        # if env.battle.stage != Battle.STAGE_DONE:
+        #     for i,sq in enumerate(obs):
+        #         logger.warning(f"- Observation Square {i}:\n{sq}\n")
         # print(f"-> Earned {reward} points from this action")
         # if done:
         #     env.render()
+        logger.warning(f"-> Earned {reward} points from this action")
+
         action_count += 1
     obs = env.get_observation().reshape((40,8,8))
     for i,sq in enumerate(obs):
